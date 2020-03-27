@@ -20,7 +20,7 @@ algorithm
 
 	<body>
 	  <p>
-        The following Recknagel correlation is pratical for a vertical plate in rest environment (no forced convection). </br>
+        The following Recknagel correlation is applicable for a vertical plate in rest environment (no forced convection). </br>
         The formula is picked from Recknagel 5th edition
 	  </p>
 

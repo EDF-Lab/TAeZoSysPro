@@ -28,7 +28,7 @@ algorithm
 
 <body>
   <p>
-    The following Churchill and Chu correlation is pratical for a vertical plate in rest environment (no forced convection). </br>
+    The following Churchill and Chu correlation is applicable for a vertical plate in rest environment (no forced convection). </br>
     The formula is picked from the ASHRAE guide chapter 3 table 10 equations T10.3
   </p>
 

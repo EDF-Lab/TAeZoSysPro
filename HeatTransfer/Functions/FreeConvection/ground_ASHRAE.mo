@@ -64,7 +64,7 @@ algorithm
 
 	<body>
 	  <p>
-	  The following Lloyd and Moran correlation is pratical for an horizontal plate in rest environment (no forced convection) where the fluid is <b>above</b> the wall. </br>
+	  The following Lloyd and Moran correlation is applicable for an horizontal plate in rest environment (no forced convection) where the fluid is <b>above</b> the wall. </br>
 	  The formula is picked from the ASHRAE guide chapter 3 table 10 equation T10.5 to T10.9
 	  </p>
 

@@ -23,7 +23,7 @@ algorithm
 
 <body>
   <p>
-  The following Churchill and Chu correlation is pratical for an horizontal cylinder in rest environment (no forced convection). </br>
+  The following Churchill and Chu correlation is applicable for an horizontal cylinder in rest environment (no forced convection). </br>
   The formula is picked from the ASHRAE guide chapter 3 table 10 equation T10.10
   </p>
 
