@@ -14,15 +14,16 @@ model FreeConvection
   parameter Real add_on(unit = "R+") = 1 "Custom add-on";
   parameter SI.Area A = 0 "Wall surface Area" annotation(
   Dialog(group="Geometrical properties"));
-  parameter SI.Length Lc = 0 "characteritic dimension for correlation" annotation(
+  parameter SI.Length Lc = 1 "characteritic dimension for correlation" annotation(
   Dialog(group="Geometrical properties"));
   parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE "Free convection Correlation" annotation(
   Dialog(group="Flow properties"));
-  parameter SI.CoefficientOfHeatTransfer  h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'constant' choosen)" annotation(
+  parameter SI.CoefficientOfHeatTransfer  h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
   Dialog(group="Flow properties"));
 
   // Internal variables
-  Medium.Temperature T_mean/*(nominal=293.15)*/ "Mean temperature between fluid and wall";
+  Medium.Temperature T_mean "Mean temperature between fluid and wall";
+  /*(nominal=293.15)*/
   /*(start = 320)*/
   SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
   SI.Density d "Density of fluid at T_mean";
@@ -81,8 +82,7 @@ equation
     assert(false, "The correlation selected is not yet implemented of not applicable", AssertionLevel.error);
     
   end if;
-
-//Convective heat transfer calculation  
+//Convective heat transfer calculation
   h_cv = Nu * k / Lc ;
 
 // Heat flux calculation
@@ -137,7 +137,7 @@ equation
 	
 </body>
 </html>"),
-  Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(origin = {-54, 0}, fillColor = {140, 138, 145}, fillPattern = FillPattern.Cross, extent = {{-26, 100}, {26, -100}}), Line(points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {40, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {80, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {35, 40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {35, -40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {36, 4}, extent = {{-28, 24}, {28, -24}}, textString = "hcv", fontSize = 25), Line(origin = {35, 0}, points = {{-27, -22}, {27, 22}}, thickness = 1.75, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-88, 27}, rotation = 180, extent = {{-4, 11}, {28, -5}}, textString = "Wall", fontSize = 8), Text(origin = {116, 27}, extent = {{-28, 5}, {0, -9}}, textString = "Fluid", fontSize = 8)}),
+  Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(origin = {-54, 0}, fillColor = {140, 138, 145}, fillPattern = FillPattern.Cross, extent = {{-26, 100}, {14, -100}}), Line(origin = {-10, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {30, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {70, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, 40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, -40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {26, 4}, extent = {{-28, 24}, {28, -24}}, textString = "hcv", fontSize = 25), Line(origin = {25, 0}, points = {{-27, -22}, {27, 22}}, thickness = 1.75, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-88, 23}, rotation = 180, extent = {{-4, 11}, {28, -5}}, textString = "Wall", fontSize = 8), Text(origin = {114, 23}, extent = {{-28, 5}, {0, -9}}, textString = "Fluid", fontSize = 8)}),
     Diagram(graphics = {Rectangle(origin = {-56, -3}, fillColor = {172, 172, 172}, fillPattern = FillPattern.Cross, extent = {{-22, 85}, {22, -85}}), Line(origin = {-1, 42}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-1, 0}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {1, -44}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled})}),
   __OpenModelica_commandLineOptions = "");
 
