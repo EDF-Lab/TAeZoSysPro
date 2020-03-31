@@ -106,7 +106,7 @@ equation
 	<body lang=\"en-UK\">
 	
       <p>
-        This components links the heat flow with a temperature difference between a wall and a fluid thanks to the Newton's law of cooling. The basic constitutive equation for convection is :
+        This components links the heat flow to a temperature difference between a wall and a fluid thanks to the Newton's law of cooling. The basic constitutive equation for convection is :
       </p>
       
       <img src=\"modelica://TAeZoSysPro/Information/HeatTransfer/BasesClasses/EQ_FreeConvection.png\" /> 
