@@ -4,18 +4,18 @@ function h_rad
 
   input Modelica.SIunits.Temperature T_A ;
   input Modelica.SIunits.Temperature T_B ;
-  input Modelica.SIunits.Emissivity eps "Emissivity of wall A" ;
+  input Modelica.SIunits.ThermalResistance R_th "Thermal resistance between solid A and B (emissivity and view factor)" ;
   output Modelica.SIunits.CoefficientOfHeatTransfer h_rad ;
   
 algorithm
   
   // with the expression bellow rise a zero division when T_A = T_B
-  //h_rad := eps * Modelica.Constants.sigma * (T_A^4 - T_B^4) / (T_A - T_B)  ;
+  //h_rad := 1 / R_th * Modelica.Constants.sigma * (T_A^4 - T_B^4) / (T_A - T_B)  ;
   
   // the expression bellow is non recursive
-  //h_rad := eps * Modelica.Constants.sigma * (T_A^3 + T_A * T_B^2 + T_B * T_A^2 + T_B^3) ;
+  //h_rad := 1 / R_th * Modelica.Constants.sigma * (T_A^3 + T_A * T_B^2 + T_B * T_A^2 + T_B^3) ;
   
-  h_rad := eps * Modelica.Constants.sigma * (T_A + T_B) * (T_A^2 + T_B^2) ;
+  h_rad := Modelica.Constants.sigma * (T_A + T_B) * (T_A^2 + T_B^2) / R_th ;
   
   annotation(Documentation( info = "
 <html>

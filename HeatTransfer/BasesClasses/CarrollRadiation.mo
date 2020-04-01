@@ -28,10 +28,10 @@ equation
 // linearization of the radiative equation
   h_rad = TAeZoSysPro.HeatTransfer.Functions.Radiation.h_rad(T_A = port_a.T,
                                                              T_B = port_b.T,
-                                                             eps = 1.0) ;
+                                                             R_th = ((1 - eps) / eps + Fview ^ (-1))) ;
   
 // Heat flux calculation
-  Q_flow = h_rad * A * dT / ((1 - eps) / eps + Fview ^ (-1));  
+  Q_flow = h_rad * A * dT ;  
   der(E) = Q_flow ;
    
   annotation(Documentation(info =
