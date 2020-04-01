@@ -9,7 +9,10 @@ model h_rad
 
 equation
 
-  h_rad = Radiation.h_rad(T_A = T_A, T_B = T_B, eps = eps) ;
+  h_rad = Radiation.h_rad(T_A = T_A, T_B = T_B, R_th = 1/eps) ;
   h_rad_check = eps * Modelica.Constants.sigma * (T_A^4 - T_B^4) / (T_A - T_B)  ; 
+
+annotation(
+    experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002));
 
 end h_rad;
