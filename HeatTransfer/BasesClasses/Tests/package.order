@@ -2,3 +2,4 @@ test_FreeConvection
 test_ForcedConvection
 test_Conduction
 test_CarrollRadiation
+test_HeatCapacitor

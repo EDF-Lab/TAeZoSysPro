@@ -1,0 +1,124 @@
+within TAeZoSysPro.HeatTransfer.Types;
+
+type Dynamics = enumeration(
+    DynamicFreeInitial
+      "DynamicFreeInitial -- Dynamic balance, Initial guess value",
+    FixedInitial "FixedInitial -- Dynamic balance, Initial value fixed",
+    SteadyStateInitial
+      "SteadyStateInitial -- Dynamic balance, Steady state initial with guess value",
+
+    SteadyState "SteadyState -- Steady state balance, Initial guess value")
+  "Enumeration to define definition of balance equations"
+annotation (Documentation(info="<html>
+<p>
+Enumeration to define the formulation of balance equations
+(to be selected via choices menu):
+</p>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><th><strong>Dynamics.</strong></th><th><strong>Meaning</strong></th></tr>
+<tr><td>DynamicFreeInitial</td><td>Dynamic balance, Initial guess value</td></tr>
+
+<tr><td>FixedInitial</td><td>Dynamic balance, Initial value fixed</td></tr>
+
+<tr><td>SteadyStateInitial</td><td>Dynamic balance, Steady state initial with guess value</td></tr>
+
+<tr><td>SteadyState</td><td>Steady state balance, Initial guess value</td></tr>
+</table>
+
+<p>
+The enumeration \"Dynamics\" is used for the mass, energy and momentum balance equations
+respectively. The exact meaning for the three balance equations is stated in the following
+tables:
+</p>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td colspan=\"3\"><strong>Mass balance</strong> </td></tr>
+<tr><td><strong>Dynamics.</strong></td>
+  <td><strong>Balance equation</strong></td>
+  <td><strong>Initial condition</strong></td></tr>
+
+<tr><td> DynamicFreeInitial</td>
+  <td> no restrictions </td>
+  <td> no initial conditions </td></tr>
+
+<tr><td> FixedInitial</td>
+  <td> no restrictions </td>
+  <td> <strong>if</strong> Medium.singleState <strong>then</strong><br>
+       &nbsp;&nbsp;no initial condition<br>
+       <strong>else</strong> p=p_start </td></tr>
+
+<tr><td> SteadyStateInitial</td>
+  <td> no restrictions </td>
+  <td> <strong>if</strong> Medium.singleState <strong>then</strong><br>
+       &nbsp;&nbsp;no initial condition<br>
+       <strong>else</strong> <strong>der</strong>(p)=0 </td></tr>
+
+<tr><td> SteadyState</td>
+  <td> <strong>der</strong>(m)=0  </td>
+  <td> no initial conditions </td></tr>
+</table>
+
+&nbsp;<br>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td colspan=\"3\"><strong>Energy balance</strong> </td></tr>
+<tr><td><strong>Dynamics.</strong></td>
+  <td><strong>Balance equation</strong></td>
+  <td><strong>Initial condition</strong></td></tr>
+
+<tr><td> DynamicFreeInitial</td>
+  <td> no restrictions </td>
+  <td> no initial conditions </td></tr>
+
+<tr><td> FixedInitial</td>
+  <td> no restrictions </td>
+  <td> T=T_start or h=h_start </td></tr>
+
+<tr><td> SteadyStateInitial</td>
+  <td> no restrictions </td>
+  <td> <strong>der</strong>(T)=0 or <strong>der</strong>(h)=0 </td></tr>
+
+<tr><td> SteadyState</td>
+  <td> <strong>der</strong>(U)=0  </td>
+  <td> no initial conditions </td></tr>
+</table>
+
+&nbsp;<br>
+
+<table border=1 cellspacing=0 cellpadding=2>
+<tr><td colspan=\"3\"><strong>Momentum balance</strong> </td></tr>
+<tr><td><strong>Dynamics.</strong></td>
+  <td><strong>Balance equation</strong></td>
+  <td><strong>Initial condition</strong></td></tr>
+
+<tr><td> DynamicFreeInitial</td>
+  <td> no restrictions </td>
+  <td> no initial conditions </td></tr>
+
+<tr><td> FixedInitial</td>
+  <td> no restrictions </td>
+  <td> m_flow = m_flow_start </td></tr>
+
+<tr><td> SteadyStateInitial</td>
+  <td> no restrictions </td>
+  <td> <strong>der</strong>(m_flow)=0 </td></tr>
+
+<tr><td> SteadyState</td>
+  <td> <strong>der</strong>(m_flow)=0 </td>
+  <td> no initial conditions </td></tr>
+</table>
+
+<p>
+In the tables above, the equations are given for one-substance fluids. For multiple-substance
+fluids and for trace substances, equivalent equations hold.
+</p>
+
+<p>
+Medium.singleState is a medium property and defines whether the medium is only
+described by one state (+ the mass fractions in case of a multi-substance fluid). In such
+a case one initial condition less must be provided. For example, incompressible
+media have Medium.singleState = <strong>true</strong>.
+</p>
+
+</html>"));
