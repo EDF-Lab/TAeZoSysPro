@@ -10,7 +10,7 @@ model ForcedConvection
   replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT;
   // User defined parameters
   parameter Real add_on(unit = "R+") = 1 "Custom add-on";
-  parameter SI.Area A = 0 "Wall Surface Area " annotation(
+  parameter SI.Area A = 0 "Wall surface Area " annotation(
   Dialog(group="Geometrical properties"));
   parameter SI.Length Lc = 1 "characteritic dimension for correlation" annotation(
   Dialog(group="Geometrical properties"));
