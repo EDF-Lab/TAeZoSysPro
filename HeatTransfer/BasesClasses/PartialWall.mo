@@ -3,11 +3,12 @@ within TAeZoSysPro.HeatTransfer.BasesClasses;
 model PartialWall
   // imports
     import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
+    import TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
   
   // User defined parameters
     parameter Integer N = 5 "Number of discrete layer from 2" annotation(
     Dialog(group = "Mesh properties"));
-    parameter Real x[:] = linspace(0, Th, N+1) "position of the vertices of the mesh" annotation(
+    parameter Modelica.SIunits.Position x[:] = MeshGrid.uniformGrid(Th, N) "position of the vertices of the mesh" annotation(
     Dialog(group = "Mesh properties"));
   //
     parameter Real add_on(unit = "R+") = 1 "Custom add-on";
