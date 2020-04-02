@@ -71,7 +71,7 @@ equation
       <p>
         <b>Where :</b>
         <ul>
-          <li> port.Q_flow: The Heat flow balance at the heat port
+          <li> port.Q_flow: The Heat flow balance at the heat port </li>
           <li> m: The Mass of the inertial component </li>
           <li> cp: The specific heat capacity at constant pressure </li>
         </ul>

@@ -30,19 +30,7 @@ package SimpleAir
 extends Modelica.Media.Interfaces.PartialPureSubstance(
         mediumName="Air",
         substanceNames={"air"},
-        singleState=false,
-        SpecificEnthalpy(start=1.0e5, nominal=5.0e5),
-        Density(start=1.0, nominal=1.2),
-        AbsolutePressure(
-          start=1e5,
-          nominal=1e5,
-          min=1.0,
-          max=2000e6),
-        Temperature(
-          start=273.15,
-          nominal=293.15,
-          min=130,
-          max=2000));
+        singleState=false);
 
   constant SpecificHeatCapacity cp_const = 1005.45
     "Constant specific heat capacity at constant pressure";
@@ -115,7 +103,8 @@ quantities are assumed to be constant.
     
     annotation (
       Inline=true,
-      derivative(zeroDerivative = p, zeroDerivative = X) = specificEnthalpy_pTX_der );
+      derivative(zeroDerivative = p, zeroDerivative = X) = specificEnthalpy_pTX_der,
+      inverse(T = temperature_phX(p = p, X = X, h = h)) );
     
   end specificEnthalpy_pTX;
   
@@ -131,6 +120,24 @@ quantities are assumed to be constant.
     annotation (Inline=true) ;
     
   end specificEnthalpy_pTX_der;
+
+  redeclare function temperature_phX
+    "Computes specific enthalpy as a function of pressure and temperature"
+    extends Modelica.Icons.Function;
+    input AbsolutePressure p = 101325 "Pressure";
+    input SpecificEnthalpy h "Specific enthalpy";
+    input MassFraction X[:] = X_default ;
+    output Temperature T "Temperature";
+    
+  algorithm
+  
+    T := h / cp_const + T0 ;
+    
+    annotation (
+      Inline=true,
+      inverse(h = specificEnthalpy_pTX(p = p, X = X, T = T)));
+    
+  end temperature_phX;
   
   function specificInternalEnergy_pTX
     "Computes specific internal energy as a function of pressure and temperature"
@@ -187,8 +194,8 @@ quantities are assumed to be constant.
     input AbsolutePressure p = 101325 "Pressure";
     input Temperature T "Temperature";
     input MassFraction X[:] = X_default ;
-    input PressureDifference dp = 1 "Elementary pressure difference";
-    input TemperatureDifference dT = 1 "Elementary temperature difference";
+    input Modelica.SIunits.PressureDifference dp = 1 "Elementary pressure difference";
+    input Modelica.SIunits.TemperatureDifference dT = 1 "Elementary temperature difference";
     
     output DerDensityByTemperature dd "differential of density";
     
