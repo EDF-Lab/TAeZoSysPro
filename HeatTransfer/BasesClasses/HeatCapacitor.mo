@@ -7,7 +7,7 @@ model HeatCapacitor
   parameter Modelica.SIunits.SpecificHeatCapacity cp = 0 "Specific heat capacity of element" annotation(
   Dialog(group="Thermal properties"));
   parameter Modelica.SIunits.Mass Mass = 0 "Mass of element";
-  parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Steady state initialization";
+  parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance";
   parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
   
   // Internal variables

@@ -1,6 +1,6 @@
 within TAeZoSysPro.PDE.ThermalDiffusion;
 
-model centralSecondOrder
+model CentralSecondOrder
   // user defined parameters
   parameter Integer N = 3 "Number of discrete layers";
   
@@ -34,7 +34,7 @@ equation
     Documentation(info = "
 <html>
 	<head>
-		<title>centralSecondOrder</title>	
+		<title>CentralSecondOrder</title>	
 	</head>
 	
 	<body lang=\"en-UK\">
@@ -92,4 +92,4 @@ equation
 </html>"),
   __OpenModelica_commandLineOptions = "");
    
-end centralSecondOrder;
+end CentralSecondOrder;
