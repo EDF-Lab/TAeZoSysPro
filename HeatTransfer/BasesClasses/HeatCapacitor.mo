@@ -6,7 +6,7 @@ model HeatCapacitor
 // User defined parameters :
   parameter Modelica.SIunits.SpecificHeatCapacity cp = 0 "Specific heat capacity of element" annotation(
   Dialog(group="Thermal properties"));
-  parameter Modelica.SIunits.Mass Mass = 0 "Mass of element";
+  parameter Modelica.SIunits.Mass m = 0 "Mass of element";
   parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance";
   parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
   
@@ -35,7 +35,7 @@ equation
     port.Q_flow = 0.0 ;
   else
   // enthalpy balance
-    Mass * cp * der(T) = port.Q_flow;
+    m * cp * der(T) = port.Q_flow;
     
   end if ;
 
@@ -72,7 +72,7 @@ equation
         <b>Where :</b>
         <ul>
           <li> port.Q_flow: The Heat flow balance at the heat port
-          <li> Mass: The Mass of the inertial component </li>
+          <li> m: The Mass of the inertial component </li>
           <li> cp: The specific heat capacity at constant pressure </li>
         </ul>
       </p>	
