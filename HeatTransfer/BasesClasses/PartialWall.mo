@@ -86,9 +86,9 @@ equation
     Documentation(info = "
   <html>
 	<head>
-		<title>PartialWall</title>
+      <title>PartialWall</title>
 	
-		<style type=\"text/css\">
+      <style type=\"text/css\">
 		*       { font-size: 10pt; font-family: Arial,sans-serif; }
 		code    { font-size:  9pt; font-family: Courier,monospace;}
 		h6      { font-size: 10pt; font-weight: bold; color: green; }
@@ -98,25 +98,43 @@ equation
 		td      { solid #000; vertical-align:top; }
 		th      { solid #000; vertical-align:top; font-weight: bold; }
 		table   { solid #000; border-collapse: collapse;}
-		</style>
+      </style>
 		
 	</head>
 	
 	<body lang=\"en-UK\">
-	
-		<p>
-			This components performed a one dimensionnal discretisation over a solid wall. For the discrete scheme, it uses an inheritance from a model of the second derivative subpackage.
-		</p>
+      <p>
+        This components performed a one dimensionnal discretisation over a solid wall. 
+        For the discrete scheme, it uses an inheritance of a model <b>CentralSecondOrder</b> of the <b>PDE.ThermalDiffusion</b> subpackage.
+      </p>
+
+<h4> Boundaries management </h4>
 		
-		<p>
-			The ports temperature are the boundary edges temperature. As the scheme is cell vertex, this value is computed from flux conservation. However it can induced numerical difficulties. In that
-			case, it is better to use the boundary node (cell centered) temperature as port temperature. It however recquires to change the code and imply a more or less important heat flow error. <br />
-		</p>
+      <p>
+        The ports temperature should be the boundary edges temperatures. 
+        As the scheme is cell vertex, the boundary temperatures are computed from flow conservation. 
+		Therefore, the boundary vertices are non inertial. 
+		However it can induced numerical difficulties. 
+		In that case, it is better to use the boundary node (cell centered) temperature as port temperature. 
+		It however becomes impossible to fix the wall surface temperature. <br />
+      </p>
+
+<h4> Initialisation </h4>
+
+      <p>
+        If <b>energyDynamics</b> parameter is <b>FixedInitial</b>, the initial temperature is equal to the value of the <b>T_start</b> parameter.
+      </p>
 		
-		<p>
-			Regarding the steady sate initialization, it has been chosen to do not set the time derivative to zero which is the definition of the steady state but rather to force a straight slope profile
-			within the wall based on the boundary temperature difference and the heat resistance. Physically is it equivalent but it let a degree of freedom on the time derivative. 
-		</p>	
+      <p>
+        Regarding the steady state initialization (<b>energyDynamics = SteadyStateInitial</b>), it has been chosen to do not set the time derivative to zero which is the definition of the steady state but rather to force a straight slope profile within the wall. 
+        The slope of the profil is based on the boundary temperature difference and the wall heat resistance. 
+        Physically is it equivalent but it let a degree of freedom on the time derivative. 
+      </p>
+		
+      <p>
+        Regarding the steady state (<b>energyDynamics = SteadyState</b>), it has been chosen to do not change the diffusion equation but rather to set the coefficient of the time derivative <b>CoeffTimeDer</b> in the model <b>CentralSecondOrder</b> to 0.
+        Multiple a time derivative per 0 rather than remove it can lead to numerical instabilities but it is simpler regarding the coding.
+      </p>	
 	
 	</body>
 </html>"),uses(Modelica(version = "3.2.3")),
