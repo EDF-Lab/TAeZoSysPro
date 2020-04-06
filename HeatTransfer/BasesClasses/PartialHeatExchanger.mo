@@ -8,7 +8,7 @@ partial model PartialHeatExchanger
   
   // Internal variables
   Real NTU "Number of transfer unit";
-  Real Cr "Ration of thermal condutance";
+  Real Cr "Ratio of thermal condutance";
   Modelica.SIunits.Efficiency Eff "Exchanger effectiveness";
   Modelica.SIunits.ThermalConductance Qc_A(min=0) "Thermal flow rate unit of fluid A";
   Modelica.SIunits.ThermalConductance Qc_B(min=0) "Thermal flow rate unit of fluid B";
