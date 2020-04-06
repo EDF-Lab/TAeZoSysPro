@@ -13,7 +13,7 @@ model test_PartialWall
     Placement(visible = true, transformation(origin = {50, -30}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Ramp ramp1(duration = 10, height = 10)  annotation(
     Placement(visible = true, transformation(origin = {-90, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall1(N = 5, T_start = 293.15, Th = 1, cp = 1000, d (displayUnit = "kg/m3") = 1, energyDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.FixedInitial, k = 1) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall1( T_start = 293.15, Th = 1, cp = 1000, d (displayUnit = "kg/m3") = 1, energyDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.FixedInitial, k = 1) annotation(
     Placement(visible = true, transformation(origin = {0, 52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow prescribedHeatFlow2 annotation(
     Placement(visible = true, transformation(origin = {-40, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

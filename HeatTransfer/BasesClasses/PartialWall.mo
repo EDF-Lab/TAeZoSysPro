@@ -6,7 +6,7 @@ model PartialWall
     import TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
   
   // User defined parameters
-    parameter Integer N = 5 "Number of discrete layer from 2" annotation(
+    parameter Integer N = integer(max(2, 5 * Th / 0.2 * 1e-6 / D_th) )  "Number of discrete layer from 2" annotation(
     Dialog(group = "Mesh properties"));
     parameter Modelica.SIunits.Position x[:] = MeshGrid.uniformGrid(Th, N) "position of the vertices of the mesh" annotation(
     Dialog(group = "Mesh properties"));
@@ -29,7 +29,6 @@ model PartialWall
 
   // Internal variables
     Modelica.SIunits.Energy E "Energy stored in the wall";
-    Modelica.SIunits.ThermalDiffusionCoefficient D_th "Thermal diffusivity";
 
   // Imported components
     Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
@@ -42,6 +41,9 @@ model PartialWall
       SourceTerm = fill(0.0, N), 
       x=x) annotation(
     Placement(visible = true, transformation(origin = {-2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+
+final parameter Modelica.SIunits.ThermalDiffusionCoefficient D_th = k / (d * cp) "Thermal diffusivity";
 
 initial equation
   // Energy at time 0 second is equal to 0J
@@ -60,7 +62,7 @@ equation
   // Energy is calculated
     der(E) = port_a.Q_flow + port_b.Q_flow "Energy stored";
   //
-    D_th = k / (d * cp);
+    //D_th = k / (d * cp);
 
   //PDE
     // determination of ghost node value
