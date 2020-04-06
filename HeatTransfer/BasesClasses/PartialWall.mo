@@ -111,7 +111,32 @@ equation
         For the discrete scheme, it uses an inheritance of a model <b>CentralSecondOrder</b> of the <b>PDE.ThermalDiffusion</b> subpackage.
       </p>
 
-<h4> Boundaries management </h4>
+      <h4> Meshing </h4>
+      <p>
+        The parameter <b>N</b> for number of discrete layers is by default calculated from the thermal diffusivity of the wall, its thickness and a reference wall having a sufficient number of nodes with regard to the desired precision. In that case, the minimal number of node is 2. 
+        The user can, if desired, manually define the value of the parameter <b>N</b>.
+      </p>
+      <p>
+        The reference wall is a concrete wall with:
+        <ul>
+          <li> a density of 2500 kg/m3 </li>
+          <li> a specific heat capacity of 1000 J/kg/K </li>
+          <li> a thermal conductivity of 2.3 W/m/K </li>
+          <li> a thickness of 0.2 m </li>
+          <li> 5 discrete node (<b>N</b> = 5) </li>
+        </ul>                
+      </p>
+
+      <img
+        src = \"modelica://TAeZoSysPro/Information/HeatTransfer/BasesClasses/EQ_PartialWall.png\"
+      />      
+
+      <p>
+        Regarding the mesh shape, the position of vertices in the mesh are given via a function allowing to have uniform or non uniform grid, to have boundary layers shape from Biot number etc. 
+        The list of mesh functions is available in the subpackage Functions.MeshGrid.
+      </p>      
+
+      <h4> Boundaries management </h4>
 		
       <p>
         The ports temperature should be the boundary edges temperatures. 
