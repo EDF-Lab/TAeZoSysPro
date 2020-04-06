@@ -43,4 +43,5 @@ algorithm
 	</body>
 </html>"),
     Diagram(coordinateSystem(grid = {2, 2})));
+
 end vertical_plate_Recknagel;
