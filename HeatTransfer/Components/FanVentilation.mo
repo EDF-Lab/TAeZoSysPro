@@ -1,12 +1,15 @@
 within TAeZoSysPro.HeatTransfer.Components;
 
-model Ventilation
+model FanVentilation
   replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT "Medium in the component";
   
   // User defined parameters
   parameter Boolean Use_External_MassFlow = false;
+  parameter Modelica.SIunits.Power Q_flow_aero_nominal = 0 "Fan power given to fluid at nominal conditions";
+  parameter Modelica.SIunits.VolumeFlowRate V_flow_nominal = 0 "Volume flow rate at nominal conditions";
   
   // Internal variables
+  Modelica.SIunits.Power Q_flow_aero "Fan power given to fluid";
   Modelica.SIunits.SpecificHeatCapacity cp "Mean specific heat capacity" ;
   Modelica.SIunits.Density d ;
   Modelica.SIunits.MassFlowRate m_flow ;
@@ -36,7 +39,11 @@ equation
     m_flow = V_flow_input * d ;
   end if;
 
-  port_b.Q_flow = m_flow * cp * (port_b.T - port_a.T) ;
+// Fan power
+  Q_flow_aero = Q_flow_aero_nominal * ((m_flow / d) / V_flow_nominal)^2 ;
+
+// Energy balance
+  port_b.Q_flow = m_flow * cp * (port_b.T - port_a.T) - Q_flow_aero ;
   der(E) = port_b.Q_flow ; 
    
 // ports handover
@@ -54,7 +61,7 @@ equation
   <body lang=\"en-UK\">
 	
     <p>
-      This components computes the heat flow balance between the heat flow from the supply ventilation and the exhaust assuming steady pressure balance thus steady mass flow balance.
+      This components computes the heat flow balance between the heat flow from the supply ventilation where fan in present between inlet conditions and the blowing in the control volume and the exhaust assuming steady pressure balance thus steady mass flow balance.
     </p>
         
     <p> 
@@ -62,18 +69,30 @@ equation
       The exhaust temperature is the temperature at port_b and the supply at port_a. 
     </p>
     
+    <p> 
+      It is assumed that the fan curve pressure vs volume flow rate is linear to the volume flow rate.
+      The aeraulic power is the product of the pressure difference at the boundary of the fan and the volume flow rate a suction. 
+    </p>
+
+	<img	
+      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/EQ_FanVentilation_aero.png\" 
+	/>
+    
     <p>
       The enthalpy flow balance to the volume that receive mass derives:
     </p>	
     		
 	<img	
-      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/EQ_Ventilation.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/EQ_FanVentilation.PNG\" 
       width=\"500\"
 	/>
 	
 	<p>
       <b>Where :</b>
       <ul>
+        <li> <b>∆p_fan</b> is pressure difference at fan boundaries </li>
+        <li> <b>a</b> a is the proportionality coefficient between the pressure difference and the flow </li>
+        <li> <b>V_flow</b> is the volume flow rate at fan suction </li>
         <li> <b>H_flow</b> is the enthalpy flow rate </li>      
         <li> <b>m_flow</b> is the mass flow rate </li>
         <li> <b>h</b> is the specific enthalpy </li>
@@ -89,4 +108,5 @@ equation
   </body>
 </html> 
     "));
-end Ventilation;
+
+end FanVentilation;
