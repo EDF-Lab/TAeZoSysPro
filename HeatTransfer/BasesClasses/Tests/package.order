@@ -5,3 +5,4 @@ test_CarrollRadiation
 test_HeatCapacitor
 test_PartialWall
 test_LumpVolume
+test_FreeConvection_dT_decoupled
