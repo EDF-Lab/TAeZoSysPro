@@ -19,47 +19,50 @@ protected
 algorithm
   N_2 := N - 2 ;
   dx_biot := Bi * k / h ;
-  x[1] := 0.0 ;
-  x[2] := dx_biot ;  
   
-  if symmetricalMesh then
-    if rem(N,2) == 0 then // even number of segment
-      dx := (L-2*dx_biot) / ( (1-q^(N_2))/(1-q) ) ;
+  if N > 2 then  
+    x[1] := 0.0 ;
+    x[2] := dx_biot ;  
+    
+    if symmetricalMesh then
+      if rem(N,2) == 0 then // even number of segment
+        dx := (L-2*dx_biot)/2 / ( (1-q^(N_2/2))/(1-q) ) ;
+        
+        for i in 2:integer(N/2) loop
+          x[i+1] := x[i] + dx * q^(i-2) ;
+        end for ;
+        
+        for i in integer(N/2)+2:N+1 loop
+          x[i] := L - x[N+1-i+1] ;
+        end for ;      
+              
+      else
+        dx := (L-2*dx_biot) / ( 2 * (1-q^(floor(N_2/2)))/(1-q) + q^(floor(N_2/2))) ;
+        
+        for i in 2:integer( ceil(N/2) ) loop
+          x[i+1] := x[i] + dx * q^(i-2) ;
+        end for ;     
+        
+        for i in integer(ceil(N/2))+1:N+1 loop
+          x[i] := L - x[N+1-i+1] ;
+        end for ;
       
-      for i in 2:integer(N/2) loop
-        x[i+1] := x[i] + dx * q^(i-2) ;
-      end for ;
+      end if;
       
-      for i in integer(N/2)+1:N+1 loop
-        x[i] := L - x[N+1-i+1] ;
-      end for ;
-      
-      x[end] := x[end-1] + dx_biot ;      
-            
     else
-      dx := (L-2*dx_biot) / ( 2 * (1-q^(floor(N_2/2)))/(1-q) + q^(floor(N_2/2))) ;
+      dx := (L-dx_biot) / ( (1-q^(N-1))/(1-q) ) ;
       
-      for i in 2:integer( ceil(N/2) ) loop
+      for i in 2:N loop
         x[i+1] := x[i] + dx * q^(i-2) ;
-      end for ;     
-      
-      for i in integer(ceil(N/2))+1:N+1 loop
-        x[i] := L - x[N+1-i+1] ;
       end for ;
       
-      x[end] := x[end-1] + dx_biot ;
-    
-    end if;
-    
-  else
-    dx := (L-dx_biot) / ( (1-q^(N-1))/(1-q) ) ;
-    
-    for i in 2:N loop
-      x[i+1] := x[i] + dx * q^(i-2) ;
-    end for ;
-    
-  end if ;
+    end if ;
 
+  else
+    x[1] := 0.0 ;
+    x[2] := L/2 ;
+    x[3] := L ;  
+  end if;
 
   annotation(Documentation(info = "
 <html>
@@ -71,6 +74,10 @@ algorithm
     <p>
       This functions gives the position of the vertices that form segments. 
       The position is computed to insure a geometrical increase of the distance between a vertex and its next expected for one of the boundary segment (x[2] - x[1]) if <b>symmetricalMesh</b> is false and both otherwise, where the size of the segment is computed for having a Biot number equal to 0.1.
+    </p>
+
+    <p>
+      For the special case where the number of segments <b>N</b> equal <b>2</b>, the length of the segment is half of the length of the domain and biot layers are ignored.
     </p>
     
     <p>
