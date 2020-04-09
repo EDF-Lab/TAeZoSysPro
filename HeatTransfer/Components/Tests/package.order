@@ -2,3 +2,4 @@ test_HeatExchanger
 test_Ventilation
 test_FanVentilation
 test_FviewCalculator
+test_HalfWall
