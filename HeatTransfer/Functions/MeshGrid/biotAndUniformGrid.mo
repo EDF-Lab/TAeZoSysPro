@@ -14,15 +14,23 @@ protected
   Modelica.SIunits.Distance dx "length of the first segment according to the biot number" ;
   
 algorithm
-  dx := Bi * k / h ;
-  x[1] := 0 ;
-  
-  if symmetricalMesh then
-    x[2:end-1] := linspace(dx, L-dx, N-1) ;  
-    x[end] := x[end-1] + dx ;
+  if N > 2 then
+    dx := Bi * k / h ;
+    x[1] := 0 ;
+    
+    if symmetricalMesh then
+      x[2:end-1] := linspace(dx, L-dx, N-1) ;  
+      x[end] := x[end-1] + dx ;
+      
+    else
+      x[2:end] := linspace(dx, L, N) ;   
+    end if ;
     
   else
-    x[2:end] := linspace(dx, L, N) ;   
+    x[1] := 0 ;
+    x[2] := L/2 ;
+    x[3] := L ;
+    
   end if ;
 
   annotation(Documentation(info = "
@@ -34,7 +42,11 @@ algorithm
   <body>
     <p>
       This functions gives the position of the vertices that form segments. 
-      The position is computed to insure an equal distance between all the vertices, expected for one of the boundary segment (x[2] - x[1]) if <b>symmetricalMesh</b> is false and both otherwise, where the size of the segment is computed for having a Biot number equal to 0.1 
+      The position is computed to insure an equal distance between all the vertices, expected for one of the boundary segment (x[2] - x[1]) if <b>symmetricalMesh</b> is false and both otherwise, where the size of the segment is computed for having a Biot number equal to 0.1. 
+    </p>
+
+    <p>
+      For the special case where the number of segments <b>N</b> equal <b>2</b>, the length of the segment is half of the length of the domain and biot layers are ignored.
     </p>
     
     <p>
