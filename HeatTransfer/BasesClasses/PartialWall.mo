@@ -3,17 +3,33 @@ within TAeZoSysPro.HeatTransfer.BasesClasses;
 model PartialWall
   // imports
     import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
-    import TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
+    import MeshFunction = TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
+    import TAeZoSysPro.HeatTransfer.Types.MeshGrid ;    
   
   // User defined parameters
     parameter Integer N = integer(max(2, 5 * Th / 0.2 * 1e-6 / D_th) )  "Number of discrete layer from 2" annotation(
     Dialog(group = "Mesh properties"));
-    parameter Modelica.SIunits.Position x[:] = MeshGrid.uniformGrid(Th, N) "position of the vertices of the mesh" annotation(
+    parameter MeshGrid mesh = MeshGrid.uniform "Shape function selection for the mesh" annotation(
+    Dialog(group = "Mesh properties"));    
+    parameter Real q = 1.2  "Growth rate (if geometricalGrowth)" annotation(
     Dialog(group = "Mesh properties"));
-  //
+    parameter Modelica.SIunits.CoefficientOfHeatTransfer h = 10 "Decoupled value of the heat transfer coefficient (if biot)" annotation(
+    Dialog(group = "Mesh properties"));  
+    final parameter Modelica.SIunits.Position x[:] = 
+      if mesh == MeshGrid.uniform then
+        MeshFunction.uniformGrid(L=Th, N=N)
+      elseif mesh == MeshGrid.geometricalGrowth then
+        MeshFunction.geometricalGrowthGrid(L=Th, N=N, q=q)  
+      elseif mesh == MeshGrid.biotAndUniform then
+        MeshFunction.biotAndUniformGrid(L=Th, N=N, h=h, k=k)
+      elseif mesh == MeshGrid.biotAndGeometricalGrowth then
+        MeshFunction.biotAndGeometricalGrowthGrid(L=Th, N=N, h=h, k=k, q=q)
+      else
+        MeshFunction.uniformGrid(Th, N) "position of the vertices of the mesh" ;
+                
     parameter Real add_on(unit = "R+") = 1 "Custom add-on";
     parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance";
-    parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
+    parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if energyDynamics = FixedInitial";
   //
     parameter Modelica.SIunits.SpecificHeatCapacity cp = 0 "Wall specific heat capacity" annotation(
     Dialog(group = "Medium properties"));
@@ -24,7 +40,7 @@ model PartialWall
   //
     parameter Modelica.SIunits.Thickness Th = 0 "Material thickness" annotation(
     Dialog(group="Geometrical properties"));
-    parameter Modelica.SIunits.Area Area = 1 "Wall area" annotation(
+    parameter Modelica.SIunits.Area A = 1 "Wall area" annotation(
     Dialog(group = "Geometrical properties"));
 
   // Internal variables
@@ -66,9 +82,9 @@ equation
 
   //PDE
     // determination of ghost node value
-    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / (x[2] - x[1]) * k = 0.0 "flux conservation";
+    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / (x[2] - x[1]) * k * A = 0.0 "flux conservation";
     
-    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1])/(x[end]-x[end-1])*k = 0.0 "flux conservation" ;
+    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1])/(x[end]-x[end-1]) * k * A = 0.0 "flux conservation" ;
 
   if energyDynamics == Dynamics.SteadyState then
     centralSecondOrder.CoeffTimeDer = 0.0 ;
