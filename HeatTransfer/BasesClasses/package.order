@@ -1,5 +1,6 @@
 Tests
 FreeConvection
+FreeConvection_dT_decoupled
 ForcedConvection
 Conduction
 CarrollRadiation
