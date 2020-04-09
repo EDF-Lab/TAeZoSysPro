@@ -135,7 +135,7 @@ A_wall = A;    //output y is set to Awall and it can be connected to FviewCalcul
     </p> 
 
     <p>		
-      To remain a generic as possible, a heatport directly connected to the first discrete layer of the wall has been added. For specific applications, The ForcedConvection module or another module for modeliing radiation can be latter connected to this empty heat port when implementing the HalfWall 
+      To remain a generic as possible, a heatport directly connected to the first discrete layer of the wall has been added. For specific applications, The ForcedConvection module or another module for modelling radiation can be latter connected to this empty heat port when implementing the HalfWall 
     </p>
 
     <p>			
