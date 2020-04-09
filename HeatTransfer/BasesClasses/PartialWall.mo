@@ -15,6 +15,8 @@ model PartialWall
     Dialog(group = "Mesh properties"));
     parameter Modelica.SIunits.CoefficientOfHeatTransfer h = 10 "Decoupled value of the heat transfer coefficient (if biot)" annotation(
     Dialog(group = "Mesh properties"));  
+    parameter Boolean symmetricalMesh = true "Axial symmetry mesh where the axis is the middle of the domain" annotation(
+    Dialog(group = "Mesh properties"));  
     final parameter Modelica.SIunits.Position x[:] = 
       if mesh == MeshGrid.uniform then
         MeshFunction.uniformGrid(L=Th, N=N)

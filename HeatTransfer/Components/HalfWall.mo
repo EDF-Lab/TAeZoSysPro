@@ -7,7 +7,7 @@ model HalfWall
   import TAeZoSysPro.HeatTransfer.Types.MeshGrid ;
   import MeshFunction = TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
   
-  outer TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
+  /*outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
 
 //Media
   replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT ;
@@ -60,7 +60,7 @@ model HalfWall
   Modelica.SIunits.BiotNumber Bi ;
 
 // Components inside wall are defined
-  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q)  annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = false)  annotation(
     Placement(visible = true, transformation(origin = {6.5, 0.5}, extent = {{-29.5, -29.5}, {29.5, 29.5}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation(
     Placement(visible = true, transformation(origin = {-47, 70}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
