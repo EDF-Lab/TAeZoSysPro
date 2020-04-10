@@ -21,8 +21,6 @@ model FreeConvection
 
 // Internal variables
   Medium.Temperature T_mean "Mean temperature between fluid and wall";
-  /*(nominal=293.15)*/
-  /*(start = 320)*/
   SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
   SI.Density d "Density of fluid at T_mean";
   SI.SpecificHeatCapacity cp "Specific heat capacity of fluid at T_mean";
