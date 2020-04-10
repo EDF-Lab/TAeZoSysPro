@@ -5,7 +5,7 @@ model CarrollRadiation
   extends Modelica.Thermal.HeatTransfer.Interfaces.Element1D ;
    
   // User defined parameters
-  parameter Real add_on(unit = "R+") = 1 "Custom add-on";
+  parameter Real add_on = 1 "Custom add-on";
   parameter Modelica.SIunits.Area A = 0 "Wall Surface Area " annotation(
   Dialog(group="Geometrical properties"));
   parameter Modelica.SIunits.Emissivity eps = 1 "Grey wall surface emissivity" annotation(
