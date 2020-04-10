@@ -45,7 +45,7 @@ model Wall
     Dialog(group = "Convection properties"));
   parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation_a = Correlations.vertical_plate_ASHRAE "free convection Correlation" annotation(
     Dialog(group = "Convection properties"));
-  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation_b = Correlations.vertical_plate_ASHRAE "free convection Correlation" annotation(
+  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation_b = if correlation_a == Correlations.ceiling_ASHRAE then Correlations.ground_ASHRAE elseif correlation_a == Correlations.ground_ASHRAE then Correlations.ceiling_ASHRAE else correlation_a "free convection Correlation" annotation(
     Dialog(group = "Convection properties"));
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const_a = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
@@ -143,6 +143,7 @@ A_wall_b = A;
     Line(points = {{-90, -30}, {-42, -30}, {-42, -52}, {-40, -52}}, color = {0, 0, 127}));
   connect(F_view_b, carrollRadiation_b.Fview) annotation(
     Line(points = {{92, -30}, {44, -30}, {44, -52}, {42, -52}}, color = {0, 0, 127}));
+  
   annotation(
     Diagram(graphics = {Rectangle(origin = {3.5, -1}, fillColor = {218, 218, 218}, fillPattern = FillPattern.Solid, lineThickness = 1, extent = {{-42.5, 101}, {36.5, -99}})}, coordinateSystem(initialScale = 0.1)),
     Icon(graphics = {Rectangle(origin = {11, 9}, fillColor = {191, 191, 191}, fillPattern = FillPattern.Cross, lineThickness = 1, extent = {{-51, 91}, {29, -109}}), Line(origin = {-70, 70.1389}, points = {{0, 30}, {0, -30}}, color = {0, 0, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-52, 70.1389}, points = {{0, 30}, {0, -30}}, color = {0, 0, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-61, 88.1389}, points = {{17, 0}, {-17, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-61, 54.1389}, points = {{17, 0}, {-17, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-93, 93}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "Fluid"), Text(origin = {-93, -67}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "J_MRT"), Text(origin = {-73, -27}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "F_view_a"), Text(origin = {-73, -49}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "A_wall_a"), Line(origin = {-52.1559, -79.8606}, rotation = 180, points = {{-9, 0}, {-7, 0}, {-7, 4}, {-3, -4}, {1, 4}, {5, -4}, {9, 4}, {13, -4}, {13, 0}, {21, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-52.5726, -99.7217}, rotation = 180, points = {{-9, 0}, {-7, 0}, {-7, 4}, {-3, -4}, {1, 4}, {5, -4}, {9, 4}, {13, -4}, {13, 0}, {21, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {67, -47}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "A_wall_b"), Text(origin = {67, -27}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "F_view_b"), Line(origin = {52.8486, -80.2659}, points = {{-9, 0}, {-7, 0}, {-7, 4}, {-3, -4}, {1, 4}, {5, -4}, {9, 4}, {13, -4}, {13, 0}, {21, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {52.4319, -100.127}, points = {{-9, 0}, {-7, 0}, {-7, 4}, {-3, -4}, {1, 4}, {5, -4}, {9, 4}, {13, -4}, {13, 0}, {21, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {68.8387, 69.7336}, points = {{0, 30}, {0, -30}}, color = {0, 0, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {59.8387, 53.7336}, rotation = 180, points = {{17, 0}, {-17, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {59.8387, 87.7336}, rotation = 180, points = {{17, 0}, {-17, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {50.8387, 69.7336}, points = {{0, 30}, {0, -30}}, color = {0, 0, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {87, 93}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "Fluid"), Text(origin = {87, -67}, lineThickness = 1, extent = {{-7, 7}, {13, -13}}, textString = "J_MRT")}, coordinateSystem(initialScale = 0.1)),
@@ -167,19 +168,23 @@ A_wall_b = A;
   <body lang=\"en-UK\">
   
     <p>
-      This component models the thermal response of half wall in interface with a rest ambiance where the thermal exchanges are mainly driven by natural convection and radiation.
+      This component models the thermal response of wall in interface with a rest ambiances where the thermal exchanges are mainly driven by natural convection and radiation.
     </p>
     
+    <p>
+      The suffix '..._a' refers to side where the ports 'port_a' are.
+    </p>
+        
     <p>		
-      This component is an assembly of the <b>PartialWall</b> module, the <b>FreeConvection</b> module and a <b>CarrollRadiation</b> module.
+      This component is an assembly of the <b>PartialWall</b> module, <b>FreeConvection</b> modules and <b>CarrollRadiation</b> modules.
     </p> 
 
     <p>		
-      To remain a generic as possible, a heatport directly connected to the first discrete layer of the wall has been added. For specific applications, The ForcedConvection module or another module for modeliing radiation can be latter connected to this empty heat port when implementing the HalfWall 
+      To remain a generic as possible, heatports directly connected to the first discrete layer of the wall has been added. For specific applications, The ForcedConvection module or another module for modelling radiation can be latter connected to this empty heat port when implementing the HalfWall 
     </p>
 
     <p>			
-      For the <b>CarrollRadiation</b> module, the HalfWall module proposes two approaches for passing information about the form factor.
+      For the <b>CarrollRadiation</b> module, the Wall module proposes two approaches for passing information about the form factor.
 	
       <h4> Explicit connection: <b>UseImplicitConnection = false</b> </h4>
     
@@ -191,10 +196,10 @@ A_wall_b = A;
       <h4> Implicit connection: <b>UseImplicitConnection = true</b> </h4>
     
       The implicit connection use the <b>inner</b> and <b>outer</b> key word to perform the passage of information. 
-      The ports <b>Awall</b> and <b>Fview</b> have to remains without connection. 
-      The <b>FviewCalculator</b> is declared as outer within the HalfWall module. 
+      The ports <b>A_wall</b> and <b>F_view</b> have to remains without connection. 
+      The <b>fviewCalculator</b> is declared as outer within the Wall module. 
       The equations corresponding to the 'connect' with graphic connection are done explicitely in the equation section.
-      To connect severals walls to the FviewCalculator, a <b>RadiativeIndex</b> is added. 
+      To connect severals walls to the fviewCalculator, a <b>RadiativeIndex</b> is added. 
       The value of raditave index corresponds to the index of the current wall in the FviewCalculator. 
       Therefore, each wall needs to have a different RadiativeIndex.
     </p>				
