@@ -124,59 +124,63 @@ equation
     Icon(graphics = {Text(origin = {66, -104}, extent = {{2, -8}, {-46, 14}}, textString = "Heat Load"), Text(origin = {-114, -14}, rotation = 180, extent = {{6, -2}, {-34, 18}}, textString = "J_MRT"), Rectangle(fillColor = {184, 51, 11}, fillPattern = FillPattern.Cross, lineThickness = 1, extent = {{-20, 20}, {20, -20}}), Line(origin = {0, -50.55}, rotation = 180, points = {{0, -26}, {0, 18}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-50, -0.55}, rotation = 90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-40, 82}, extent = {{-22, -6}, {-46, 14}}, textString = "F_view"), Text(origin = {-60, 46}, extent = {{-6, -6}, {-46, 14}}, textString = "A_rad_casing"), Text(origin = {18, 112}, extent = {{32, -12}, {2, 8}}, textString = "Hood"), Text(origin = {78, 22}, extent = {{40, -10}, {4, 6}}, textString = "Fluid"), Line(origin = {-40, 20}, points = {{-20, -80}, {-20, 60}, {20, 60}}, thickness = 2), Line(origin = {40, 20}, points = {{20, -80}, {20, 60}, {-20, 60}}, thickness = 2), Line(origin = {0, -80}, points = {{-60, 0}, {60, 0}}, thickness = 2), Ellipse(origin = {-3, 91}, lineThickness = 2, extent = {{-17, -1}, {23, -21}}, endAngle = 360), Line(origin = {-50.5454, -69.0254}, points = {{-10, -11}, {-10, 9}}, pattern = LinePattern.Dot, thickness = 1), Line(origin = {70.3659, -68.8599}, points = {{-10, -11}, {-10, 9}}, pattern = LinePattern.Dot, thickness = 1), Line(origin = {-41, 15}, points = {{-39, -85}, {-19, -85}, {-11, -83}, {-9, -75}, {-9, 45}, {-3, 51}, {5, 55}, {21, 55}, {29, 57}, {33, 65}, {33, 85}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Line(origin = {44, 15}, points = {{36, -85}, {16, -85}, {8, -83}, {6, -75}, {6, 45}, {4, 53}, {-4, 55}, {-24, 55}, {-32, 57}, {-34, 65}, {-34, 85}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Line(origin = {50.07, -0.38}, rotation = -90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {15.64, -3}, points = {{-17.6391, 53}, {-17.6391, 43}, {-13.6391, 35}, {-5.63908, 33}, {2.3609, 33}, {8.3609, 29}, {12.3609, 23}, {12.3609, -17}, {10.3609, -25}, {2.36092, -29}, {0.36092, -29}, {-5.63908, -31}, {-7.6391, -37}, {-7.6391, -47}}, color = {0, 85, 255}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 4), Line(origin = {-18, -0.36}, points = {{8, -51.6391}, {8, -41.6391}, {6, -33.6391}, {-2, -31.6391}, {-4, -31.6391}, {-10, -27.6391}, {-12, -21.6391}, {-12, 18.3609}, {-8, 24.3609}, {-2, 28.3609}, {4, 28.3609}, {14, 30.3609}, {18, 38.3609}}, color = {0, 85, 255}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.None}, arrowSize = 4), Line(origin = {-28.7119, 40.0462}, rotation = -90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-29.0928, -39.557}, rotation = -90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {30.4806, 39.4998}, rotation = 90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {30.0997, -40.1034}, rotation = 90, points = {{0, -26}, {0, -8}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-73, 0}, points = {{11, 0}, {7, 0}, {5, -6}, {1, 6}, {-3, -6}, {-7, 6}, {-9, 0}, {-17, 0}}, color = {255, 0, 0}, thickness = 0.75, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5)}, coordinateSystem(initialScale = 0.1)),
     Documentation(info = "
 <html>
-	<head>
-		<title>CabinetPower</title>		
-	</head>
+  <head>
+    <title>CabinetPower</title>		
+  </head>
 	
-	<body lang=\"en-UK\">
-	
-		<p>
-			This module allows to model a electrical cabinet, an I&amp;C cabinet or any cabinet that is composed of a thermal dissipator surrounded by
-			a casing. The shape and the internal arrangement of a cabinet is clear dependant from the manufacturer as it is visible on the first figure.
-		</p>
+  <body lang=\"en-UK\">
+    <p>
+      This module allows to model a electrical cabinet, an I&amp;C cabinet or any cabinet that is composed of a thermal dissipator surrounded by a casing. 
+    </p>
+    
+    <p>			
+      The shape and the internal arrangement of a cabinet is clearly dependent from the manufacturer as it is visible on the first figure.
+    </p>
 		
-		<img 
-			src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/FIG_CabinetPower.PNG\"	
-			width = \"700\"
-		/>
+    <img 
+      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/FIG_CabinetPower.PNG\"	
+      width = \"600\"
+    />
 		
-		<p>
-			Consequently a reduction model is performed to model generical cabinet as much as possible. The cabinet is represented by a box (called emitter)
-			into a box (called the casing). The following assumptions are made:
-			<ul>
-				<li> The conductive exchanges due to possible media between the emitter and the casing are neglected </li>
-				<li> The space between the emitter and the casing is large enough to consider that the outside boundary layer temperature is the room
-				temperature for both the convection with the emitter or the inner of the casing </li>
-				<li> The space for the radiation between the emitter and the casing is of kind 'convex to concave'. There is no self radiation for the emitter. 
-				The view (or form) factor between the emitter and the casing is equal to one </li>
-				
-			</ul>
-			The heatload are dissipated within the emitter. The emitter exchanges by convection with the fluid between	the emitter and the casing. 
-			Regarding the convection, the emitter is supposed flat and horizontal or vertical depending on the value of <b>correlation_internal</b>. The
-			convective surface of the emitter (<b>A1</b>) has thus to be an equivalent surface is both vertical and horizontal surfaces are present. 
-			For the casing for the inner and outer convection, the correlation is always a correlation for a vertical plate.
-			All the convective surfaces are equivalent surface, there must not necessarily be any size hierachies between the surfaces. For example, 
-			in the equivalent thermal model, the equivalent surface <b>A3</b> for the internal convection with the casing looks smaller than the external
-			surface whereas in pratical it is often	greater. <br/>	
-			Regarding the emitter radiation, the real shape is often so much complex that self radiation almost always occurs. The equivalent surface is
-			thus often smaller than the real surface. Regarding the radiation over the inner of the casing, as the view factor is attached to the emitter,
-			the convective <b>A3</b> and radiative surface area are the same. <br/>
-			The real outer surface area of the casing is represented by two variables <b>A4</b> and <b>A5</b> for respectively the convective and radiant
-			exchange. It is usefull when multiple cabinets are modelled by one equivalent cabinet (model reduction). If each cabinets are close enough 
-			to each other, a part of the external surface of each cabinet shines over its neighboors. With the assumptions that the surface temperature 
-			of each cabinet is close, the balance of radiation is null. It can be represented by a reduction of outer radiant surface area.  
-		</p>
+    <p>
+      Consequently a reduction model is performed to model generical cabinet as much as possible. 
+      The cabinet is represented by a box (called emitter) into a box (called the casing). 
+      The following assumptions are made:
+      <ul>
+        <li> The conductive exchanges due to possible media between the emitter and the casing are neglected </li>
+        <li> The space between the emitter and the casing is large enough to consider that the outside boundary layer temperature is the room temperature for both the convection with the emitter or the inner of the casing </li>
+        <li> The space for the radiation between the emitter and the casing is of kind 'convex to concave'. There is no self radiation for the emitter. The view (or form) factor between the emitter and the casing is equal to one </li>
+      </ul>
+    </p>
+    
+    <p>      
+      The heatload are dissipated within the emitter. 
+      The emitter exchanges by convection with the fluid between the emitter and the casing. 
+      Regarding the convection, the emitter is supposed flat and horizontal or vertical depending on the value of <b>correlation_internal</b>. 
+      The convective surface of the emitter (<b>A_conv_emitter</b>) has thus to be an equivalent surface is both vertical and horizontal surfaces are present. 
+      For the casing for the inner and outer convection, the correlation is always a correlation for a vertical plate.
+      All the convective surfaces are equivalent surface, there must not necessarily be any size hierachies between the surfaces. 
+      For example, in the equivalent thermal model, the equivalent surface <b>A_in_casing</b> for the internal convection with the casing looks smaller than the external surface whereas in pratical it is often greater. <br/>	
+      Regarding the emitter radiation, the real shape is often so much complex that self radiation almost always occurs. 
+      The equivalent surface is thus often smaller than the real surface. 
+      Regarding the radiation over the inner of the casing, as the view factor is attached to the emitter, the convective <b>A_in_casing</b> and radiative surface area are the same. <br/>
+      The real outer surface area of the casing is represented by two variables <b>A_conv_casing</b> and <b>A_rad_casing</b> for respectively the convective and radiant exchange. 
+      It is usefull when multiple cabinets are modelled by one equivalent cabinet (model reduction).
+      If each cabinets are close enough to each other, a part of the external surface of each cabinet shines over its neighboors. 
+      With the assumptions that the surface temperature of each cabinet is close, the balance of radiation is null. 
+      It can be represented by a reduction of outer radiant surface area.  
+    </p>
 		
-		<p>
-			This module has been designed to be calibrated on data assimilation.
-		</p>
+    <p>
+      This module has been designed to be calibrated on data assimilation.
+    </p>
 		
-		<img 
-			src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/FIG_CabinetPower2.PNG\"	
-			width = \"700\"
-		/>
+    <img 
+      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/Components/FIG_CabinetPower2.PNG\"	
+      width = \"600\"
+    />
 		
-	</body>
+  </body>
 </html>"));
 
 end CabinetPower;
