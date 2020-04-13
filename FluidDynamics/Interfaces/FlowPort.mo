@@ -15,7 +15,7 @@ Basic definition of the connector.<br>
 <b>State variables:</b>
 <ul>
 <li>Temperature T</li>
-<li>Density vector di</li>
+<li>Density vector d</li>
 </ul>
 
 <b>Flow variables:</b>
