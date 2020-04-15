@@ -109,7 +109,7 @@ equation
     Documentation(info ="
 <html>
   <head>
-    <title>AeraulicConvection</title>
+    <title>FreeConvection</title>
   </head>
 	
   <body lang=\"en-UK\">
