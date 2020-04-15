@@ -20,7 +20,7 @@ algorithm
   Nu_up := 0 ;
   Nu_buffer := 0 ;
 
-  if dT > 0 then
+  if dT < 0 then
 
     if Ra < Ra_1 then
       x_small:= Ra_1/100 ; 

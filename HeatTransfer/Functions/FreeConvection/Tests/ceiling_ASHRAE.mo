@@ -4,12 +4,11 @@ model ceiling_ASHRAE
 
   Modelica.SIunits.NusseltNumber Nu;
   Modelica.SIunits.RayleighNumber Ra;
-  Modelica.SIunits.TemperatureDifference dT "Difference of Temperature plate - fluid";
+  parameter Modelica.SIunits.TemperatureDifference dT = -20 "Difference of Temperature plate - fluid";
   
 equation
 
   Ra = min(10 ^ time, 10 ^ 11);
-  dT = -20;
   Nu = Functions.FreeConvection.ceiling_ASHRAE(Ra = Ra, dT = dT);
   
   annotation(
