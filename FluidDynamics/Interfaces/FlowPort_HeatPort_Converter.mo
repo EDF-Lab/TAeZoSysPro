@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Interfaces;
 
 model FlowPort_HeatPort_Converter
   replaceable package Medium = Modelica.Media.Air.MoistAir ;
-  TAeZoSysPro.Aeraulic.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation(
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
