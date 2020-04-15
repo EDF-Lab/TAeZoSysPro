@@ -40,7 +40,7 @@ equation
 // Ports handover
   flowPort.m_flow[Medium.Water] = m_flow;
   flowPort.m_flow[Medium.Air] = 0;
-  flowPort.H_flow = m_flow * Medium.enthalpyOfVaporization(flowPort.T);
+  flowPort.H_flow = m_flow * Medium.enthalpyOfVaporization(heatPort.T);
   flowPort.H_flow + heatPort.Q_flow = 0.0 ;
 
 //Output condensation data
@@ -83,7 +83,7 @@ equation
     </p>
     
     <p>           
-      The element limiting the rate of condensation is <b>the ability to bring the mass of moist air into contact with a wall</b>. 
+      The element limiting the rate of condensation is <b>the ability to bring the mass of moist air into contact to a wall</b>. 
       This is represented by a coefficient βv determined by the following equation:
     </p>
 		
