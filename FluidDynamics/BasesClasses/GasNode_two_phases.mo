@@ -6,7 +6,7 @@ model GasNode_two_phases
     Modelica.SIunits.Density d_condensable "Density of the condensable species" ;
     Modelica.SIunits.Density d_sat "Saturation density of the condensable species" ;
     Modelica.SIunits.Pressure p_sat "Saturation pressure of the condensable species" ;
-    Modelica.SIunits.Diameter d_drops "Diameter of equivalent droplet" ;
+    Modelica.SIunits.Diameter d_drop "Diameter of equivalent droplet" ;
     Modelica.SIunits.Velocity Vel "Velocity of droplet" ;
     input Modelica.SIunits.Area A "Surface area through which fog drains";
     Modelica.SIunits.MassFlowRate m_flow_fog "Mass flow rate of droplet leaving the control volume" ;
@@ -24,14 +24,107 @@ model GasNode_two_phases
     p_sat = Medium.saturationPressure(Medium.temperature(state)) ;
     d_sat = p_sat / (Modelica.Constants.R / Medium.MMX[Medium.Water] * Medium.temperature(state)) ;
 // mass of water = number density of droplets * Volume of fluid * Volume of droplet * density of droplets
-    d_drops / 2 = ( max(d_condensable - d_sat, 0) / (d_liquidPhase * n_drops * 4 / 3 * Modelica.Constants.pi) ) ^(1/3) ;
+    d_drop / 2 = ( max(d_condensable - d_sat, 0) / (d_liquidPhase * n_drops * 4 / 3 * Modelica.Constants.pi) ) ^(1/3) ;
     
     // quasi static flow: viscous friction force( Stocke's law) + bouyancy force + weight = 0
-    Vel = 2 * (d_drops / 2)^2 * Modelica.Constants.g_n * (d_liquidPhase - 1.2) / (9 * Medium.dynamicViscosity(state)) ;
-    Re = Medium.density(state) * Vel * d_drops / Medium.dynamicViscosity(state) ;
+    Vel = 2 * (d_drop / 2)^2 * Modelica.Constants.g_n * (d_liquidPhase - 1.2) / (9 * Medium.dynamicViscosity(state)) ;
+    Re = Medium.density(state) * Vel * d_drop / Medium.dynamicViscosity(state) ;
     
     // mass flow rate = velocity * wet surface * amount of droplets peer wet surface * density of droplet
-    m_flow_fog = Vel * A * (n_drops * Modelica.Constants.pi / 6 * d_drops ^ 3) * d_liquidPhase; 
+    m_flow_fog = Vel * A * (n_drops * Modelica.Constants.pi / 6 * d_drop ^ 3) * d_liquidPhase; 
+  
+    annotation(Documentation(info = "
+  <html>
+    <head>
+      <title>FogModel</title>
+    </head>
+  	
+    <body lang=\"en-UK\">
+      <p>
+        This component makes it possible to model the dynamic behavior of the droplets of a fog. 
+        I.e. the size of the droplets and their speed of fall.
+      </p>
+      
+      <p>
+        The fog appears when the amount of vapour per volume (the vapour density) present in a gas node exceeds its maximum admissible value (the saturation density of the vapour). 
+        Once this limit is reached, any additional gain in moisture (or reduction in vapour pressure) would imply a liquid phase in the form of spherical drops of liquid suspended in the air node.
+        The main objective of this model is not to finely represents the behavior of the real fog but rather to aviod sensible fraction of liquid in the gas node. 
+      </p>
+      <p>
+        It is assumed that:
+        <ul>
+          <li> number density of droplets <b>n_drops</b> is constant (no coalescence). The default value of 150 droplets per cm3 is given for rest closed room with small amount of dust. </li>
+          <li> The droplets diameter is homogeneous </li>
+          <li> The fall speed is small enough to consider laminar flow arround droplets  </li>
+          <li> The droplets are assumed non inertial. The weight always equal the drag force plus the buoyancy </li>              
+          <li> The droplets are assumed spherical </li>        
+        </ul>
+      </p>
+      
+      <p>    
+        First, the amount of liquid (droplets) derives from the difference between density of the water species and the saturation density of water in gas at current condition. Then the diameter of the droplet is computed from the equality between the amount of liquid and the product of the number of droplets and the volume of one droplet and the density of liquid (water) of the droplet. 
+      </p>    
+  
+      <img	
+        src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel1.PNG\"
+      />
+  
+      <p>	
+        <b>Where</b>:
+        <ul>
+          <li> <code>d_sat</code> is the saturation density of the condensable species in the gas mixture </li>
+          <li> <code>p_sat</code> is the saturation pressure of the condensable species in the gas mixture </li>
+          <li> <code>R</code> is the perfect gas law constant  </li>
+          <li> <code>MM</code> is the molar mass of the condensable species </li>
+          <li> <code>T</code> is the temperature of the gas mixture </li>
+          <li> <code>V</code> is the volume of the gas node </li>
+          <li> <code>d_drop</code> is the diameter of a droplet </li>
+        </ul>				
+      </p>
+  
+      <p>    
+        The dynamic behavior of the droplet derives from the fundammental dynamic principe where the balance of forces is the weight, the drag and the buoyancy. As droplets are non inertial, the sum of these 3 forces is zero. Therefore, the velocity of droplets derives:
+      </p>
+  
+      <img	
+        src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel2.PNG\"
+      />
+  
+      <p>	
+        <b>Where</b>:
+        <ul>
+          <li> <code>F<sub>drag</sub></code> is the visquous force for a sphere in a laminar </li>
+          <li> <code>d<sub>fluid</sub></code> is the density of the gas mixture of the gas node. As the current model is modelling only moist, the <code>d<sub>droplet</sub></code> is fixed at 1.2 kg.m-3</li></li>        
+          <li> <code>μ<sub>fluid</sub></code> is the dynamic viscosity of the gas mixture of the gas node</li>
+          <li> <code>Vel</code> is the fall velocity of droplets</li>
+          <li> <code>P</code> is the weight of a droplet</li>
+          <li> <code>d<sub>droplet</sub></code> is the density of the liquid that the droplets is made of. As the current model is modelling only droplet of water, the <code>d<sub>droplet</sub></code> is fixed at 1000 kg.m-3</li>         
+        </ul>				
+      </p> 
+      
+      <p>
+        The drops falling 'on the floor of the gas node' are removed from the system gas node (the control volume indeed). The flow lost is therefore:
+      </p>
+  
+      <img	
+        src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel3.PNG\"
+      />
+      
+      <p>    
+        The liquid surface is a difficult parameter to calculate in the sense that the vertical distribution of the drops is unknown. 
+        The mass flow rate is therefore computed from the volume ratio. 
+        First, imagine that there is no slipping between the droplet and the carrier phase (the surrounding gas). 
+        Their velocities are thus equal. 
+        The number density is known as it is an input parameter. 
+        Knowing the diameter of the droplets and their number densities, the volume of liquid per total volume is determined. 
+        Finally, the volume flow rate leaving the node is computed with the assumption of no slip condition.
+      </p>
+      
+      <img	
+        src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel4.PNG\"
+      />   			
+    </body>
+  </html>")) ;
     
   end FogModel;
 
