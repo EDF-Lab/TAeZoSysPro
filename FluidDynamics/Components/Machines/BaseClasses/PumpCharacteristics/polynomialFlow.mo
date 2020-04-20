@@ -8,7 +8,7 @@ function polynomialFlow
   input Modelica.SIunits.VolumeFlowRate V_flow_nominal[:]
       "Volume flow rate for N operating points (single pump)" annotation(Dialog);
   input Modelica.SIunits.Position head_nominal[:] "Pump head for N operating points" annotation(Dialog);
-  input Integer OrderPolyFitting = 3 "Order of the polynom that fits the fan curve";
+  input Integer OrderPolyFitting(max = 3) = 3 "Order of the polynom that fits the fan curve";
   
   protected
   Integer N = size(V_flow_nominal,1) "Number of nominal operating points";
@@ -83,9 +83,54 @@ coeff := Modelica.Math.Matrices.leastSquares(A = A, b = head_nominal);
     poly := coeff[OrderPolyFitting+1] ;
     for i in 1:OrderPolyFitting loop
       poly := poly * V_flow + coeff[OrderPolyFitting+1-i] ;
-    end for ; 
-    head := poly ;
+    end for ;
+    
+    head := poly ;    
+    if head < 0.0 then // head is threshold at 0.0 ;
+      head := 0.0 ;
+    end if ;
+     
+
   
-  end if ;  
+  end if ;
+  
+annotation(
+  LateInline = true,
+  inverse(V_flow = polynomialFlow_inv(V_flow_nominal=V_flow_nominal,
+                                      head_nominal = head_nominal,
+                                      head = head) ),
+  Documentation(info = "
+<html>
+  <head>
+    <title>polynomialFlow</title>
+	<style type=\"text/css\">
+		h5      { font-size: 11pt; font-weight: bold; color: green; }
+    </style>
+  </head>
+	
+  <body lang=\"en-UK\">
+    <p>
+      This function computes the <b>head</b> in meter supplied by a pump at a given volume flow rate <b>V_flow</b> from a polynomial fitting of the pump curve.  
+    </p>      
+
+    <p>
+      The fitting is carried out from nominal inputs of the volume flow rate and the head (<b>V_flow_nominal</b> and <b>head_nominal</b>) via the least squares method.
+      The order of the polynom that fits the curve is settable via the input <b>OrderPolyFitting</b> but cannot go over the third order.  
+    </p>
+    
+    <p>
+      <li>If the input <b>V_flow</b> is out of the range of the input nominal data <b>V_flow_nominal</b>, a linear extrapolation is performed. 
+    </p>
+    
+    <p>
+      <li>If <b>V_flow <= 0</b> the <b>head</b> remains at <b>head = f(V_flow = 0)</b>. This condition is prior to the bullet point above.
+    </p>
+    
+    <p>
+      <li>If the <b>head</b> computed by the polynom or by the extrapolation combined with the polynom goes bellow 0, the heat is threshold at 0 (<b> head ⩾ 0</b>).
+    </p>
+
+  </body>
+</html>") ) ;  
 
 end polynomialFlow;
