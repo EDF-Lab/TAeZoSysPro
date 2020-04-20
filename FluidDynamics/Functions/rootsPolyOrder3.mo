@@ -83,19 +83,36 @@ annotation(
     </p>      
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_1.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3.PNG\" 
     />
 
     <p>
       The process to get the roots derives from CARDAN's method available at the following <a href=\"https://fr.wikiversity.org/wiki/%C3%89quation_du_troisi%C3%A8me_degr%C3%A9/M%C3%A9thode_de_Cardan\">link</a>. </br>
-      To sum up: 
+      To sum up:
+      <li> The following change of variable is performed to derive to:
+      <img	
+        src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_changeVar.PNG\" 
+      /> 
     </p>
     
-    <ul>
-      <li>if the determinant Δ of the 3rd order polynom is strictly positif, the roots derives:</li>
-      <li>if Δ = 0, the roots derives:</li>       
-      <li>if Δ > 0, the roots derives:</li>
-    </ul>
+
+    <li>if the determinant Δ of the 3rd order polynom is strictly positif (<b>Δ > 0</b>), the roots derive:</li>
+    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discrPos.PNG\" 
+    />
+    
+    <li>if Δ = 0, the roots derive:</li>
+    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discrNul.PNG\" 
+    />
+           
+    <li>if Δ > 0, the only real root derives:</li>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discrNeg.PNG\" 
+    />
     
 <h5> If 'a' is bellow 1e-10, the polynom is assumed to be 2nd order </h5>
 
@@ -104,16 +121,15 @@ annotation(
     </p>
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_4.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discr.PNG\" 
     />
 
-    <ul>
-      <li> If Δ < 0, there are no real root and an error message is raised. </li>
-      <li> If Δ = 0, there is one double solution: </li> 
-    </ul>
+
+    <li> If Δ < 0, there are no real root and an error message is raised. </li>
+    <li> If Δ = 0, there is one double solution: </li> 
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_5.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discr2Nul.PNG\" 
     />
 
     <ul>
@@ -121,7 +137,7 @@ annotation(
     </ul>
     
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_6.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_discr2Pos.PNG\" 
     />	
 
     <h5> If 'a' and 'b' are bellow 1e-10, the polynom is assumed to be 1st order </h5>
@@ -131,7 +147,7 @@ annotation(
     </p>
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_7.PNG\" 
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Functions/EQ_rootsPolyOrder3_firstOrder.PNG\" 
     />
     
     <p>
