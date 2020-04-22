@@ -1,2 +1,4 @@
-test_PartialPump
 test_polynomialFlow
+Tests_polynomialFlow_inv
+test_MSL_pump
+test_PrescribedPump
