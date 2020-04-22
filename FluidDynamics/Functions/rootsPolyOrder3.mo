@@ -2,6 +2,8 @@ within TAeZoSysPro.FluidDynamics.Functions;
 
 function rootsPolyOrder3 "Find the roots of a 3 order polynome of kind ax3 + bx2 + cx + d = 0"
 
+  extends Modelica.Icons.Function ;
+
   input Real a "Polynom coefficients";
   input Real b "Polynom coefficients";
   input Real c "Polynom coefficients";
