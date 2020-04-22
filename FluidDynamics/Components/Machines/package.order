@@ -1,4 +1,3 @@
 Tests
-test_MSL_pump
-ControlledPump
+PrescribedPump
 BaseClasses
