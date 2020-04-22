@@ -56,10 +56,11 @@ protected
     Real[Medium.nC] mC_scaled(min=fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
     parameter Medium.ExtraProperty C_start[Medium.nC](quantity=Medium.extraPropertiesNames) = Medium.C_default;
        
-    parameter Medium.MassFraction X_start[Medium.nX] = if Medium.mediumName == "Moist air" then 
-                                                        cat(1, {Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1-Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)})
-                                                       else 
-                                                        Medium.X_default ;
+//    parameter Medium.MassFraction X_start[Medium.nX] = if Medium.mediumName == "Moist air" then 
+//                                                        cat(1, {Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1-Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)})
+//                                                       else 
+//                                                        Medium.X_default ;
+    parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default ;
 protected 
 
 initial equation
