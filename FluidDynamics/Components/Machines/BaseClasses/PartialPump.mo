@@ -1,6 +1,6 @@
 within TAeZoSysPro.FluidDynamics.Components.Machines.BaseClasses;
 
-partial model PartialPump "Base model for centrifugal pumps"
+partial model PartialPump "Base model for pumps"
   // Import of libraries
   import Modelica.Constants;
 
@@ -87,40 +87,61 @@ equation
 
   annotation(
     Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(fillColor = {0, 127, 255}, fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, 46}, {100, -46}}), Polygon(lineColor = {0, 0, 255}, pattern = LinePattern.None, fillPattern = FillPattern.VerticalCylinder, points = {{-48, -60}, {-72, -100}, {72, -100}, {48, -60}, {-48, -60}}), Ellipse(fillColor = {0, 100, 199}, fillPattern = FillPattern.Sphere, extent = {{-80, 80}, {80, -80}}, endAngle = 360), Polygon(fillColor = {255, 255, 255}, pattern = LinePattern.None, fillPattern = FillPattern.HorizontalCylinder, points = {{-28, 30}, {-28, -30}, {50, -2}, {-28, 30}})}),
-    Documentation(info = "<html>
-<p>This is the base model for pumps.</p>
-<p>The model describes a centrifugal pump, or a group of <code>nParallel</code> identical pumps. The pump model is based on the theory of kinematic similarity: the pump characteristics are given for nominal operating conditions (rotational speed and fluid density), and then adapted to actual operating condition, according to the similarity equations.</p>
+    Documentation(info = "
+<html>
+  <p>
+    This is the base model for pumps strongly inspired from the PartialPump of Modelica Standard Library (MSL).
+  </p>
+  
+  <p>
+    The pump model is based on the theory of kinematic similarity: the pump characteristics are given for nominal operating conditions (rotational speed and fluid density), and then adapted to actual operating condition, according to the similarity equations.
+  </p>
 
-<p><strong>Pump characteristics</strong></p>
-<p> The nominal hydraulic characteristic (head vs. volume flow rate) is given by the replaceable function <code>flowCharacteristic</code>.</p>
-<p> The pump energy balance can be specified in two alternative ways:</p>
-<ul>
-<li><code>use_powerCharacteristic = false</code> (default option): the replaceable function <code>efficiencyCharacteristic</code> (efficiency vs. volume flow rate in nominal conditions) is used to determine the efficiency, and then the power consumption.
-  The default is a constant efficiency of 0.8.</li>
-<li><code>use_powerCharacteristic = true</code>: the replaceable function <code>powerCharacteristic</code> (power consumption vs. volume flow rate in nominal conditions) is used to determine the power consumption, and then the efficiency.
-  Use <code>powerCharacteristic</code> to specify a non-zero power consumption for zero flow rate.</li>
-</ul>
+  <img
+    src = \"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Machines/EQ_PartialPump.png\"
+  />
+
+  <p>
+    <strong>Pump characteristics</strong>
+  </p>
+  
+  <p> 
+    The nominal hydraulic characteristic (head vs. volume flow rate) is given by the replaceable function <code>flowCharacteristic</code>.
+  </p>
+  
+  <p> 
+    The pump energy balance can be specified in two alternative ways:
+  </p>
+  
+  <ul>
+    <li><code>use_powerCharacteristic = false</code> (default option): the replaceable function <code>efficiencyCharacteristic</code> (efficiency vs. volume flow rate in nominal conditions) is used to determine the efficiency, and then the power consumption.
+    The default is a constant efficiency of 0.8.</li>
+    <li><code>use_powerCharacteristic = true</code>: the replaceable function <code>powerCharacteristic</code> (power consumption vs. volume flow rate in nominal conditions) is used to determine the power consumption, and then the efficiency.
+    Use <code>powerCharacteristic</code> to specify a non-zero power consumption for zero flow rate.</li>
+  </ul>
+  
+  <p>
+    Several functions are provided in the package <code>PumpCharacteristics</code> of the TAeZoSysPro library or the MSL to specify the characteristics as a function of some operating points at nominal conditions.
+  </p>
+  <p>
+    Depending on the value of the <code>checkValve</code> parameter, the model either supports reverse flow conditions, or includes a built-in check valve to avoid flow reversal.
+  </p>
+
+  <p>
+    <strong>Dynamics options</strong>
+  </p>
+  
+  <p>
+    The pump dynamic is quasistatic.
+    No mass or energy are stored.
+  </p>
+
 <p>
-Several functions are provided in the package <code>PumpCharacteristics</code> to specify the characteristics as a function of some operating points at nominal conditions.
-</p>
-<p>Depending on the value of the <code>checkValve</code> parameter, the model either supports reverse flow conditions, or includes a built-in check valve to avoid flow reversal.
-</p>
-<p>It is possible to take into account the mass and energy storage of the fluid inside the pump by specifying its volume <code>V</code>, and by selecting appropriate dynamic mass and energy balance assumptions (see below);
-this is recommended to avoid singularities in the computation of the outlet enthalpy in case of zero flow rate.
-If zero flow rate conditions are always avoided, this dynamic effect can be neglected by leaving the default value <code>V = 0</code>, thus avoiding fast state variables in the model.
+  <strong>Heat transfer</strong>
 </p>
 
-<p><strong>Dynamics options</strong></p>
 <p>
-Steady-state mass and energy balances are assumed per default, neglecting the holdup of fluid in the pump; this configuration works well if the flow rate is always positive.
-Dynamic mass and energy balance can be used by setting the corresponding dynamic parameters. This is recommended to avoid singularities at zero or reversing mass flow rate. If the initial conditions imply non-zero mass flow rate, it is possible to use the <code>SteadyStateInitial</code> condition, otherwise it is recommended to use <code>FixedInitial</code> in order to avoid undetermined initial conditions.
-</p>
-
-<p><strong>Heat transfer</strong></p>
-<p>
-The Boolean parameter <code>use_HeatTransfer</code> can be set to true if heat exchanged with the environment
-should be taken into account or to model a housing. This might be desirable if a pump with realistic
-<code>powerCharacteristic</code> for zero flow operates while a valve prevents fluid flow.
+  The pump is adiabatic.
 </p>
 
 <p><strong>Diagnostics of Cavitation</strong></p>
