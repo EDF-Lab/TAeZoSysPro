@@ -1,0 +1,151 @@
+within TAeZoSysPro.Aeraulic.BasesClasses;
+
+model HeatExchanger
+  //
+  package MediumGas = TAeZoSysPro.Aeraulic.Media.MyMedia;
+  package MediumLiq = TAeZoSysPro.Aeraulic.Media.SimpleWater;
+  MediumGas.BaseProperties mediumGasIn(p = port_in_Gas.p, h = inStream(port_in_Gas.h_outflow), Xi = inStream(port_in_Gas.Xi_outflow)) ;
+  MediumLiq.BaseProperties mediumLiqIn(p = port_in_Liq.p, h = inStream(port_in_Liq.h_outflow), Xi = inStream(port_in_Liq.Xi_outflow)) ;
+  //
+  parameter Modelica.SIunits.Area CrossAreaGas = 4.26, CrossAreaLiq = 1.82e-2 ;
+  parameter Modelica.SIunits.ThermalConductance KSGas  "Constant heat conductance for gas side" ;
+  parameter Modelica.SIunits.ThermalConductance KSLiq  "Constant heat conductance for liquid side" ;
+  parameter Real ksi_fixedGas = 44.15 ;
+  parameter Real ksi_fixedLiq = 86.42 ;
+  //Internal variables
+  Real NTU "Number of transfer unit";
+  Real NTU_air "Number of transfer unit";
+  Real Cr "Ration of thermal condutance";
+  Real Cair ;
+  Modelica.SIunits.Efficiency Eff "Exchanger effectiveness";
+  Modelica.SIunits.Efficiency Eff_air "Exchanger effectiveness";
+  //
+  Modelica.SIunits.ThermalConductance QcDryAir "thermal flow rate unit";
+  Modelica.SIunits.ThermalConductance QcLiq "thermal flow rate unit";
+  //
+  Modelica.SIunits.Temperature Tae "Inlet temperature of air" ;
+  Modelica.SIunits.Temperature Tas "Outlet temperature of air" ;
+  Modelica.SIunits.Temperature Tee "Inlet temperature of water" ;
+  Modelica.SIunits.Temperature Tes "Inlet temperature of water" ;
+  Modelica.SIunits.Temperature Tcond "dewpoint temperature" ;
+  Modelica.SIunits.Temperature Tr "Condensated film temperature" ;
+  //
+  Modelica.SIunits.MassFraction Wae "Mass of water peer mass of dry air at saturation at inlet" ;
+  Modelica.SIunits.MassFraction Was "Mass of water peer mass of dry air at saturation at outlet" ;
+  Modelica.SIunits.MassFraction WeeSat "Mass of water peer mass of dry air at saturation at inlet water temperature" ;
+  Modelica.SIunits.MassFraction WcondSat "Mass of water peer mass of dry air at saturation at condensated film temperature" ;
+  //
+  Modelica.SIunits.SpecificEnthalpy hae "specific enthalpy of moist air peer mass of dry air at gas inlet" ;
+  Modelica.SIunits.SpecificEnthalpy has "specific enthalpy of moist air peer mass of dry air at gas outlet" ;
+  Modelica.SIunits.SpecificEnthalpy heeSat "fictive specific enthalpy of moist air at inlet water temperature" ;
+  Modelica.SIunits.SpecificEnthalpy hr "dewpoint specific enthalpy" ;
+  Modelica.SIunits.SpecificEnthalpy hcondSat "specific enthalpy of condensated film" ;
+  //
+  Modelica.SIunits.Power P_sens "Sensible power" ;
+  Modelica.SIunits.Power P_lat "Latent power" ;
+  Modelica.SIunits.Power P_exc "Exchanged power" ;
+  //
+  Modelica.SIunits.MassFlowRate m_flow_cond "Condensated steam flow rate" ;
+  Modelica.SIunits.MassFlowRate m_flowGas "Mass flow rate of moist air" ;
+  Modelica.SIunits.MassFlowRate m_flowLiq "Mass flow rate of liquid" ;
+  //
+  Modelica.SIunits.SpecificHeatCapacity cp_air, cp_eau, cp_vap, cp_sat ;
+  //
+  Modelica.SIunits.CoefficientOfHeatTransfer KS_overall "Global heat conductance" ;
+  //
+  Modelica.SIunits.Velocity VelGas, VelLiq ;
+  //
+  Modelica.SIunits.PressureDifference dpGas, dpLiq ;
+  // imported components
+  Modelica.Fluid.Interfaces.FluidPort_a port_in_Gas(replaceable package Medium = MediumGas) annotation(
+    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_b port_out_Gas(replaceable package Medium = MediumGas) annotation(
+    Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_a port_in_Liq(replaceable package Medium = MediumLiq) annotation(
+    Placement(visible = true, transformation(origin = {-68, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {62, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_b port_out_Liq(replaceable package Medium = MediumLiq) annotation(
+    Placement(visible = true, transformation(origin = {66, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-56, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+  equation
+//
+  cp_air = 1005;
+  cp_eau = 4180 ;
+  cp_vap = 1830 ;
+  
+// Shorter variables
+  Tae = mediumGasIn.T;
+  Tee = mediumLiqIn.T;
+//
+//dT_Gas = Tae - Tas;
+//dT_Liquid = Tee - Tes ;
+/***** if statement to check is a condensable species is modelled *****/
+  if MediumGas.mediumName == "MoistAir" then
+// Shorter variables
+    Wae = mediumGasIn.X[MediumGas.Water] / mediumGasIn.X[MediumGas.Air];
+// thermal flow rate
+    QcDryAir = m_flowGas * mediumGasIn.X[MediumGas.Air];
+    QcLiq = m_flowLiq * cp_eau / cp_sat;
+//
+    1 / KS_overall = cp_air / KSGas + cp_sat / KSLiq;
+//
+    hae = mediumGasIn.h / mediumGasIn.X[MediumGas.Air];
+    WeeSat = MediumGas.k_mair * MediumGas.saturationPressure(Tee) / (mediumGasIn.p - MediumGas.saturationPressure(Tee));
+    heeSat = MediumGas.enthalpyOfNonCondensingGas(Tee) + WeeSat * MediumGas.enthalpyOfCondensingGas(Tee);
+//
+    Tr = MediumGas.saturationTemperature(mediumGasIn.pi[MediumGas.Water]);
+    hr = MediumGas.enthalpyOfNonCondensingGas(Tr) + mediumGasIn.X[MediumGas.Water] / mediumGasIn.X[MediumGas.Air] * MediumGas.enthalpyOfCondensingGas(Tr);
+    cp_sat = (hr - heeSat) / (Tr - Tee);
+//NTU method
+    Cr = min(QcDryAir, QcLiq) / max(QcDryAir, QcLiq);
+    NTU = KS_overall / min(QcDryAir, QcLiq);
+    Eff = (1 - exp(-NTU * (1 - Cr))) / (1 - Cr * exp(-NTU * (1 - Cr)));
+    Eff = QcDryAir * (hae - has) / (min(QcDryAir, QcLiq) * (hae - heeSat));
+// outlet temperature calculation
+    Cair = QcDryAir * (cp_air + mediumGasIn.X[MediumGas.Water] / mediumGasIn.X[MediumGas.Air] * cp_vap);
+    NTU_air = KSGas / Cair;
+    Eff_air = 1 - exp(-NTU);
+    Eff_air = (hae - has) / (hae - hcondSat);
+    WcondSat = MediumGas.k_mair * MediumGas.saturationPressure(Tcond) / (mediumGasIn.p - MediumGas.saturationPressure(Tcond));
+    hcondSat = MediumGas.enthalpyOfNonCondensingGas(Tcond) + WcondSat * MediumGas.enthalpyOfCondensingGas(Tcond);
+    Eff = (Tae - Tas) / (Tae - Tcond);
+    has = MediumGas.enthalpyOfNonCondensingGas(Tas) + Was * MediumGas.enthalpyOfCondensingGas(Tas);
+// power balance
+    P_exc = QcDryAir * (hae - has);
+    P_exc = m_flowLiq * cp_eau * (Tes - Tee);
+    P_sens = QcDryAir * cp_air * (Tae - Tas);
+    m_flow_cond = QcDryAir * (Wae - Was);
+    P_lat = P_exc - P_sens;
+// Fluid dynamics
+    m_flowGas = mediumGasIn.d * CrossAreaGas * VelGas;
+    m_flowLiq = mediumLiqIn.d * CrossAreaLiq * VelLiq;
+  // momentum balance
+    dpGas = port_in_Gas.p - port_out_Gas.p;
+    dpGas - 1 / 2 * ksi_fixedGas * mediumGasIn.d * Modelica.Fluid.Utilities.regSquare2(x = VelGas, x_small = 0.001, k1 = 1, k2 = 1) = 0.0;
+    dpLiq = port_in_Liq.p - port_out_Liq.p;
+    dpLiq - 1 / 2 * ksi_fixedLiq * mediumLiqIn.d * Modelica.Fluid.Utilities.regSquare2(x = VelLiq, x_small = 0.001, k1 = 1, k2 = 1) = 0.0;
+  else
+    assert(true, "current media not model in the heat exchanger", level = AssertionLevel.error);
+  end if;
+// port handover
+  port_in_Gas.m_flow = m_flowGas;
+  port_in_Gas.h_outflow  =  inStream(port_in_Gas.h_outflow) ;
+  port_in_Gas.Xi_outflow  =  inStream(port_in_Gas.Xi_outflow) ;
+//
+  port_out_Gas.m_flow + port_in_Gas.m_flow + m_flow_cond = 0.0;
+  port_out_Gas.h_outflow  =  has / (1.0 - sum(port_in_Gas.Xi_outflow)) ;
+  port_out_Gas.Xi_outflow  =  {mediumGasIn.X[MediumGas.Water] - m_flow_cond / abs(m_flowGas)}  ;
+//
+  port_in_Liq.m_flow = m_flowLiq;
+  port_in_Liq.h_outflow = inStream(port_out_Liq.h_outflow) ;
+  port_in_Liq.Xi_outflow  =  inStream(port_out_Liq.Xi_outflow) ;
+//
+  port_out_Liq.m_flow + port_in_Liq.m_flow = 0.0;
+  m_flowLiq * (port_out_Liq.h_outflow - inStream(port_in_Liq.h_outflow) )  =  P_exc ;
+  port_out_Liq.Xi_outflow  =  inStream(port_in_Liq.Xi_outflow) ; 
+
+
+  annotation(
+    Diagram(graphics = {Rectangle(origin = {2, -2}, lineThickness = 0.5, extent = {{-84, 76}, {84, -80}}), Line(origin = {3, 2.15119}, points = {{-71, 77.8488}, {-71, -74.1512}, {-3, -2.15119}, {71, -78.1512}, {71, 77.8488}}, thickness = 0.5), Line(origin = {-84, 0}, points = {{-8, 0}, {8, 0}}, thickness = 0.5), Line(origin = {85.9847, -0.259542}, points = {{-8, 0}, {8, 0}}, thickness = 0.5)}, coordinateSystem(initialScale = 0.1)),
+    Icon(graphics = {Rectangle(origin = {2, -2}, lineThickness = 0.5, extent = {{-84, 76}, {80, -80}}), Line(origin = {3, 2.15119}, points = {{-59, 75.8488}, {-47, -44.1512}, {-3, -2.15119}, {43, -44.1512}, {59, 75.8488}}, thickness = 0.5), Line(origin = {-84, 0}, points = {{-8, 0}, {8, 0}}, thickness = 0.5), Line(origin = {81.9847, -0.259542}, points = {{-8, 0}, {8, 0}}, thickness = 0.5), Text(origin = {-68, -10}, lineThickness = 0.5, extent = {{-14, 8}, {22, -8}}, textString = "Gas in", fontSize = 7), Text(origin = {48, 62}, lineThickness = 0.5, extent = {{-14, 8}, {22, -6}}, textString = "Water in", fontSize = 7), Text(origin = {61, -95}, lineThickness = 0.5, extent = {{-19, 7}, {19, -7}}, textString = "KURY - EDVANCE", fontSize = 7), Line(origin = {-0.12214, -50.8449}, points = {{-6, 2.64645}, {0, -3.35355}, {6, 2.64645}}, thickness = 0.5), Line(origin = {-0.122137, -62.5191}, points = {{0, 8}, {0, -8}}, thickness = 0.5), Line(origin = {0, -13}, points = {{0, 13}, {0, -13}}, thickness = 0.5), Ellipse(origin = {3, -47}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, lineThickness = 0.5, extent = {{-7, 7}, {1, -1}}, endAngle = 360), Polygon(origin = {17, -37}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, lineThickness = 0.5, points = {{-21, -7}, {-13, -7}, {-17, 5}, {-21, -7}}), Text(origin = {62, -10}, lineThickness = 0.5, extent = {{-14, 8}, {22, -8}}, textString = "Gas out", fontSize = 7), Text(origin = {-64, 62}, lineThickness = 0.5, extent = {{-14, 8}, {22, -6}}, textString = "Water out", fontSize = 7)}, coordinateSystem(initialScale = 0.1)));
+
+end HeatExchanger;

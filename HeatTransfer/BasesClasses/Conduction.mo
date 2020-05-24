@@ -1,105 +1,76 @@
 within TAeZoSysPro.HeatTransfer.BasesClasses;
 
 model Conduction
-  type ConductionType = enumeration(
-    Linear "linear conduction", 
-    Radial "cylindric conduction") "Enumeration defining the type of conduction";
-    
-  //
   extends Modelica.Thermal.HeatTransfer.Interfaces.Element1D;
-  
-  // User defined parameters
+  parameter TAeZoSysPro.HeatTransfer.Types.ConductionType conduction = TAeZoSysPro.HeatTransfer.Types.ConductionType.Linear;
+  parameter Modelica.SIunits.ThermalConductivity k = 0 "Thermal conductivity";
+  parameter Modelica.SIunits.Thickness l = 0 "Material thickness";
+  parameter Modelica.SIunits.Area A = 0 "Cross section (if linear conduction)";
+  parameter Modelica.SIunits.Length L = 0 "Cylinder length (if cylindric conduction)";
+  parameter Modelica.SIunits.Radius Ri = 0 "Internal radius(if cylindric conduction)";
+  parameter Modelica.SIunits.Conversions.NonSIunits.Angle_deg Angle = 360 "Angle of cylindrical part (if cylindric conduction)";
   parameter Real add_on(unit = "R+") = 1 "Custom add-on";
-  parameter Modelica.SIunits.ThermalConductivity k = 0 "Thermal conductivity" annotation(
-  Dialog(group="Thermal properties"));
-  parameter ConductionType conduction = ConductionType.Linear annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Thickness Th = 0 "Material thickness" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Area A = 0 "Cross section (if linear conduction)" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Length L = 0 "Cylinder length (if cylindric conduction)" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Radius Ri = 0 "Internal radius(if cylindric conduction)" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Conversions.NonSIunits.Angle_deg Angle = 360 "Angle of cylindrical part (if cylindric conduction)" annotation(
-  Dialog(group="Geometrical properties"));
-
-  // Internal variables
-  Modelica.SIunits.Energy E "Energy passed throught the component" ;
-  
-initial equation
-  E = 0.0 ;
-    
 equation
-
-  if conduction == ConductionType.Radial then
-    Q_flow = add_on * (Modelica.SIunits.Conversions.from_deg(Angle) * L * k) / log((Ri + Th) / Ri) * dT;
-  
-  elseif conduction == ConductionType.Linear then
-    Q_flow = add_on * k * (A / Th) * dT;
-
+//Heat flow throught ports are calculated
+  if conduction == TAeZoSysPro.HeatTransfer.Types.ConductionType.Radial then
+    Q_flow = add_on * (Modelica.SIunits.Conversions.from_deg(Angle) * L * k) / log((Ri + l) / Ri) * dT;
+  elseif conduction == TAeZoSysPro.HeatTransfer.Types.ConductionType.Linear then
+    Q_flow = add_on * k * (A / l) * dT;
+//Heat flow throught ports are calculated
   end if;
-  
-  der(E) = Q_flow ;
-
+// pipe comments
   annotation(
-    Documentation(info = "
-<html>
-  <head>
-    <title>Conduction</title>
-    <style type=\"text/css\">
-      *       { font-size: 10pt; font-family: Arial,sans-serif; }
-      code    { font-size:  9pt; font-family: Courier,monospace;}
-      h4      { font-size: 14pt; font-weight: bold; color: rgb(32,32,32); }
-    </style>
-    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">
-  </head>
-  
-  <body>
-    <p>
-      This components links the heat flow to a gradient of temperature within a solid material thanks to the Fourier's law.  
-    </p>
-    
-    <p>
-      The module allows via the <b>conduction</b> enumeration variable to select beween linear condution model or cylindric. </br>    
-      The basic constitutive equation for <b>linear</b> conduction is :
-    </p>
-    
-    <img
-      alt=\"equation for linear conduction\" 
-      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/BasesClasses/EQ_Conduction_linear.PNG\" 
-    />
-    
-    <p>     
-      The basic constitutive equation for <b>cylindric</b> conduction is :
-    </p>
-    	
-    <img 
-      alt=\"equation for cylindric conduction\"
-      src=\"modelica://TAeZoSysPro/Information/HeatTransfer/BasesClasses/EQ_Conduction_cylindric.PNG\" 
-	/>
+    Documentation(info = "<html>
+<head>
+<title>The Modelica License 2</title>
+<style type=\"text/css\">
+*       { font-size: 10pt; font-family: Arial,sans-serif; }
+code    { font-size:  9pt; font-family: Courier,monospace;}
+h1      { font-size: 20pt; font-weight: bold; color: rgb(32,32,32); }
+h2      { font-size: 18pt; font-weight: bold; color: rgb(32,32,32); }
+h3      { font-size: 16pt; font-weight: bold; color: rgb(32,32,32); }
+h4      { font-size: 14pt; font-weight: bold; color: rgb(32,32,32); }
+h5      { font-size: 12pt; font-weight: bold; color: rgb(32,32,32); }
+h6      { font-size: 10pt; font-weight: bold; color: rgb(32,32,32); }
 
-    <p>
-      Where :
-      <ul>
-        <li> Q_flow is the thermal flux throughing connector port_a to connector port_b </li>
-        <li> dT is the temperature difference (port_a.T - port_b.T) on both side of the length segment equal to the thickness </li>
-        <li> add_on is a user paramater to adjust if needed the Heat flow to the temperature difference dT </li>
-        <li> A is the cross section (for linear) </li>
-        <li> Th is the thickness of material </li>
-        <li> k is thermal conductivity </li>
-        <li> Ri is the internal radius (for cylindric) </li>
-        <li> Angle is the revolution angle of the cylinder (from 0 to 360° for cylindric) </li>
-        <li> L is the longitudinal length of the cylinder (for cylindric) </li>   
-      </ul>
-    </p>	
 
-  </body>
-  
+
+
+</style>
+<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">
+</head>
+<body>
+
+<p>
+This is a model of Cylindric heat conduction governed by the Fourier's law.	The basic constitutive equation for convection is : </br>
+Q_flow = add_on*Angle*L*dT*k /Ln(Re / Ri) ; </br>
+Q_flow: Heat flow rate from connector 'solid' (e.g., a pipe wall) to another one 
+</p>
+
+<p>
+Where :
+<ul>
+<li> add_on is a user paramater to adjust if needed the Thermal flux </li>
+<li> Angle is the revolution angle (from 0 to 360°) </li>
+<li> Q_flow is the thermal flux throughing from one connector to the other </li>
+<li> L is the longitudinal length </li>
+<li> dT is the temperature difference the 2 ports (boundaries) </li>
+<li> k is thermal conductivity </li>			
+<li> Re and Ri are respectivelly the external and internal radius </li>
+</ul>
+</p>	
+
+<p>
+The followings hypotheses are made:
+<ul>
+<li> <Strong>Hypothesis 1:</Strong> The thermal conductivity is isotropic </li>
+<li> <Strong>Hypothesis 2:</Strong> The Cylindric part is homogeneous </li>
+<li> <Strong>Hypothesis 3:</Strong> The cylinder is supposed sufficently long to consider that the heat flux has only one radial component</li>
+</ul>		
+</p>
+
+</body>
 </html>"),
     Diagram,
-  Icon(graphics = {Line(origin = {20, 61}, points = {{0, 19}}), Line(origin = {13, 75}, points = {{-13, 3}}), Rectangle(origin = {-3, -1}, fillColor = {156, 156, 156}, fillPattern = FillPattern.Cross, extent = {{-37, 101}, {43, -99}}), Line(origin = {-9, 78}, points = {{-47, 0}, {71, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, 0}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, -76}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
-  __OpenModelica_commandLineOptions = "");
-
+    Icon(coordinateSystem(initialScale = 0.1), graphics = {Text(origin = {69, -92}, extent = {{-28, 5}, {28, -5}}, textString = "KURY - EDVANCE"), Line(origin = {20, 61}, points = {{0, 19}}), Line(origin = {13, 75}, points = {{-13, 3}}), Rectangle(origin = {-3, -1}, fillColor = {156, 156, 156}, fillPattern = FillPattern.Cross, extent = {{-35, 95}, {41, -95}}), Line(origin = {-9, 78}, points = {{-47, 0}, {71, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, 0}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, -76}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled})}));
 end Conduction;

@@ -1,4 +1,5 @@
 within TAeZoSysPro.HeatTransfer;
 
 package Tests
-end Tests;
+  extends Modelica.Icons.ExamplesPackage;
+end Tests ;

@@ -1,0 +1,6 @@
+within TAeZoSysPro.Aeraulic.Test;
+
+model LiquidNode
+  TAeZoSysPro.Aeraulic.BasesClasses.GasNode gasNode1(replaceable package Medium = TAeZoSysPro.Aeraulic.Media.SimpleWater) annotation(
+    Placement(visible = true, transformation(origin = {0, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+end LiquidNode;

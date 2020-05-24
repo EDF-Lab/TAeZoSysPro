@@ -1,0 +1,4 @@
+within TAeZoSysPro.HeatTransfer.Types;
+
+type ExchangerMethod
+end ExchangerMethod;

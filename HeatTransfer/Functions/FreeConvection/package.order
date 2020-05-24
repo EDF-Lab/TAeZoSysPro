@@ -1,6 +1,7 @@
-Tests
-vertical_plate_Recknagel
-vertical_plate_ASHRAE
-ground_ASHRAE
-ceiling_ASHRAE
-horizontal_cylinder_ASHRAE
+ChurchillAndChu_Hor_Cyl
+Morgan_Hor_Cyl
+Recknagel_Vert_Plate
+ChurchillAndChu_Vert_Plate
+Cibse_Vert_Plate
+Ceiling
+Ground

@@ -1,8 +1,0 @@
-test_FreeConvection
-test_ForcedConvection
-test_Conduction
-test_CarrollRadiation
-test_HeatCapacitor
-test_PartialWall
-test_LumpVolume
-test_FreeConvection_dT_decoupled

@@ -1,7 +1,6 @@
 within TAeZoSysPro;
 
 class ModelicaLicense2
-
   extends Modelica.Icons.Information;
   annotation(
     Documentation(info = "<html>
@@ -601,5 +600,4 @@ a selling fee for a (in this case physical) copy. However, mere
 printing and shipping costs may be recovered.</p>
 </body>
 </html>"));
-
 end ModelicaLicense2;

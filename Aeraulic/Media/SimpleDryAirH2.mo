@@ -1,0 +1,411 @@
+within TAeZoSysPro.Aeraulic.Media;
+
+package SimpleDryAirH2
+
+  ////////////////////////////////////////////////////////////////
+  extends Modelica.Media.Interfaces.PartialCondensingGases(mediumName = "AirH2", substanceNames = {"Air","H2"}, final fixedX = false, final reducedX = true, final singleState = false, reference_X = {1.0,0.0});
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+  // Provide constants here
+  constant Integer Air = 1 "Index of air (in substanceNames, massFractions X, etc.)";
+  constant Integer H2 = 2 "Index of H2 (in substanceNames, massFractions X, etc.)";
+  constant Modelica.SIunits.MolarMass[2] MMX = {dryair.MM, diHydrogen.MM};
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  redeclare record ThermodynamicState "Thermodynamic variables records"
+    extends Modelica.Icons.Record;
+    Modelica.SIunits.Pressure[nX] pi "Partial pressure of each species";
+    Modelica.SIunits.Density[nX] di "Density of each species";
+    Modelica.SIunits.Temperature T "Temperature";
+    Modelica.SIunits.SpecificEnthalpy[nX] hi "SpecificEnthalpy of each species";
+  end ThermodynamicState;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  redeclare replaceable model extends BaseProperties(final standardOrderComponents = true) "Base properties of medium"
+      // Pressure declaration
+      Modelica.SIunits.Pressure[nX] pi "partial pressure peer species";
+      // Density declaration
+      Modelica.SIunits.Density[nX] di "Density peer species";
+      // Enthalpy declaration
+      Modelica.SIunits.SpecificEnthalpy[nX] hi "Specific enthalpy of a species";
+
+    equation
+//
+      MM = 1 / (X[Air] / MMX[Air] + X[H2] / MMX[H2]) ;
+//Molar mass of the mixing (taking account of liquid water)
+      R = Modelica.Constants.R / MM ;
+//-----
+//
+      d = sum(di);
+      X[Air] = di[Air] / d ;
+//
+      pi[Air] = di[Air] * Modelica.Constants.R / MMX[Air] * T;
+      pi[H2] = di[H2] * Modelica.Constants.R / MMX[H2] * T;
+      p = sum(pi);
+//
+      hi[Air] = dryair.cp * (T - 273.15);
+      hi[H2] = diHydrogen.cp * (T - 273.15);
+      h = X[Air] * hi[Air] + X[H2] * hi[H2] ;
+//
+      u = h - p / d;
+//-----
+//
+      state.pi = pi;
+      state.T = T;
+      state.di = di;
+      state.hi = hi;
+//-----
+  end BaseProperties;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function setState_diT "Return thermodynamic state as function of p, h and composition X or Xi"
+    extends Modelica.Icons.Function;
+    input Modelica.SIunits.Density[nX] di "Density";
+    input Modelica.SIunits.Temperature T "Temperature";
+    output ThermodynamicState state "Thermodynamic state record";
+  algorithm
+    state.di[Air] := di[Air];
+    state.di[H2] := di[H2];
+    state.pi[Air] := di[Air] * Modelica.Constants.R / MMX[Air] * T;
+    state.pi[H2] := di[H2] * Modelica.Constants.R / MMX[H2] * T;
+    state.T := T;
+    state.hi[Air] := enthalpyOfNonCondensingGas(T = T);
+    state.hi[H2] := dihydrogen.cp * (T - 273.15);
+    
+  end setState_diT;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends enthalpyOfNonCondensingGas
+      //    "Return specific enthalpy of dry air as a function of the state"
+
+    algorithm
+//  h:= Modelica.Media.Air.ReferenceAir.Air_Base.Air_Utilities.h_dT(d, T) ;
+      h := dryair.cp * (T - 273.15);
+    annotation(
+      Inline = false,
+      smoothOrder = 1,
+      Documentation(info = "<html> Specific enthalpy of dry air is computed from temperature.
+</html>"));
+  end enthalpyOfNonCondensingGas;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends specificEnthalpy "Return specific enthalpy of moist air as a function of the thermodynamic state record"
+    algorithm
+      h := h_dT(di = state.di, T = State.T);
+    annotation(
+      smoothOrder = 2,
+      Documentation(info = "<html>
+Specific enthalpy of moist air is computed from the thermodynamic state record.
+</html>"));
+  end specificEnthalpy;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function h_dT
+    extends Modelica.Icons.Function;
+    input Modelica.SIunits.Density[nX] di;
+    input Modelica.SIunits.Temperature T;
+    output Modelica.SIunits.SpecificEnthalpy h;
+  algorithm
+    h := 1 / sum(di) * ( di[Air] * enthalpyOfNonCondensingGas(T = T) + di[H2] * dihydrogen.cp * (T - 273.15) ) ;
+  end h_dT;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends specificHeatCapacityCp "Return specific heat capacity at constant pressure as a function of the thermodynamic state record"
+    algorithm
+// Based on IF97 standard
+//    cp := Modelica.Media.Air.ReferenceAir.Air_Utilities.cp_dT(state.di[Air], state.T) ;
+// Based on constant approach : the part of liquid water is neglected
+      cp := 1 / sum(state.di) * ( state.di[Air] * dryair.cp + state.di[H2] * diHydrogen.cp ) ;
+//
+    annotation(
+      Inline = false,
+      smoothOrder = 2,
+      Documentation(info = "<html>
+The specific heat capacity at constant pressure <b>cp</b> is computed from the composition for a mixture of water (X[1]) and dry air.
+</html>"));
+  end specificHeatCapacityCp;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function Cp "Return specific heat capacity at constant pressure as a function of the thermodynamic state record"
+    extends Modelica.Icons.Function;
+    input Modelica.SIunits.Density[Medium.nX] di;
+    output Modelica.SIunits.SpecificHeatCapacity cp;
+  algorithm
+// Based on IF97 standard
+//    cp := Modelica.Media.Air.ReferenceAir.Air_Utilities.cp_dT(state.di[Air], state.T) ;
+// Based on constant approach : the part of liquid water is neglected
+    cp := 1 / sum(di) * ( di[Air] * dryair.cp + di[H2] * diHydrogen.cp ) ;
+//
+    annotation(
+      Inline = false,
+      smoothOrder = 2,
+      Documentation(info = "<html>
+The specific heat capacity at constant pressure <b>cp</b> is computed from the composition for a mixture of water (X[1]) and dry air.
+</html>"));
+  end Cp;
+
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends specificHeatCapacityCv "Return specific heat capacity at constant volume"
+    algorithm
+// Based on IF97 standard
+//    cp := Modelica.Media.Air.ReferenceAir.Air_Utilities.cv_dT(state.di[Air], state.T) ;
+// Based on constant approach : the part of liquid water is neglected
+      cp := 1 / sum(state.di) * ( state.di[Air] * dryair.cv + state.di[H2] * diHydrogen.cv ) ;
+//
+    annotation(
+      Inline = false,
+      smoothOrder = 2,
+      Documentation(info = "<html>
+The specific heat capacity at constant volume <b>cv</b> is computed from the composition
+</html>"));
+  end specificHeatCapacityCv;
+
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function Cv "Return specific heat capacity at constant volume as a function of the thermodynamic state record"
+    extends Modelica.Icons.Function;
+    input Modelica.SIunits.Density[Medium.nX] di;
+    output Modelica.SIunits.SpecificHeatCapacity cv;
+  algorithm
+// Based on constant approach : the part of liquid water is neglected
+    cp := 1 / sum(di) * ( di[Air] * dryair.cv + di[H2] * diHydrogen.cv ) ;
+//
+    annotation(
+      Inline = false,
+      smoothOrder = 2,
+      Documentation(info = "<html>
+The specific heat capacity at constant volume <b>cp</b> is computed from the composition for a mixture of water (X[1]) and dry air.
+</html>"));
+  end Cv;
+
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends dynamicViscosity
+      extends Modelica.Icons.Function;
+      input ThermodynamicState state "Thermodynamic state record";
+      output DynamicViscosity mu "Dynamic viscosity";
+
+    algorithm
+      eta := dryair.mu;
+    annotation(
+      smoothOrder = 2,
+      Documentation(info = "<html>
+<p>Dynamic viscosity is fixed and computed from dry air. The influence of pressure and moisture is neglected. </p>
+</html>"));
+  end dynamicViscosity;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  function extends thermalConductivity
+    algorithm
+      lambda := dryair.lambda;
+    annotation(
+      smoothOrder = 2,
+      Documentation(info = "<html>
+<p>Thermal conductivity is fixed computed from dry air. The influence of pressure and moisture is neglected. </p>
+</html>"));
+  end thermalConductivity;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+  
+  function MolecularDiffusionCoeff
+    input Modelica.SIunits.Pressure p;
+    input Modelica.SIunits.Temperature T;
+    output Modelica.SIunits.DiffusionCoefficient[nX,nX] D;
+  protected 
+    constant Modelica.SIunits.Pressure p_ref = 101325;
+    constant Modelica.SIunits.Temperature T_ref = 273.15 + 30;      
+    constant Modelica.SIunits.DiffusionCoefficient D_H2_dryair_ref = 0.82e-4  ;
+    
+  algorithm
+  if nX <= 1 then /*only one species, no diffusion possible*/
+    D := fill(0.0, nX, nX);
+  else
+    for i in 1:nX loop /* i = rows */
+      for j in i:nX loop /* j = columns */
+        if i == j then
+          D[i,j] := 0.0;
+        else
+          D[1,2] := D_H2_dryair_ref * (T / T_ref)^(3/2) * (p_ref / p) ;
+          D[j,i] := D[i,j] ;
+        end if ;
+      end for ;  
+    end for ;
+  end if ;
+    
+  end MolecularDiffusionCoeff ;
+  
+  
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+
+  record dryair "Record containing media properties"
+    extends Modelica.Icons.Record;
+    constant Modelica.SIunits.Density rho = 1.18 "Density";
+    constant Modelica.SIunits.SpecificHeatCapacity cp = 1005 "Specific heat capacity at constant pressure";
+    constant Modelica.SIunits.SpecificHeatCapacity cv = 720 "Specific heat capacity at constant volume";
+    constant Modelica.SIunits.ThermalConductivity lambda = 2.62e-2 "Thermal conductivity";
+    constant Modelica.SIunits.KinematicViscosity nue = 1.85e-5 "Kinematic viscosity";
+    constant Modelica.SIunits.DynamicViscosity mu = 1.57e-5 "Dynamic viscosity";
+    constant Modelica.SIunits.MolarMass MM = 0.029 "Medium Molar mass";
+    annotation(
+      Documentation(info = "<html>
+Record containing (constant) air properties.
+</html>"));
+  end dryair;
+
+  //--------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////
+  
+  record diHydrogen "Record containing media properties"
+    extends Modelica.Icons.Record;
+    constant Modelica.SIunits.Density rho = 0.0827 "Density";
+    constant Modelica.SIunits.SpecificHeatCapacity cp = 14300 "Specific heat capacity at constant pressure";
+    constant Modelica.SIunits.SpecificHeatCapacity cv = 10000 "Specific heat capacity at constant volume";
+    constant Modelica.SIunits.ThermalConductivity lambda = 0.182 "Thermal conductivity";
+    constant Modelica.SIunits.KinematicViscosity nue = 0.88e-5 / 0.0827 "Kinematic viscosity";
+    constant Modelica.SIunits.DynamicViscosity mu = 0.88e-5 "Dynamic viscosity";
+    constant Modelica.SIunits.MolarMass MM = 0.002 "Medium Molar mass";
+    annotation(
+      Documentation(info = "<html>
+Record containing (constant) air properties.
+</html>"));
+  end diHydrogen;
+  
+  type MassFlowRate = Modelica.SIunits.MassFlowRate(quantity = "MassFlowRate." + mediumName, min = -1.0e7, max = 1.0e7) "Type for mass flow rate with medium specific attributes";
+  //--------------------------------------------------------------
+  //comments
+  annotation(
+    Documentation(info = "
+<html>
+<head>
+<title>The Modelica License 2</title>
+<style type=\"text/css\">
+*       { font-size: 10pt; font-family: Arial,sans-serif; }
+code    { font-size:  9pt; font-family: Courier,monospace;}
+h1      { font-size: 20pt; font-weight: bold; color: rgb(32,32,32); }
+h2      { font-size: 18pt; font-weight: bold; color: rgb(32,32,32); }
+h3      { font-size: 16pt; font-weight: bold; color: rgb(32,32,32); }
+h4      { font-size: 14pt; font-weight: bold; color: rgb(32,32,32); }
+h5      { font-size: 12pt; font-weight: bold; color: rgb(32,32,32); }
+h6      { font-size: 10pt; font-weight: bold; color: rgb(32,32,32); }
+</style>
+
+<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">
+</head>
+
+<!-- balise p pour paragraphe -->
+<!-- balise br pour sauter une ligne -->
+<!-- balise em pour italique ou plutot mettre en valeur -->
+
+<body>
+
+<h1> MoistAir Media  </h1>  
+
+<p>	
+The <em>MoistAir</em> packages provides most of useful equations, functions and physical quanties of a moist air. It is built following the idea of a decomposition in three
+main parts. The first one is a <em>record</em> module where the principal physical quantities, being the total pressure, the temperature and the mass fraction of each species
+are stored. This record, named <em>ThermodynamicState</em>, allows to simulate severals quantities variation avoiding to use severals base properties model for each variation
+(cf example and <strong>base properties</strong> ). The second one is a model that contains the equation that link classical thermodynamical	properties
+and others useful value (<strong>base properties</strong> chapter). The last one contains function to compute physical quanties depending on parameter values. The parameter can 
+be some other quantities.
+</p>
+
+
+<p>
+The thermodynamical properties (maily the specific heat capacity, the molar mass, the dynamic viscosity and the thermal conductivity) of the liquid water, the steam and the dry air are imported from an external record.
+As a few quantifies are passed as vector, the first component always refers to the water even if the vector has only one component. For the most air, the max number of compoment is two (water and dry air). Therefore,
+the integer variable Water = 1 and Air = 2.	
+</p>
+
+<h3> Base properties model  </h3> 
+
+<p>
+The model supplies equation to supply the following quantities :
+
+<ul>
+<li>The Molar Mass MM of the mixture. The liquid water (fog) is taken account here</li>
+<li>The perfect gas constant R weighted by the mass fraction of steam and dry air. The liquid water (fog) is not taken account here </li>
+<li>The mass fraction : </li>
+<ul>
+<li>X[medium.Water] = X[1] = mass of total water (steam + liquid ) per mass of moist air </li>			
+<li>X[medium.Air] = X[2] = mass of dry air per mass of moist air </li>
+<li>X_air = mass of dry air per mass of moist air </li>
+<li>X_liquid = mass of liquid water (fog) per mass of moist air </li>
+<li>X_steam = mass of steam per mass of moist air </li>	
+<li>X_sat = mass of steam per mass of moist air at saturation condition. X_steam <&le> X_sat  </li>
+<li>Xi[number of surbstance(=2) -1] = Xi[1] = independant mass fraction vector. Abitrary defined as mass of total water (steam + liquid ) per mass of moist air </li>
+<li>x_water = mass of total water (steam + liquid ) per mass of dry air </li>				
+<li>x_sat = mass of steam per mass of dry air at saturation condition </li>							
+</ul>
+<li>The relative humidity (phi or HR) </li>
+<li>The absolute pressure (p) </li>
+<li>The pressure of steam at saturation (p_steam_sat) </li>
+<li>The temperature (T) </li>
+<li>The specific internal energy (u) per unit  of moist air </li>			
+<li>The specific internal energy (h) per unit  of moist air. The volume of water is neglected here </li>
+<li>The density (d). The volume of water is neglected here </li>			
+</ul>
+
+
+The model requires the value of 3 three separated physical quantities for example the pressure, the temperature and the mass fraction to compute the remaining quantity. </br>
+The equation system is the following :
+</p>	
+
+<h3> Functions  </h3>
+
+<h5> Psat_T  </h5>	
+<p>	
+<em>Psat_T</em>	supplies the saturation pressure of steam for a given temperature. The temperature is in kelvin. The function is picked up from the modelica library with the following root : </br>
+Psat_T(T) = Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T)
+</p>	
+
+<h5> X_sat </h5>		
+<p>	
+<em>X_sat</em> supplies the mass fraction of steam at saturation for a given temperature and pressure. The temperature is in kelvin and the pressure in pascal. </br>
+X_sat = k_mair/(p/min(psat_T(T), 0.999*p)- 1 + k_mair)
+</p>		
+
+<h5> h_pTX </h5>		
+<p>	
+<em>h_pTX</em> supplies the specific enthalpy of the moist air for a given temperature, pressure and mass fraction. The temperature is in kelvin and the pressure in pascal.
+The function computes the mass fraction of each components (liquid and steam water, dry air) to then computes the specific enthalpy.  </br>
+h = X_air*air.cp*T + X_steam*(moisture.cp*T + moisture.LHea) + X_liquid*liquidWater.cp*T 
+</p>		
+
+<h5> massFraction_pTphi </h5>		
+<p>	
+<em>massFraction_pTphi</em> supplies the mass fraction of water for a given temperature, pressure and relative humidity (phi). If the user set a value up to 1 for phi, the mass fraction is the one of the steam and the one of the liquid water.
+specific enthalpy of the moist air for a given temperature, pressure and mass fraction. The temperature is in kelvin and the pressure in pascal.
+The function computes the mass fraction of each components (liquid and steam water, dry air) to then computes the specific enthalpy.  </br>
+X_steam := phi*k_mair/(k_mair*phi + p/psat - phi) with psat =  psat_T(T)
+</p>
+
+</body>
+</html>"));
+
+end SimpleDryAirH2;

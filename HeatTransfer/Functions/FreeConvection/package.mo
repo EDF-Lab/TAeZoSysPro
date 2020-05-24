@@ -1,7 +1,5 @@
 within TAeZoSysPro.HeatTransfer.Functions;
 
 package FreeConvection
-
-  extends Modelica.Icons.FunctionsPackage ;
-
+  extends Modelica.Icons.Package;
 end FreeConvection;

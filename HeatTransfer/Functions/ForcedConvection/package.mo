@@ -1,7 +1,5 @@
 within TAeZoSysPro.HeatTransfer.Functions;
 
 package ForcedConvection
-
-  extends Modelica.Icons.FunctionsPackage ;
-
-end ForcedConvection;
+  extends Modelica.Icons.Package;
+end ForcedConvection;  

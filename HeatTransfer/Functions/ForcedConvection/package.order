@@ -1,4 +1,3 @@
-Tests
-flat_plate_ASHRAE
-internal_pipe_ASHRAE
-crossFlow_cylinder_ASHRAE
+ASHRAE_Int_Cyl
+ASHRAE_Ext_Cyl
+ASHRAE_Flat_Plate

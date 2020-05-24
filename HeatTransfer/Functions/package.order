@@ -1,7 +1,5 @@
-FreeConvection
 ForcedConvection
-Radiation
-MeshGrid
-ExchangerEffectiveness
-ExchangerHeatTransferCoeff
-fviewFunction
+FreeConvection
+mass_fill
+Ri_fill
+hrad_Linearize

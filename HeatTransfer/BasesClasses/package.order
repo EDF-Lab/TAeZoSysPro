@@ -1,11 +1,7 @@
-Tests
-FreeConvection
-FreeConvection_dT_decoupled
-ForcedConvection
+Convection
+ConvectionHood
 Conduction
 CarrollRadiation
 HeatCapacitor
 PartialWall
-LumpVolume
-CarrollNode
-PartialHeatExchanger
+HeatExchanger
