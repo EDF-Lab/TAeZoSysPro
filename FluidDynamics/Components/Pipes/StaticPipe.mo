@@ -32,12 +32,11 @@ equation
                            h = inStream(port_b.h_outflow), 
                            X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))})) ;
 
-// momentum balance
   dp = port_a.p - port_b.p;
   m_flow = A * Modelica.Fluid.Utilities.regRoot2(x = dp,
-                                                         x_small = 0.1,
-                                                         k1 = 2.0 * d_a / ksi,
-                                                         k2 = 2.0 * d_b / ksi) ;
+                                                 x_small = 0.1,
+                                                 k1 = 2.0 * d_a / ksi,
+                                                 k2 = 2.0 * d_b / ksi) ;
   Vel * d_a * A = m_flow ;
 
 // Ports handover
