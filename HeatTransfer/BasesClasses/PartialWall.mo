@@ -69,7 +69,7 @@ initial equation
   
   if energyDynamics == Dynamics.SteadyStateInitial then
     centralSecondOrder.u[2:end - 1] = {port_a.T - (port_a.T - port_b.T) / Th * (x[i - 1] + (x[i] - x[i - 1]) / 2) for i in 2:N + 1};
-    //der(centralSecondOrder.u[2:end-1]) = fill(0, n) ;
+//    der(centralSecondOrder.u[2:end-1]) = fill(0.0, N) ;
     
   elseif energyDynamics == Dynamics.FixedInitial then
     centralSecondOrder.u[2:end - 1] = fill(T_start, N) "Initial Condition";
