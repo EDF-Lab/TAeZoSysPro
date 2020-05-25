@@ -57,7 +57,8 @@ model PartialWall
       N = N,  
       CoeffSpaceDer=-D_th, 
       SourceTerm = fill(0.0, N), 
-      x=x) annotation(
+      x=x,
+      SteadyState = energyDynamics == Dynamics.SteadyState) annotation(
     Placement(visible = true, transformation(origin = {-2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 
@@ -68,8 +69,8 @@ initial equation
   E = 0;
   
   if energyDynamics == Dynamics.SteadyStateInitial then
-    centralSecondOrder.u[2:end - 1] = {port_a.T - (port_a.T - port_b.T) / Th * (x[i - 1] + (x[i] - x[i - 1]) / 2) for i in 2:N + 1};
-//    der(centralSecondOrder.u[2:end-1]) = fill(0.0, N) ;
+//    centralSecondOrder.u[2:end - 1] = {port_a.T - (port_a.T - port_b.T) / Th * (x[i - 1] + (x[i] - x[i - 1]) / 2) for i in 2:N + 1};
+    der(centralSecondOrder.u[2:end-1]) = fill(0.0, N) ;
     
   elseif energyDynamics == Dynamics.FixedInitial then
     centralSecondOrder.u[2:end - 1] = fill(T_start, N) "Initial Condition";
@@ -84,9 +85,9 @@ equation
 
   //PDE
     // determination of ghost node value
-    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / (x[2] - x[1]) * k * A = 0.0 "flux conservation";
+    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / ((x[2] - x[1])/2) * k * A = 0.0 "flux conservation";
     
-    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1])/(x[end]-x[end-1]) * k * A = 0.0 "flux conservation" ;
+    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1]) / ((x[end]-x[end-1])/2) * k * A = 0.0 "flux conservation" ;
 
   if energyDynamics == Dynamics.SteadyState then
     centralSecondOrder.CoeffTimeDer = 0.0 ;
