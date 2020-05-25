@@ -9,6 +9,7 @@ model CentralSecondOrder
   input Real CoeffTimeDer "Coefficient for time derivative" ;
   input Real CoeffSpaceDer "Coefficient for space derivative" ;
   input Real SourceTerm[N] "Source term in the right hand side" ;
+  input Boolean SteadyState = false "Steady state mode" ;
 
   
   // internal variable
@@ -16,20 +17,38 @@ model CentralSecondOrder
     
 equation
 
-  for i in 2:size(u,1)-1 loop
-    if i == 2 then //first layer: take account that the ghost node is vertex centered => not centered but forward derivative
-      CoeffTimeDer * der(u[i]) +
-      CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-1]) ) ) = SourceTerm[i-1] "PDE domain";
-    
-    elseif i == size(u,1)-1 then //last layer: take account that the ghost node is vertex centered => not centered but backward derivative
-      CoeffTimeDer * der(u[i]) +
-      CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
+  if SteadyState == false then
+  
+    for i in 2:size(u,1)-1 loop
+      if i == 2 then //first layer: take account that the ghost node is vertex centered => not centered but forward derivative
+        CoeffTimeDer * der(u[i]) +
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-1]) ) ) = SourceTerm[i-1] "PDE domain";
       
-    else    
-      CoeffTimeDer * der(u[i]) +
-      CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
-    end if;    
-  end for ;
+      elseif i == size(u,1)-1 then //last layer: take account that the ghost node is vertex centered => not centered but backward derivative
+        CoeffTimeDer * der(u[i]) +
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
+        
+      else    
+        CoeffTimeDer * der(u[i]) +
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
+      end if;    
+    end for ;
+  
+  else /*SteadyState mode*/
+
+    for i in 2:size(u,1)-1 loop
+      if i == 2 then //first layer: take account that the ghost node is vertex centered => not centered but forward derivative
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-1]) ) ) = SourceTerm[i-1] "PDE domain";
+      
+      elseif i == size(u,1)-1 then //last layer: take account that the ghost node is vertex centered => not centered but backward derivative
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
+        
+      else    
+        CoeffSpaceDer * ( 1/(x[i] - x[i-1]) * ( 2*(u[i+1] - u[i])/(x[i+1] - x[i-1]) - 2*(u[i] - u[i-1])/(x[i] - x[i-2]) ) ) = SourceTerm[i-1] "PDE domain";
+      end if;    
+    end for ;  
+  
+  end if ;
   
  annotation(
     Documentation(info = "
