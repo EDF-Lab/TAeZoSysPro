@@ -67,10 +67,10 @@ equation
 // Power consumption
   if use_powerCharacteristic then
     P = (N/N_nominal)^2*(d/d_nominal)*powerCharacteristic(V_flow*(N_nominal/N));
-    eta = abs(dp)*V_flow/P;
+    eta = -dp*V_flow/P;
   else
     eta = efficiencyCharacteristic(V_flow*(N_nominal/N)) ;
-    P = abs(dp)*V_flow/eta ;
+    P = -dp*V_flow/eta ;
   end if;
 
 // Ports handover
