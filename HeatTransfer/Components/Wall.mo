@@ -72,7 +72,7 @@ model Wall
   Modelica.SIunits.BiotNumber Bi_a, Bi_b ;
 
 // Components inside wall are defined
-  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = false)  annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = true)  annotation(
     Placement(visible = true, transformation(origin = {0.5, 0.5}, extent = {{-29.5, -29.5}, {29.5, 29.5}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_a(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_a, h_cv_const = h_cv_const_a) annotation(
     Placement(visible = true, transformation(origin = {-55, 70}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
@@ -121,7 +121,6 @@ equation
 
 A_wall_a = A;
 A_wall_b = A;
-
 //output y is set to Awall and it can be connected to FviewCalculator
   connect(freeConvection_a.port_a, partialWall.port_a) annotation(
     Line(points = {{-36, 70}, {-28, 70}, {-28, 0}, {-28, 0}}, color = {191, 0, 0}));
