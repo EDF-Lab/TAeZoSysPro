@@ -3,12 +3,13 @@ within TAeZoSysPro.PDE.ThermalDiffusion;
 model CentralSecondOrder
   // user defined parameters
   parameter Integer N = 3 "Number of discrete layers";
-  
+  parameter Modelica.SIunits.Position x[N+1] "Position array" ;
+    
   // inputs
   input Real CoeffTimeDer "Coefficient for time derivative" ;
   input Real CoeffSpaceDer "Coefficient for space derivative" ;
   input Real SourceTerm[N] "Source term in the right hand side" ;
-  input Modelica.SIunits.Position x[N+1] "Position array" ;
+
   
   // internal variable
   Real[N+2] u "transported variables. size = N + 2 for ghost nodes" annotation(HideResult = false ) ;
