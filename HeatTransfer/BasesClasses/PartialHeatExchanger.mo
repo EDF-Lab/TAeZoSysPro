@@ -3,8 +3,7 @@ within TAeZoSysPro.HeatTransfer.BasesClasses;
 partial model PartialHeatExchanger
 
   //User defined parameters
-  parameter Modelica.SIunits.Area A = 1.0 "equivalent exchange surface area" annotation(
-  Dialog(group="Geometrical properties"));
+  parameter Modelica.SIunits.Area A = 1.0 "equivalent exchange surface area" annotation(Dialog(group="Geometrical parameters"));
   
   // Internal variables
   Real NTU "Number of transfer unit";
