@@ -18,7 +18,6 @@ model VerticalOpening
 //  Modelica.SIunits.Velocity Vel;
   Modelica.SIunits.MassFlowRate m_flow_i[N] ;  
   Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
-  
   Modelica.SIunits.Density d;
   
   // Imported modules
@@ -31,13 +30,17 @@ protected
   Modelica.SIunits.MassFraction[Medium.nX] X_a "Mass fraction vector at port a";
   Modelica.SIunits.MassFraction[Medium.nX] X_b "Mass fraction vector at port b";
   parameter Modelica.SIunits.Height H_fluidStream = H * Cd ^0.5 "Minimal height between top and bottom flow path";
-  Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;   
+  Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
+  Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_a" ;  
 
 equation
 //
   X_a = 1 / sum(port_a.d) * port_a.d;
   X_b = 1 / sum(port_b.d) * port_b.d;
-  
+  h_a = Medium.specificEnthalpy_pTX(p = p_a, T = port_a.T, X = X_a );
+  h_b = Medium.specificEnthalpy_pTX(p = p_b, T = port_b.T, X = X_b );
+    
 // pressure reconstruction
   p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
   p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
@@ -73,10 +76,11 @@ equation
   port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
-  port_a.H_flow = m_flow * Medium.specificEnthalpy_pTX(
-    p = if noEvent(dp >= 0.0) then p_a else p_b, 
-    T = if noEvent(dp >= 0.0) then port_a.T else port_b.T, 
-    X = if noEvent(dp >= 0.0) then X_a else X_b);
+  port_a.H_flow = m_flow_i * Modelica.Fluid.Utilities.regStep(
+    x = dp_i, 
+    x_small = 0.01, 
+    y1 = h_a, 
+    y2 = h_b ) ;
   port_a.H_flow + port_b.H_flow = 0;
   
   annotation(defaultComponentName="verticalOpening",
