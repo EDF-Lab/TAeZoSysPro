@@ -99,7 +99,7 @@ Documentation(info ="
         <li> <code>dp</code> is the pressure difference between port_a.p and port_b.p </li>
         <li> <code>d</code> is the upstream density </li>
         <li> <code>Vel</code> is fluid velocity </li>              
-        <li> <code>m_flow</code> is the mass flow rate induced by convection </li>
+        <li> <code>m_flow</code> is the mass flow rate through the orifice </li>
         <li> <code>A</code> is cross section of the orifice </li>
         <li> <code>Cd</code> is the discharge coefficient </li>
       </ul>				
@@ -112,4 +112,5 @@ Documentation(info ="
 </html>"),
     Icon(graphics = {Line(origin = {0, 50}, points = {{0, 30}, {0, -30}}, thickness = 2), Line(origin = {0, -50}, points = {{0, 30}, {0, -30}}, thickness = 2), Text(origin = {16, -113}, extent = {{-116, 33}, {84, 13}}, textString = "A=%A"), Text(origin = {-43, 88}, extent = {{-57, 12}, {143, -8}}, textString = "%name"), Line(origin = {-1, 27.24}, points = {{-39, 12.7571}, {-19, -7.24287}, {1, -15.2429}, {21, -7.24287}, {41, 12.7571}}, pattern = LinePattern.Dash, arrow = {Arrow.Filled, Arrow.Filled}, smooth = Smooth.Bezier), Line(origin = {1.02, -27.23}, rotation = 180, points = {{-39, 12.7571}, {-19, -7.24287}, {1, -15.2429}, {21, -7.24287}, {41, 12.7571}}, pattern = LinePattern.Dash, arrow = {Arrow.Filled, Arrow.Filled}, smooth = Smooth.Bezier), Line(points = {{-40, 0}, {40, 0}}, pattern = LinePattern.Dash, arrow = {Arrow.Filled, Arrow.Filled})}),
     Diagram);
+
 end SimpleOpening;
