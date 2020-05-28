@@ -43,7 +43,7 @@ equation
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
   
-  Vel * d * A = m_flow ;
+  Vel * d * A * Cd = m_flow ;
 // Port handover
   port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
