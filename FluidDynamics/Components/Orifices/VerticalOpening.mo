@@ -32,7 +32,7 @@ protected
   parameter Modelica.SIunits.Height H_fluidStream = H * Cd ^0.5 "Minimal height between top and bottom flow path";
   Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
-  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_a" ;  
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;  
 
 equation
 //
