@@ -76,7 +76,106 @@ equation
     X = if noEvent(dp >= 0.0) then X_a else X_b) - Q_flow_buoyancy;
   port_a.H_flow + port_b.H_flow = 0;
   
-  annotation(
+  annotation(defaultComponentName="horizontalOpening",
+Documentation(info ="
+<html>
+  <head>
+    <title>HorizontalOpening</title>
+  </head>
+	
+  <body lang=\"en-UK\">
+    <p>
+      This components allows to model the mass flow rate through from either static boundary pressure difference or buoyancy effect through a horizontal orifice in a wall spliting two ambiances.
+      The flow regime is steady state. 
+    </p>
+    
+    <p>
+      To be considered as an orifice, the depth of the hole in the wall has to remain bellow the hydrodynamic entrance region (Distance between the entrance of the hole and the position where the dynamic boundary layers meet).
+      In that case and due to visquous and inertial forces, the current line is not at right angles to the opening but curved. 
+      The flow is constricted in the orifice. Consequently, the cross-section of the fluid is not equal to the geometric section of the orifice. 
+      the ratio between the fluid passage section and the geometric section is called the discharge coefficient.
+      It is assumed to be constant and therefore independent of the flow regime.
+    </p>
+    
+    <p>
+      The static pressure of the boundary nodes to which the ports are connected is corrected from pressure induced by the fluid column above the opening for the port_a and bellow for the port_b. The static pressure difference at the boundaries of orifice derives:
+    </p> 
+       
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening1.PNG\"
+    />
+       
+    <p>
+      In the flow, all the boundary pressure difference is converted in kinetic energy.
+    </p> 
+          
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening2.PNG\"
+    />
+    
+    <p>
+      It is equivalent to have a pressure loss factor equation to one.
+      Therefore, the relation to compute mass flow rate through the orifice derives:
+    </p>    
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening3.PNG\"
+    />
+    
+    <p>
+      At this step, nothings prevents to have a configuration where light fluid (in therm of density) being on the bottom part of the opening and a heavier fluid on the top. 
+      In reality in such, a small instalibity at the interface of the fluids would lead to a start of mixing. 
+      That mixing would self accelerate to lead to ascending column of light fluid and descending a heavy fluid. 
+      The mass balabce between the light and heavy fluid is null. Therefore the phenomena <b> does not transport mass but only enthalpy</b>. 
+    </p>
+    
+    <p>
+      To model the enthalpy transport by buoyancy, let's first determine the pressure difference induced a column of heavy and light fluid having the height equal to <b>L_up</b>.
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening4.PNG\"
+    />
+    
+    <p>
+      Then the mass flow rate is computed with the same assumptions thant previously and with the assumption that a half the flow cross section 'sees' the descending flow and the other half the ascending.
+    </p>    
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening5.PNG\"
+    />
+
+    <p>
+      Knowing the mass flow rate and the state at both ports, the enthalpy balance derives:  
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening6.PNG\"
+    />
+ 		
+    <p>	
+      <b>Where</b>:
+      <ul>
+        <li> <code>L_up</code> is the vertical distance between the centre of the node above the orifice and the orifice </li>
+        <li> <code>L_down</code> is the vertical distance between the centre of the node bellow the orifice and the orifice </li>  
+        <li> <code>dp</code> is the static pressure difference between top and bottom part of the orifice </li>
+        <li> <code>d</code> is the upstream density </li>
+        <li> <code>Vel</code> is fluid velocity </li>              
+        <li> <code>m_flow</code> is the mass flow rate through the layer index <b>i</b></li>
+        <li> <code>A</code> is cross section of the orifice </li>
+        <li> <code>Cd</code> is the discharge coefficient </li>
+        <li> <code>dp_buoyancy</code> is the pressure difference induced the weight difference between a light and heavy fluid column </li>
+        <li> <code>m_flow_buoyancy</code> is mass flow rate induced by the stack effect </li>
+        <li> <code>Q_flow_buoyancy</code> is heat flow balance from the ascending and descending flow </li>
+      </ul>				
+    </p>
+
+    <p>
+      To avoid infinite derivative at dp_i=0, The square root (for m_flow calculation only) is replaced by the function <b>regRoot2</b> of the MSL that replace the square root by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square root is <b> abs(dp≤0.01) Pa </b>
+    </p>			
+  </body>
+</html>"),
     Icon(graphics = {Line(origin = {-20, 30}, points = {{-60, -30}, {0, -30}}, thickness = 2), Line(origin = {20, -30}, points = {{0, 30}, {60, 30}}, thickness = 2), Text(origin = {-54, 17}, extent = {{-46, 33}, {94, 13}}, textString = "L_up=%L_up"), Line(origin = {49.9541, 34.6789}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}), Text(origin = {6, -33}, extent = {{-46, 33}, {34, 13}}, textString = "A=%A"), Text(origin = {6, -63}, extent = {{-46, 33}, {94, 13}}, textString = "L_down=%L_down"), Line(origin = {-49.9541, -27.3945}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
     experiment(StartTime = 0, StopTime = 0.01, Tolerance = 1e-06, Interval = 2.00803e-05));
+
 end HorizontalOpening;
