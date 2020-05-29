@@ -11,7 +11,7 @@ model SimpleOpening
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
   Modelica.SIunits.PressureDifference dp;
   Modelica.SIunits.Velocity Vel;
-  Modelica.SIunits.MassFlowRate m_flow "Aperture flow kg/s";
+  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
   Modelica.SIunits.Density d;
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
