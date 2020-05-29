@@ -5,9 +5,10 @@ model LumpVolume
 
   // Medium is declared
   //replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT;
-  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
-  //replaceable package Medium = Modelica.Media.Air.SimpleAir ;  
-  Medium.BaseProperties medium(preferredMediumStates= true, p = p) ;   //preferredMediumStates = true for having a static state selection
+//  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
+  
+  replaceable package Medium = Modelica.Media.Air.SimpleAir ;
+  Medium.BaseProperties medium(preferredMediumStates= true, p = p) ;     //preferredMediumStates = true for having a static state selection
   
   // User defined parameters
   parameter Modelica.SIunits.Volume V = 1 "Air node volume [m3]";
@@ -25,7 +26,6 @@ model LumpVolume
 
 initial equation
   E = 0.0 ;
-  
 // Initialisation
   if energyDynamics == Dynamics.SteadyStateInitial then
     der(medium.T) = 0 "Zero time derivative at initilisation" ;
@@ -36,26 +36,24 @@ initial equation
   end if;
   
 equation
-  T = medium.T;
 
+  T = medium.T;
+  
 // Mass balance
   m = medium.d * V;
   
 // Energy balance
   if energyDynamics == Dynamics.SteadyState then
-    port_a.Q_flow = 0 ;
-    
+    port_a.Q_flow = 0;
   else
-  m * der(medium.h) = port_a.Q_flow ;
-  
-  end if ;
+    m * der(medium.h) = port_a.Q_flow;
+  end if;
   der(E) = port_a.Q_flow;
   
 // Port handover
-  port_a.T = T ;
-  
+  port_a.T = T;
   annotation(
-    Icon(graphics = {Ellipse(lineColor = {85, 85, 255}, fillColor = {85, 170, 255}, fillPattern = FillPattern.Solid, extent = {{100, 100}, {-100, -100}}, endAngle = 360), Text(origin = {24, -43}, extent = {{28, 17}, {-74, -51}}, textString = "V=%V m3", fontSize = 20)}, coordinateSystem(initialScale = 0.1)),
+    Icon(graphics = {Ellipse(lineColor = {85, 85, 255}, fillColor = {85, 170, 255}, fillPattern = FillPattern.Solid, extent = {{100, 100}, {-100, -100}}, endAngle = 360), Text(origin = {24, -43}, extent = {{76, -17}, {-124, -57}}, textString = "V=%V")}, coordinateSystem(initialScale = 0.1)),
     Documentation(info="
     <html>
 	<head>
