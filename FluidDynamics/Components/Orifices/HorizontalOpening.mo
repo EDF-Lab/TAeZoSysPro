@@ -17,7 +17,7 @@ model HorizontalOpening
   Modelica.SIunits.Pressure p_down;
   Modelica.SIunits.Pressure p_up;
   Modelica.SIunits.Velocity Vel;
-  Modelica.SIunits.MassFlowRate m_flow "Aperture flow kg/s";
+  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
   Modelica.SIunits.MassFlowRate m_flow_buoyancy "Mass flow rate induced by buoyancy";  
   Modelica.SIunits.Density d;
   Modelica.SIunits.HeatFlowRate Q_flow_buoyancy ;  
@@ -161,7 +161,7 @@ Documentation(info ="
         <li> <code>dp</code> is the static pressure difference between top and bottom part of the orifice </li>
         <li> <code>d</code> is the upstream density </li>
         <li> <code>Vel</code> is fluid velocity </li>              
-        <li> <code>m_flow</code> is the mass flow rate through the layer index <b>i</b></li>
+        <li> <code>m_flow_i[i]</code> is the mass flow rate through the layer index <b>i</b></li>
         <li> <code>A</code> is cross section of the orifice </li>
         <li> <code>Cd</code> is the discharge coefficient </li>
         <li> <code>dp_buoyancy</code> is the pressure difference induced the weight difference between a light and heavy fluid column </li>
