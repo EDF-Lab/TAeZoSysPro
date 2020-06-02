@@ -6,13 +6,18 @@ model SimpleOpening
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
+  
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
   Modelica.SIunits.PressureDifference dp;
   Modelica.SIunits.Velocity Vel;
-  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
+  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate through the opening";
   Modelica.SIunits.Density d;
+  Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
+  Modelica.SIunits.MachNumber M "Mach number at the opening";
+  Medium.ThermodynamicState state ;  
+  
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -39,11 +44,24 @@ equation
     y2 = sum(port_b.d));
     
   m_flow = Cd * A * Modelica.Fluid.Utilities.regRoot2(
-    x = dp, x_small = 0.1, 
+    x = dp, x_small = 0.01, 
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
   
   Vel * d * A * Cd = m_flow ;
+
+// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
+  state = Medium.setSmoothState(
+    x = dp, 
+    x_small = 0.01, 
+    state_a = Medium.setState_pTX(p = p_a, T = port_a.T, X = X_a), 
+    state_b = Medium.setState_pTX(p = p_b, T = port_b.T, X = X_b));
+  gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
+  // Mach number calculation: The pressure at the orifice is the downstream node pressure
+  M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
+
+assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+  
 // Port handover
   port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
