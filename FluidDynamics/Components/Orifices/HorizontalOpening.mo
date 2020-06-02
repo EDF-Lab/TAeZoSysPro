@@ -61,20 +61,24 @@ equation
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
     
- dp_buoyancy = Modelica.Constants.g_n * L_up * max(sum(port_a.d - port_b.d), 0) ;
- m_flow_buoyancy = Cd * A / 2 * sqrt(2*dp_buoyancy*sum(port_a.d));
- Q_flow_buoyancy = m_flow_buoyancy * (h_b-h_a) ;
+  dp_buoyancy = Modelica.Constants.g_n * L_up * max(sum(port_a.d - port_b.d), 0) ;
+  m_flow_buoyancy = TAeZoSysPro.FluidDynamics.Utilities.regStep(
+    x = abs(dp) - dp_buoyancy, 
+    x_small = 0.1, 
+    y1 = 0.0, 
+    y2 = Cd * A / 2 * sqrt(2*dp_buoyancy*sum(port_a.d))); 
+  Q_flow_buoyancy = m_flow_buoyancy * (h_a-h_b) ;
           
   Vel * d * A * Cd = m_flow ;
   
 // Ports handover
-  port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
-  port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
+  port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b) + m_flow_buoyancy * (X_a - X_b);
+  port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
   port_a.H_flow = m_flow * Medium.specificEnthalpy_pTX(
     p = if noEvent(dp >= 0.0) then p_a else p_b, 
     T = if noEvent(dp >= 0.0) then port_a.T else port_b.T, 
-    X = if noEvent(dp >= 0.0) then X_a else X_b) - Q_flow_buoyancy;
-  port_a.H_flow + port_b.H_flow = 0;
+    X = if noEvent(dp >= 0.0) then X_a else X_b) + Q_flow_buoyancy ;
+  port_b.H_flow + port_a.H_flow = 0.0 ;
   
   annotation(defaultComponentName="horizontalOpening",
 Documentation(info ="
