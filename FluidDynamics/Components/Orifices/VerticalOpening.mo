@@ -82,8 +82,7 @@ equation
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
-
-assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
   
 // Port handover
   port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;

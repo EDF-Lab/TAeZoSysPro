@@ -20,7 +20,10 @@ model HorizontalOpening
   Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
   Modelica.SIunits.MassFlowRate m_flow_buoyancy "Mass flow rate induced by buoyancy";  
   Modelica.SIunits.Density d;
-  Modelica.SIunits.HeatFlowRate Q_flow_buoyancy ;  
+  Modelica.SIunits.HeatFlowRate Q_flow_buoyancy ;
+  Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
+  Modelica.SIunits.MachNumber M "Mach number at the opening";
+  Medium.ThermodynamicState state ;  
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
@@ -60,7 +63,19 @@ equation
     x_small = 0.01, 
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
-    
+
+// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
+  state = Medium.setSmoothState(
+    x = dp, 
+    x_small = 0.01, 
+    state_a = Medium.setState_pTX(p = p_a, T = port_a.T, X = X_a), 
+    state_b = Medium.setState_pTX(p = p_b, T = port_b.T, X = X_b));
+  gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
+  // Mach number calculation: The pressure at the orifice is the downstream node pressure
+  M = min(1, (2 / (gamma - 1) * ((min(p_up, p_down) / max(p_up, p_down)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
+  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+
+// Calculation of the mass and heat flow induced by buoyancy difference    
   dp_buoyancy = Modelica.Constants.g_n * L_up * max(sum(port_a.d - port_b.d), 0) ;
   m_flow_buoyancy = TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = abs(dp) - dp_buoyancy, 
