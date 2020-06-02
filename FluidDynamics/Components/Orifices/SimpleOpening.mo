@@ -37,13 +37,13 @@ equation
   p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
   dp = p_a - p_b;
 //
-  d = Modelica.Fluid.Utilities.regStep(
+  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp, 
     x_small = 0.01, 
     y1 = sum(port_a.d), 
     y2 = sum(port_b.d));
     
-  m_flow = Cd * A * Modelica.Fluid.Utilities.regRoot2(
+  m_flow = Cd * A * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
     x = dp, x_small = 0.01, 
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
@@ -62,7 +62,11 @@ equation
   assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
   
 // Port handover
-  port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
+  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
+    x = dp, 
+    x_small = 0.01, 
+    y1 = X_a, 
+    y2 = X_b);
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
   port_a.H_flow = m_flow * Medium.specificEnthalpy_pTX(

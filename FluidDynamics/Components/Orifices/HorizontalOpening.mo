@@ -87,7 +87,7 @@ equation
   Vel * d * A * Cd = m_flow ;
   
 // Ports handover
-  port_a.m_flow = m_flow * Modelica.Fluid.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b) + m_flow_buoyancy * (X_a - X_b);
+  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b) + m_flow_buoyancy * (X_a - X_b);
   port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
   port_a.H_flow = m_flow * Medium.specificEnthalpy_pTX(
     p = if noEvent(dp >= 0.0) then p_a else p_b, 

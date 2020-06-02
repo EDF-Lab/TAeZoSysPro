@@ -49,7 +49,7 @@ equation
   dp = p_a - p_b;
 
 //
-  d = Modelica.Fluid.Utilities.regStep(
+  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp, 
     x_small = 0.01, 
     y1 = sum(port_a.d), 
@@ -58,14 +58,14 @@ equation
   for i in 1:N loop  
     dp_i[i] = dp + Modelica.Constants.g_n * (H_fluidStream / 2 -H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
     
-    m_flow_i[i] = A * Cd / N * Modelica.Fluid.Utilities.regRoot2(
+    m_flow_i[i] = A * Cd / N * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
       x = dp_i[i], 
       x_small = 0.01, 
       k1 = 2.0 * sum(port_a.d), 
       k2 = 2.0 * sum(port_b.d)); 
   end for ;
       
-  mX_flow_i = {m_flow_i[i] * Modelica.Fluid.Utilities.regStep(
+  mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp_i[i], 
     x_small = 0.01, 
     y1 = X_a, 
@@ -88,7 +88,7 @@ equation
   port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
-  port_a.H_flow = m_flow_i * Modelica.Fluid.Utilities.regStep(
+  port_a.H_flow = m_flow_i * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp_i, 
     x_small = 0.01, 
     y1 = h_a, 
