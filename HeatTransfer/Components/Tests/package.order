@@ -5,3 +5,4 @@ test_FviewCalculator
 test_HalfWall
 test_Wall
 test_CabinetPower
+test_InertMass
