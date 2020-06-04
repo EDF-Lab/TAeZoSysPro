@@ -142,14 +142,16 @@ Documentation(info ="
     />
     
     <p>
-      At this step, nothings prevents to have a configuration where light fluid (in therm of density) being on the bottom part of the opening and a heavier fluid on the top. 
+      At this step, nothings prevents to have a configuration where a light fluid (in therm of density) being on the bottom part of the opening and a heavier fluid on the top. 
       In reality in such, a small instalibity at the interface of the fluids would lead to a start of mixing. 
-      That mixing would self accelerate to lead to ascending column of light fluid and descending a heavy fluid. 
-      The mass balabce between the light and heavy fluid is null. Therefore the phenomena <b> does not transport mass but only enthalpy</b>. 
+      That mixing would self accelerate to lead to ascending column of light fluid and descending a heavy fluid.  
     </p>
     
     <p>
-      To model the enthalpy transport by buoyancy, let's first determine the pressure difference induced a column of heavy and light fluid having the height equal to <b>L_up</b>.
+      To model the mass transport by buoyancy, let's first determine the pressure difference induced a column of heavy and light fluid. 
+      It assumed that the height of the fluid columns is the height above the opening <b>L_up</b>.
+      In reality, the height is clearlly smaller when mixing starts but in steady state it can be more.
+      Anyway, this kind a flow is clearlly three dimensionals thus it requires assumptions to be modelled with a one dimensional approach.
     </p>
 
     <img	
@@ -157,7 +159,9 @@ Documentation(info ="
     />
     
     <p>
-      Then the mass flow rate is computed with the same assumptions thant previously and with the assumption that a half the flow cross section 'sees' the descending flow and the other half the ascending.
+      Then the mass flow rate is computed with the same assumptions thant previously and with the assumption that a half the flow cross section 'sees' the descending flow and the other half the ascending. 
+      However, when the static pressure difference <b>dp</b> is heigher then pressure difference induced by buoyancy <b>dp_buoyancy</b>, then the mixing does not occurs since the flow is one dimensional.
+      In such case, the mass flow rate induced by buoyancy is set to zero.
     </p>    
 
     <img	
@@ -165,6 +169,9 @@ Documentation(info ="
     />
 
     <p>
+      It is supposed the mass flow rate induced by buoyancy between the ports is balanced.
+      In reality, a flow imbalance would induce a rise in static pressure in one of the nodes which would result in a mass exchange to rebalance the pressures. 
+      So the assumption of balanced mass flows is not too false. <\br>   
       Knowing the mass flow rate and the state at both ports, the enthalpy balance derives:  
     </p>
 
