@@ -26,7 +26,7 @@ model HeatExchanger
 
   //
   replaceable function effectiveness = ExchangerEffectiveness.counterCurrent ;
-  replaceable function heatTransferCoeff = ExchangerHeatTransferCoeff.user_defined ;
+  replaceable function heatTransferCoeff = ExchangerHeatTransferCoeff.baseFunc ;
   
 equation
 

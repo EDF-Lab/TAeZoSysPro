@@ -1,6 +1,8 @@
 within TAeZoSysPro.HeatTransfer.Functions.ExchangerHeatTransferCoeff;
 
 function from_correlations
+
+  extends baseFun ;
   input Modelica.SIunits.ReynoldsNumber Re_A "Reynolds number for flow A" ;
   input Modelica.SIunits.PrandtlNumber Pr_A "Prandtl number for fluid A" ;
   input Modelica.SIunits.Length Lc_A "Charactereistic length for flow A" ;
@@ -9,7 +11,6 @@ function from_correlations
   input Modelica.SIunits.PrandtlNumber Pr_B "Prandtl number for fluid A" ;
   input Modelica.SIunits.Length Lc_B "Charactereistic length for flow A" ;
   input Modelica.SIunits.ThermalConductivity k_B "Thermal conductivity for fluid A" ;
-  output Modelica.SIunits.CoefficientOfHeatTransfer h "Heat transfer Coefficient" ;
 
 protected 
   Modelica.SIunits.NusseltNumber Nu_A ;
