@@ -5,8 +5,6 @@ function polynomial  "Polynomial characteristic: rc = c[1] + c[2]*pos + c[3]*pos
   input Real  c[:] "Polynomial coefficients";
     
 algorithm
-  pos := min(pos, 1.0) ;
-  pos := max(pos, 0.0) ;
 
   rc := c[size(c, 1)];
   for i in size(c, 1)-1:-1:1 loop
