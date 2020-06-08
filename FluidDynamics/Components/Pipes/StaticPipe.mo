@@ -84,7 +84,7 @@ Documentation(info ="
         <li> <code>ksi</code> is the pressure loss coefficient </li>
         <li> <code>d</code> is the upstream density </li>
         <li> <code>Vel</code> is fluid velocity </li>              
-        <li> <code>m_flow</code> is the mass flow rate induced by convection </li>
+        <li> <code>m_flow</code> is the mass flow rate through the pipe </li>
         <li> <code>A</code> is cross section of the pipe </li>
       </ul>				
     </p>
