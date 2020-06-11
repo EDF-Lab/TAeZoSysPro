@@ -2,18 +2,20 @@ within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model Interface_liq_gas
   import SI = Modelica.SIunits;
-  //
+//
   replaceable package Medium = Modelica.Media.Air.MoistAir;
   replaceable package MediumLiquid = Modelica.Media.Water.StandardWater;  
-  // User defined parameters
+// User defined parameters
   parameter SI.Area A = 0 "Interface surface Area" annotation(
     Dialog(group = "Geometrical properties"));
   parameter SI.Length Lc = 4 * A ^ 0.5 "Perimeter of the surface Area" annotation(
     Dialog(group = "Geometrical properties"));
   parameter SI.Emissivity eps = 0.96 "Emissivity of liquid interface" annotation(
     Dialog(group = "Geometrical properties"));
-  
-  // Internal variables
+  parameter Modelica.SIunits.NumberDensityOfMolecules n_bubbles = 150 * 1e6 "Number density of bubble in node" ;
+    
+// Internal variables
+  //for convection
   Medium.Temperature T_mean "Mean temperature between fluid and wall";
   SI.TemperatureDifference dT "Temperature difference Interface - gas";
   SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
@@ -26,10 +28,22 @@ model Interface_liq_gas
   SI.RayleighNumber Ra "Rayleigh Number";
   SI.NusseltNumber Nu "Nusselt Number";
   Real betaV(unit = "kg/m2/s") "Mass transfer coefficient";
-  SI.Density d_sat "Saturation density of the condensable species";
   SI.HeatFlowRate Q_flow_conv "Heat flow rate from convection";
+  //for evapo-condensation
   SI.HeatFlowRate Q_flow_evap "Heat flow rate from evaporation";
-  SI.MassFlowRate m_flow "Mass flow rate from evaporation";
+  SI.EnthalpyFlowRate H_flow_evap ;
+  SI.MassFlowRate m_flow_evap "Mass flow rate from evaporation";
+  SI.Density d_sat "Saturation density of the condensable species";
+  //for boiling
+  SI.SpecificEnthalpy h_dew "Specific dew enthalpy of liquid medium";
+  SI.SpecificEnthalpy h_bubble "Specific bubble enthalpy of liquid medium";
+  SI.SpecificEnthalpy h "Specific enthalpy of liquid medium";
+  SI.Density d_liq "Density in the liquid medium";  
+  SI.Diameter d_bubble "Diameter of bubble in liquid medium";
+  SI.Velocity Vel "Ascending velocity of bubble in the liquid medium";
+  SI.MassFlowRate m_flow_bubble "Mass flow rate from boiling";
+  Real Xg "Mass fraction of gas in the liquid medium";
+  //
   SI.Energy E "Energy passed throught the component";
   
   // Imported modules
@@ -51,6 +65,7 @@ model Interface_liq_gas
     Placement(visible = true, transformation(origin = {54, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {60, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 protected
   Medium.ThermodynamicState state;
+  MediumLiquid.SaturationProperties sat "Saturation property record at the interface";
 
 initial equation
   E = 0.0;
@@ -60,6 +75,7 @@ equation
   dT = heatPort_a.T - flowPort_b.T;
   prescribedTemperature.T = heatPort_a.T;
   state = Medium.setState_pTX(p = Medium.reference_p, T = T_mean);
+  sat = MediumLiquid.setSat_p(p = fluidPort_a.p) ;
   
 // Thermodynamic properties calculation
   d = Medium.density(state);
@@ -80,21 +96,35 @@ equation
   Q_flow_conv = h_cv * A * dT;
   
 // Evapocondensation heat flow rate calculation
-  d_sat = Medium.saturationPressure(heatPort_a.T) / (heatPort_a.T * Modelica.Constants.R / Medium.MMX[Medium.Water]);
+  //d_sat = Medium.saturationPressure(heatPort_a.T) / (heatPort_a.T * Modelica.Constants.R / Medium.MMX[Medium.Water]);
+  d_sat = MediumLiquid.dewDensity(sat) ;
   betaV = h_cv / (sum(flowPort_b.d) * cp);
-  m_flow = betaV * (d_sat - flowPort_b.d[Medium.Water]) * A;
-  Q_flow_evap = m_flow * Medium.enthalpyOfVaporization(heatPort_a.T);
-  
+  m_flow_evap = betaV * (d_sat - flowPort_b.d[Medium.Water]) * A;
+  Q_flow_evap = m_flow_evap * Medium.enthalpyOfVaporization(heatPort_a.T);
+  H_flow_evap = m_flow_evap * h_dew ; 
+
+// Boiling
+  h_dew = MediumLiquid.dewEnthalpy(sat) ;
+  h_bubble = MediumLiquid.bubbleEnthalpy(sat) ;
+  h = inStream(fluidPort_a.h_outflow) ;
+  h_dew * Xg + (1 - Xg) * h_bubble = h;
+  d_liq = MediumLiquid.density_ph(p = fluidPort_a.p, h = inStream(fluidPort_a.h_outflow)) ;
+  //
+  Modelica.Constants.pi * (d_bubble^3)/6 = max(Xg, 0.0) * d_liq / d_sat / n_bubbles ; 
+  // quasi static flow: viscous friction force( Stocke's law) + bouyancy force = 0
+  Vel = Modelica.Constants.g_n * d_bubble^2 / (18 * MediumLiquid.dynamicViscosity(MediumLiquid.setDewState(sat))) ;
+  m_flow_bubble = Vel * A * (n_bubbles * Modelica.Constants.pi / 6 * d_bubble ^ 3) * d_sat;
+
 //
   der(E) = heatPort_a.Q_flow;
   A_wall = A ;
   
 // Ports handovers
-  heatPort_a.Q_flow = carrollRadiation.Q_flow + Q_flow_conv + Q_flow_evap;
-  flowPort_b.H_flow + heatPort_a.Q_flow = 0.0;
-  flowPort_b.m_flow[Medium.Water] = -m_flow;
+  heatPort_a.Q_flow = carrollRadiation.Q_flow + Q_flow_conv + Q_flow_evap + m_flow_bubble * (h_dew - h_bubble) ;
+  flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * h_dew ;
+  flowPort_b.m_flow[Medium.Water] = -m_flow_evap - m_flow_bubble ;
   flowPort_b.m_flow[Medium.Air] = 0.0;
-  fluidPort_a.m_flow = m_flow ;
+  fluidPort_a.m_flow = m_flow_evap - m_flow_bubble  ;
   fluidPort_a.h_outflow = inStream(fluidPort_a.h_outflow);
   fluidPort_a.Xi_outflow = inStream(fluidPort_a.Xi_outflow);
   fluidPort_a.C_outflow = inStream(fluidPort_a.C_outflow);
