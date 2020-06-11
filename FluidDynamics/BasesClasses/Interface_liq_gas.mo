@@ -141,27 +141,100 @@ equation
 <html>
   <head>
     <title>Interface_liq_gas</title>
+	<style type=\"text/css\">
+		*       { font-size: 10pt; font-family: Arial,sans-serif; }
+		code    { font-size:  9pt; font-family: Courier,monospace;}
+		h6      { font-size: 10pt; font-weight: bold; color: green; }
+		h5      { font-size: 11pt; font-weight: bold; color: green; }
+		h4      { font-size: 13pt; font-weight: bold; color: green; }
+		address {                  font-weight: normal}
+		td      { solid #000; vertical-align:top; }
+		th      { solid #000; vertical-align:top; font-weight: bold; }
+		table   { solid #000; border-collapse: collapse;}
+    </style>
   </head>
 	
   <body lang=\"en-UK\">
     <p>
-      This components allows to model an interface between a liquid and surrounding where evapo-condensation, radiation and convection occur. This component is designed to work with moist air media.
+      This components allows to model a flat interface between a liquid and surrounding gas where evapo-condensation, boiling, radiation and convection occur. This component is designed to work with moist air media.
     </p>
+
+    <h4>Evapo-condensation</h4>
     
     <p>
       The mathematical model of evapo-condensation uses the same approach than in the <b>Condensation</b> module. It assumed that the limiting phenomenon for the transfer is the ability to bring the mass of moist air into contact to a wall.
     </p>
+
+    <h4>Convection</h4>
     			
     <p>
       Regarding the convection, the approach is the same than for the <b>FreeConvection</b> module of the <b>HeatTransfer</b> package. The correlation used is ground_ASHRAE.
     </p>
+
+    <h4>Radiation</h4>
     
     <p>
       The radiative heat transfer is computed using the <b>CarrollRadiation</b> module.
     </p>
 
+    <h4>Boiling</h4>
+    
     <p>
-      The heat exchanged from radiation, convection and evapo-condensation is transfered via the <b>heatPort_a</b>. The <b>fluidPort</b>_a is just used to transfer mass from the liquid to the atmosphere for evaporation and the vice versa for condensation. It does not transport energy.
+      The boiling is modelled by an homogeneneous formation of bubbles of equal diameter (no coalescence, no growth, no collapse) that would be formed in the liquid node and that escape by the interface. </br> 
+      The bubble formation rate is deduced from the fraction of gas itself deduced from the liquid node specific enthalpy, the bubble and dew specific enthalpy:
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_Interface_liq_gas1.PNG\"
+    />
+
+    <p>
+      The diameter of bubble is computed from the amount of gas, from an arbitrary number density of bubble (number of bubble per cubic meter of liquid) and from the knowledge of the state of the liquid node connected to the interface. By default <code>n_bubbles = 150e6 m<sup><code>-3</code></sup></code>
+    </p>
+    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_Interface_liq_gas2.PNG\"
+    />
+    
+    <p>
+      The velocity of bubbles is computed from the steady balance between the buoyancy force and the friction force. The weight of the bubble in neglected and the density term of liquid phase regarding the density of the gas phase in neglected in the buoyancy force claculation. The flow regime considered for the friction is laminar and the bubbles are assimilated to spheres. 
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_Interface_liq_gas3.PNG\"
+    />
+    
+    <p>
+      The boiling mass flow rate derives from the surface aera of the interface corrected by the ratio between the volume of bubbles and the total volume of the liquid node connected to the interface module. 
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_Interface_liq_gas4.PNG\"
+    />
+
+    <p>
+      <b>Where:</b>
+      <ul>
+        <li> <code>Xg</code> is ratio between the mass of bubble (<code>m<sub><code>bubble</code></sub></code>) in the liquid node connected to the interface and the total mass (<code>m</code>) of the liquid node </li>
+        <li> <code>h</code> is the specific enthalpy of the liquid node connected to the interface, <code>h_bubble</code> and <code>h_dew</code> being its respectively the saturated liquid and gas specific enthalpy </li>
+        <li> <code>d_sat</code> is the density of bubble</li>
+        <li> <code>V</code> is the volume of the liquid node connected to the interface</li>        
+        <li> <code>n_bubbles</code> is the number density (number/m3) of bubbles in the liquid node </li>
+        <li> <code>d_bubble</code> is the diameter of a bubble </li>
+        <li> <code>d</code> is the total density of the liquid node connected to the interface </li> 
+        <li> <code>Vel</code> is the ascending velocity of bubble </li> 
+        <li> <code>μ</code> is dynamic viscosity of the liquid node connected to the interface </li>
+        <li> <code>g</code> is gravitationnal acceleration </li>
+        <li> <code>m_flow</code> is the mass flow rate of leaving bubble </li>
+        <li> <code>A</code> is the surface area of the interface </li>      
+      </ul>	
+    </p>    
+     
+       
+    <h4>Port heat and mass flows</h4>
+    
+    <p>
+      The heat exchanged from radiation, convection, evapo-condensation and boiling is transfered via the <b>heatPort_a</b>. The <b>fluidPort</b>_a is just used to transfer mass from the liquid to the atmosphere for evaporation and the vice versa for condensation. It is not used to transport energy.
     </p>    	
   </body>
 </html>"),
