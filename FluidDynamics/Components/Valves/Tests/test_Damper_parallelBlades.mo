@@ -1,6 +1,6 @@
 within TAeZoSysPro.FluidDynamics.Components.Valves.Tests;
 
-model test_Damper
+model test_Damper_parallelBlades
 
   TAeZoSysPro.FluidDynamics.Components.Valves.Damper_parallelBlades damper(redeclare package Medium = Modelica.Media.Air.SimpleAir, CvData = Modelica.Fluid.Types.CvTypes.Kv, Kv = 106.73, allowFlowReversal = true, dp_nominal = 100000, m_flow_nominal = 1, m_flow_small = 1e-3, p_nominal = 201325, rho_nominal = 1.204, show_T = false, show_V_flow = false)  annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
@@ -18,4 +18,4 @@ equation
   connect(damper.port_b, sink.ports[1]) annotation(
     Line(points = {{20, 0}, {60, 0}, {60, 0}, {60, 0}}, color = {0, 127, 255}));
 
-end test_Damper;
+end test_Damper_parallelBlades;
