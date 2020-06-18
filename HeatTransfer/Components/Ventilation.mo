@@ -2,10 +2,8 @@ within TAeZoSysPro.HeatTransfer.Components;
 
 model Ventilation
   replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT "Medium in the component";
-  
   // User defined parameters
   parameter Boolean Use_External_MassFlow = false;
-  
   // Internal variables
   Modelica.SIunits.SpecificHeatCapacity cp "Mean specific heat capacity" ;
   Modelica.SIunits.Density d ;
@@ -38,8 +36,8 @@ equation
 
   port_b.Q_flow = m_flow * cp * (port_b.T - port_a.T) ;
   der(E) = port_b.Q_flow ; 
-   
-// ports handover
+  
+  // ports handover
   port_a.Q_flow = 0;
   
   annotation(
