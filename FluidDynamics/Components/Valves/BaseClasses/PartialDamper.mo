@@ -44,9 +44,7 @@ model PartialDamper "Base model for dampers"
 // *** General ***
   parameter Modelica.Fluid.Types.CvTypes CvData=Modelica.Fluid.Types.CvTypes.OpPoint "Selection of flow coefficient" annotation(
   Dialog(group = "Flow Coefficient"));
-  parameter SI.Area Av(
-    fixed= CvData == Modelica.Fluid.Types.CvTypes.Av,
-    start=m_flow_nominal/(sqrt(rho_nominal*dp_nominal))*valveCharacteristic(opening_nominal)) "Av (metric) flow coefficient" annotation(
+  parameter SI.Area A = 0 "Damper cross section surface area" annotation(
     Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Av)));
   parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]" annotation(
   Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Kv)));
@@ -54,7 +52,7 @@ model PartialDamper "Base model for dampers"
   Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Cv)));
   parameter SI.Pressure dp_nominal "Nominal pressure drop" annotation(
   Dialog(group="Nominal operating point"));
-  parameter Medium.MassFlowRate m_flow_nominal "Nominal mass flowrate" annotation(
+  parameter Medium.MassFlowRate m_flow_nominal "Nominal mass flow rate" annotation(
   Dialog(group="Nominal operating point"));
   parameter Medium.Density rho_nominal=Medium.density_pTX(Medium.p_default, Medium.T_default, Medium.X_default) "Nominal inlet density" annotation(
   Dialog(group="Nominal operating point", enable = (CvData==Modelica.Fluid.Types.CvTypes.OpPoint)));
@@ -89,8 +87,6 @@ model PartialDamper "Base model for dampers"
                   Medium.temperature(Medium.setState_phX(port_b.p, port_b.h_outflow, port_b.Xi_outflow)),
                   m_flow_small) if show_T
       "Temperature close to port_b, if show_T = true";
-  constant SI.Area Kv2Av = 27.7e-6 "Conversion factor";
-  constant SI.Area Cv2Av = 24.0e-6 "Conversion factor";
   
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPort_a port_a(
@@ -112,14 +108,19 @@ model PartialDamper "Base model for dampers"
   protected
   Medium.ThermodynamicState state_a "state for medium inflowing through port_a";
   Medium.ThermodynamicState state_b "state for medium inflowing through port_b";
-protected
   parameter SI.Pressure dp_small=1e-2 "Regularisation of zero flow" annotation(Dialog(tab="Advanced"));
+  constant Real N6 = 31.6 "N6 constant of the ISA-75.01.01-2007 standard";
+  parameter SI.Area Av(fixed = false) ;
+
 initial equation
   if CvData == CvTypes.Kv then
-    Av = Kv*Kv2Av "Unit conversion";
+    Av = Kv * N6 / 3600 / sqrt(1e5) "Unit conversion";
   elseif CvData == CvTypes.Cv then
-    Av = Cv*Cv2Av "Unit conversion";
+    Av = Cv * 0.865 * N6 "Unit conversion";
+  elseif CvData == CvTypes.Av then
+    Av = A * sqrt(2) "Root of 2 is added to compensate for its lack in head expression V_flow = f(head)";    
   end if;
+
 
 equation
   // medium states
@@ -148,84 +149,95 @@ equation
   port_b.h_outflow = inStream(port_a.h_outflow);
  
   annotation (
-    Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(extent = {{-80, 80}, {80, -80}})}),
+    Icon(graphics = {Rectangle(extent = {{-80, 80}, {80, -80}})}),
     Documentation(info="<html>
-<p>This is the base model for the <code>ValveIncompressible</code>, <code>ValveVaporizing</code>, and <code>ValveCompressible</code> valve models. The model is based on the IEC 534 / ISA S.75 standards for valve sizing.</p>
-<p>The model optionally supports reverse flow conditions (assuming symmetrical behaviour) or check valve operation, and has been suitably regularized, compared to the equations in the standard, in order to avoid numerical singularities around zero pressure drop operating conditions.</p>
-<p>The model assumes adiabatic operation (no heat losses to the ambient); changes in kinetic energy
-from inlet to outlet are neglected in the energy balance.</p>
-<p><strong>Modelling options</strong></p>
-<p>The following options are available to specify the valve flow coefficient in fully open conditions:</p>
-<ul><li><code>CvData = Modelica.Fluid.Types.CvTypes.Av</code>: the flow coefficient is given by the metric <code>Av</code> coefficient (m^2).</li>
-<li><code>CvData = Modelica.Fluid.Types.CvTypes.Kv</code>: the flow coefficient is given by the metric <code>Kv</code> coefficient (m^3/h).</li>
-<li><code>CvData = Modelica.Fluid.Types.CvTypes.Cv</code>: the flow coefficient is given by the US <code>Cv</code> coefficient (USG/min).</li>
-<li><code>CvData = Modelica.Fluid.Types.CvTypes.OpPoint</code>: the flow is computed from the nominal operating point specified by <code>p_nominal</code>, <code>dp_nominal</code>, <code>m_flow_nominal</code>, <code>rho_nominal</code>, <code>opening_nominal</code>.</li>
-</ul>
-<p>The nominal pressure drop <code>dp_nominal</code> must always be specified; to avoid numerical singularities, the flow characteristic is modified for pressure drops less than <code>b*dp_nominal</code> (the default value is 1% of the nominal pressure drop). Increase this parameter if numerical problems occur in valves with very low pressure drops.</p>
-<p>If <code>checkValve</code> is true, then the flow is stopped when the outlet pressure is higher than the inlet pressure; otherwise, reverse flow takes place. Use this option only when needed, as it increases the numerical complexity of the problem.</p>
-<p>The valve opening characteristic <code>valveCharacteristic</code>, linear by default, can be replaced by any user-defined function. Quadratic and equal percentage with customizable rangeability are already provided by the library. The characteristics for constant port_a.p and port_b.p pressures with continuously changing opening are shown in the next two figures:
-</p>
+  <p>
+    This is the base model for <code>Damper_parallelBlades</code> and <code>Damper_opposedBlades</code> strongly inspired from the PartialValve of Modelica Standard Library (MSL). 
+    The model is based on the IEC 534 / ISA-75.01.01-2007 standard for valve sizing.
+  </p>
 
-<blockquote>
-<img src=\"modelica://Modelica/Resources/Images/Fluid/Components/ValveCharacteristics1a.png\"
- alt=\"ValveCharacteristics1a.png\"><br>
-<img src=\"modelica://Modelica/Resources/Images/Fluid/Components/ValveCharacteristics1b.png\"
- alt=\"Components/ValveCharacteristics1b.png\">
-</blockquote>
+  <p>
+    The model optionally supports reverse flow conditions (assuming symmetrical behaviour) or check valve operation, and has been suitably regularized, compared to the equations in the standard, in order to avoid numerical singularities around zero pressure drop operating conditions.
+  </p>
+  
+  <p>
+    The model assumes adiabatic operation (no heat losses to the ambient); changes in kinetic energy
+from inlet to outlet are neglected in the energy balance.
+  </p>
+  
+  <p>
+    <strong>Modelling options</strong>
+  </p>
+  
+  <p>
+    The following options are available to specify the valve flow coefficient in fully open conditions:
+  </p>
+  
+  <ul>
+    <li><code>CvData = Modelica.Fluid.Types.CvTypes.Av</code>: The cross section surface area is given by the metric <code>A</code> coefficient (m^2).</li>
+    <li><code>CvData = Modelica.Fluid.Types.CvTypes.Kv</code>: the flow coefficient is given by the metric <code>Kv</code> coefficient (m^3/h).</li>
+    <li><code>CvData = Modelica.Fluid.Types.CvTypes.Cv</code>: the flow coefficient is given by the US <code>Cv</code> coefficient (USG/min).</li>
+    <li><code>CvData = Modelica.Fluid.Types.CvTypes.OpPoint</code>: the flow is computed from the nominal operating point specified by <code>p_nominal</code>, <code>dp_nominal</code>, <code>m_flow_nominal</code>, <code>rho_nominal</code>, <code>opening_nominal</code>.</li>
+  </ul>
+  
+  <p>
+    The nominal conditions (mainly pressure drop <code>dp_nominal</code> and mass flow rate <code>m_flow_nominal</code>) must always be specified;
+  </p>
+  
+  <ul>
+    <li> To avoid numerical singularities, the flow characteristic is modified for pressure drops less than <code>dp_small</code>. 
+         The default for <code>dp_small</code> is 1% of the nominal pressure drop <code>dp_nominal</code>.  
+         Increase <code>dp_small</code> if numerical problems occur in dampers with very low pressure drops</li></li>
+    <li> To be used a guess values. Moreover the homotopy operator used <code>dp_nominal</code> and <code>m_flow_nominal</code> to compute the flow with the 'simplified' solution.
+  </ul>      
+    
+  <p>
+    If <code>checkValve</code> is true, then the flow is stopped when the outlet pressure is higher than the inlet pressure; otherwise, reverse flow takes place. 
+    Use this option only when needed, as it increases the numerical complexity of the problem.
+  </p>
+  
+  <p>
+    The valve opening characteristic <code>valveCharacteristic</code>, linear by default, can be replaced by any user-defined function available in the <code>ValveCharacteristics</code> package. 
+    Functions provides by the Modelica Standard Library (MSL) are compatible.
+    The characteristics for constant port_a.p and port_b.p pressures with continuously changing opening are shown in the next two figures:
+  </p>
 
-<p>
-The treatment of parameters <strong>Kv</strong> and <strong>Cv</strong> is
-explained in detail in the
-<a href=\"modelica://Modelica.Fluid.UsersGuide.ComponentDefinition.ValveCharacteristics\">User's Guide</a>.
-</p>
+  <img 
+    src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Valves/BaseClasses/FIG_PartialDamper.png\"
+    alt=\"ValveCharacteristics.png\"><br>
 
-<p>
-With the optional parameter \"filteredOpening\", the opening can be filtered with a
-<strong>second order, criticalDamping</strong> filter so that the
-opening demand is delayed by parameter \"riseTime\". The filtered opening is then available
-via the output signal \"opening_filtered\" and is used to control the valve equations.
-This approach approximates the driving device of a valve. The \"riseTime\" parameter
-is used to compute the cut-off frequency of the filter by the equation: f_cut = 5/(2*pi*riseTime).
-It defines the time that is needed until opening_filtered reaches 99.6 % of
-a step input of opening. The icon of a valve changes in the following way
-(left image: filteredOpening=false, right image: filteredOpening=true):
-</p>
+  <p>
+    The treatment of parameters <b>Kv</b> and <b>Cv</b> slightly differs from the explaination detailled in the <a href=\"modelica://Modelica.Fluid.UsersGuide.ComponentDefinition.ValveCharacteristics\">User's Guide</a> and derives more from the standard.
+  </p>
 
-<blockquote>
-<img src=\"modelica://Modelica/Resources/Images/Fluid/Components/FilteredValveIcon.png\"
- alt=\"FilteredValveIcon.png\">
-</blockquote>
+  <img 
+    src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Valves/BaseClasses/EQ_PartialDamper1.png\" ><br>
 
-<p>
-If \"filteredOpening = <strong>true</strong>\", the input signal \"opening\" is limited
-by parameter <strong>leakageOpening</strong>, i.e., if \"opening\" becomes smaller as
-\"leakageOpening\", then \"leakageOpening\" is used instead of \"opening\" as input
-for the filter. The reason is that \"opening=0\" might structurally change the equations of the
-fluid network leading to a singularity. If a small leakage flow is introduced
-(which is often anyway present in reality), the singularity might be avoided.
-</p>
+  <p>
+    In the above equation, <code>m_flow</code> and <code>p</code> unit are respectively in m3/h and bar. 
+  </p>
+   
+  <img 
+    src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Valves/BaseClasses/EQ_PartialDamper2.png\" ><br>
+    
+  <img 
+    src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Valves/BaseClasses/EQ_PartialDamper3.png\" ><br>
+    
+  <img 
+    src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Valves/BaseClasses/EQ_PartialDamper4.png\" ><br>
 
-<p>
-In the next figure, \"opening\" and \"filtered_opening\" are shown in the case that
-filteredOpening = <strong>true</strong>, riseTime = 1 s, and leakageOpening = 0.02.
-</p>
+  <p>	
+    <b>Where</b>:
+    <ul>
+      <li> m_flow is the mass flow rate in m3/h </li>
+      <li> <code>Y</code> is the expansion factor as defined in the standard </li> 
+      <li> <code>x</code> is the ratio of pressure differential to upstream absolute pressure (dp /p) </li> 
+      <li> <code>Fγ</code> is the Specific heat ratio factor (γ/1.4) </li>        
+      <li> <code>d</code> is the upstream density </li>
+      <li> <code>N6</code> is a constant depending of the chosen coefficient Kv or Cv </li>              
+    </ul>				
+  </p>
 
-<blockquote>
-<img src=\"modelica://Modelica/Resources/Images/Fluid/Components/ValveFilteredOpening.png\"
- alt=\"ValveFilteredOpening.png\">
-</blockquote>
-
-</html>", revisions="<html>
-<ul>
-<li><em>Sept. 5, 2010</em>
-by <a href=\"mailto:martin.otter@dlr.de\">Martin Otter</a>:<br>
-Optional filtering of opening introduced, based on a proposal
-from Mike Barth (Universitaet der Bundeswehr Hamburg) +
-Documentation improved.</li>
-<li><em>2 Nov 2005</em>
-by <a href=\"mailto:francesco.casella@polimi.it\">Francesco Casella</a>:<br>
-   Adapted from the ThermoPower library.</li>
-</ul>
 </html>"));
 
 end PartialDamper;
