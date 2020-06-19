@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Components.Valves.Tests;
 
 model test_Damper_parallelBlades
 
-  TAeZoSysPro.FluidDynamics.Components.Valves.Damper_parallelBlades damper(redeclare package Medium = Modelica.Media.Air.SimpleAir, CvData = Modelica.Fluid.Types.CvTypes.Kv, Kv = 106.73, allowFlowReversal = true, dp_nominal = 100000, m_flow_nominal = 1, m_flow_small = 1e-3, p_nominal = 201325, rho_nominal = 1.204, show_T = false, show_V_flow = false)  annotation(
+  TAeZoSysPro.FluidDynamics.Components.Valves.Damper_parallelBlades damper(redeclare package Medium = Modelica.Media.Air.SimpleAir, CvData = Modelica.Fluid.Types.CvTypes.Kv, Kv = 106.73, allowFlowReversal = true, dp_nominal = 100000, dp_small(displayUnit = "Pa"), m_flow_nominal = 1, m_flow_small = 1e-3, p_nominal = 201325, rho_nominal = 2.3, show_T = false, show_V_flow = false)  annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Fluid.Sources.FixedBoundary source(redeclare package Medium = Modelica.Media.Air.SimpleAir, T = 277.15, nPorts = 1, p = 101325 + 1e5)  annotation(
     Placement(visible = true, transformation(origin = {-80, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
