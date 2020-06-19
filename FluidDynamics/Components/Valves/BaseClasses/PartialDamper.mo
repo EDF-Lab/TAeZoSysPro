@@ -28,6 +28,8 @@ model PartialDamper "Base model for dampers"
   parameter Medium.MassFlowRate m_flow_start = m_flow_nominal
       "Guess value of m_flow = port_a.m_flow"
     annotation(Dialog(tab = "Advanced"));
+  parameter SI.Pressure dp_small=0.01*dp_nominal "Regularisation of zero flow" 
+    annotation(Dialog(tab="Advanced"));
   // Note: value of m_flow_small shall be refined by derived model, basing on local m_flow_nominal
   parameter Medium.MassFlowRate m_flow_small = 0.0
       "Small mass flow rate for regularization of zero flow"
@@ -108,7 +110,6 @@ model PartialDamper "Base model for dampers"
   protected
   Medium.ThermodynamicState state_a "state for medium inflowing through port_a";
   Medium.ThermodynamicState state_b "state for medium inflowing through port_b";
-  parameter SI.Pressure dp_small=1e-2 "Regularisation of zero flow" annotation(Dialog(tab="Advanced"));
   constant Real N6 = 31.6 "N6 constant of the ISA-75.01.01-2007 standard";
   parameter SI.Area Av(fixed = false) ;
 
