@@ -90,8 +90,8 @@ equation
   TA_in = MediumA.temperature(stateA_in);
   TB_in = MediumB.temperature(stateB_in);
 //momentum - steady assumptions
-  m_flowA = CrossSectionA * TAeZoSysPro.Aeraulic.Functions.regRoot2(x = port_in_A.p - port_out_A.p, x_small = 10, k1 = 2 * MediumA.density(stateA_in) / ksi_fixedA, k2 = 2 * MediumA.density(stateA_in) / ksi_fixedA);
-  m_flowB = CrossSectionB * TAeZoSysPro.Aeraulic.Functions.regRoot2(x = port_in_B.p - port_out_B.p, x_small = 10, k1 = 2 * MediumB.density(stateB_in) / ksi_fixedB, k2 = 2 * MediumB.density(stateB_in) / ksi_fixedB);
+  m_flowA = CrossSectionA * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(x = port_in_A.p - port_out_A.p, x_small = 10, k1 = 2 * MediumA.density(stateA_in) / ksi_fixedA, k2 = 2 * MediumA.density(stateA_in) / ksi_fixedA);
+  m_flowB = CrossSectionB * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(x = port_in_B.p - port_out_B.p, x_small = 10, k1 = 2 * MediumB.density(stateB_in) / ksi_fixedB, k2 = 2 * MediumB.density(stateB_in) / ksi_fixedB);
 /*---------- Calculation of a fully dry exchanger ----------*/
   Cr_1 = min(QcA, QcB) / max(max(QcA, QcB), 1e3 * Modelica.Constants.small);
   NTU_1 = K_global * ExchangeSurface / max(min(QcA, QcB), 1e3 * Modelica.Constants.small);
@@ -102,11 +102,11 @@ equation
 /*---------- Calculation of the sensible part for condensation configuration ----------*/
 // Compute the saturation temperature of the moist air
   p_water / port_in_A.p = stateA_in.X[MediumA.Water] * Modelica.Constants.R / MediumA.MMX[MediumA.Water] / MediumA.gasConstant(stateA_in);
-  Tdew = TAeZoSysPro.Aeraulic.Functions.regStep(x = p_water - 625, x_small = 5.0, y1 = Modelica.Media.Water.WaterIF97_base.saturationTemperature(max(620, p_water)), y2 = 273.15 + 0.1);
+  Tdew = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = p_water - 625, x_small = 5.0, y1 = Modelica.Media.Water.WaterIF97_base.saturationTemperature(max(620, p_water)), y2 = 273.15 + 0.1);
 // Determination of which the temperature of the gas corresponds to the dew temperature of the external surface knowing the thermal resistance
   hcv_A * (TA_mid_buffer - Tdew) = K_global * (TA_mid_buffer - TB_mid_2);
 //TA_mid_2 = min(TA_mid_buffer, TA_in) ;
-  TA_mid_2 = TAeZoSysPro.Aeraulic.Functions.regStep(x = TA_in - TA_mid_buffer - 0.01, x_small = 0.01, y1 = TA_mid_buffer, y2 = TA_in);
+  TA_mid_2 = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = TA_in - TA_mid_buffer - 0.01, x_small = 0.01, y1 = TA_mid_buffer, y2 = TA_in);
   QcA * (TA_mid_2 - TA_in) + QcB * (TB_out_2 - TB_mid_2) = 0.0;
 // Determination of the dry surface necessary for  the surface temperature to achieve the dew temperature
   NTU_2 = K_global * S_sensible / max(min(QcA, QcB), 1e3 * Modelica.Constants.small);
@@ -136,7 +136,7 @@ equation
 //
   NTU_wet = (cpA / hcv_B + cp_eq / hcv_A) ^ (-1) * S_wet / min(m_flowA, m_flow_eq);
 //
-  Eff_wet = TAeZoSysPro.Aeraulic.Functions.regStep(x = 0.98 - Cr_wet, x_small = 1.0e-2, y1 = (1.0 - exp(-NTU_wet * (1.0 - Cr_wet))) / (1.0 - Cr_wet * exp(-NTU_wet * (1.0 - Cr_wet))), y2 = NTU_wet / (NTU_wet + 1.0));
+  Eff_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = 0.98 - Cr_wet, x_small = 1.0e-2, y1 = (1.0 - exp(-NTU_wet * (1.0 - Cr_wet))) / (1.0 - Cr_wet * exp(-NTU_wet * (1.0 - Cr_wet))), y2 = NTU_wet / (NTU_wet + 1.0));
   Eff_wet = m_flowA / min(m_flowA, m_flow_eq) * (hA_mid_2 - hA_out_2) / (hA_mid_2 - hsat_eq_in);
 //
   Q_flow_wet_2 = m_flowA * stateA_in.X[MediumA.Air] * (hA_out_2 - hA_mid_2);
@@ -150,9 +150,9 @@ equation
 //hcv_A * (TA_out_2 - Tsat_out) + hcv_A / cpA * (wA_out_2 - wsat_eq_in) * Ll = hcv_B * (Tsat_out - TB_in) ;
   wA_out_2 = wsat_out;
 //retained configuration
-  TA_out = TAeZoSysPro.Aeraulic.Functions.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = TA_out_2, y2 = TA_out_1);
-  Q_flow_dry = TAeZoSysPro.Aeraulic.Functions.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_dry_2, y2 = Pex_1);
-  Q_flow_wet = TAeZoSysPro.Aeraulic.Functions.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_wet_2, y2 = 0.0);
+  TA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = TA_out_2, y2 = TA_out_1);
+  Q_flow_dry = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_dry_2, y2 = Pex_1);
+  Q_flow_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_wet_2, y2 = 0.0);
   Pex = Q_flow_dry + Q_flow_wet;
   QcB * (TB_out - TB_in) + Pex = 0.0;
 // ports handover
