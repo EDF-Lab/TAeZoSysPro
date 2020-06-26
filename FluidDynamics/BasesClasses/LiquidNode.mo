@@ -1,16 +1,14 @@
 within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model LiquidNode
-// additionnal package
+  // additionnal package
   import Modelica.Fluid.Types;
   import Modelica.Fluid.Types.Dynamics;
   import SI = Modelica.SIunits;
-  
-// Medium declaration
+  // Medium declaration
   replaceable package Medium = Modelica.Media.Water.WaterIF97_ph;
   Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
-  
-//User defined parameters
+  //User defined parameters
   // Assumptions
   parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation(
     Dialog(tab = "Assumptions", group = "Dynamics"));
@@ -26,6 +24,11 @@ model LiquidNode
   parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation(
     Dialog(tab = "Initialization"));
   parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default ;
+  parameter Modelica.SIunits.NumberDensityOfMolecules n_bubbles = 150 * 1e6 "Number density of bubble in node" ;
+  parameter SI.Area A = 0 "Interface surface Area" annotation(
+    Dialog(group = "Geometrical properties"));
+  parameter SI.Volume V_start = 0 "Initial volume" annotation(
+    Dialog(group = "Geometrical properties"));
   //
   parameter Integer nPorts = 1 "Number of fluidport" annotation(
     Dialog(connectorSizing = true));
@@ -34,14 +37,20 @@ model LiquidNode
   SI.Enthalpy H "Medium enthalpy";
   SI.SpecificEnthalpy h_bubble "Medium specific enthalpy at bubble point ";
   SI.SpecificEnthalpy h_dew "Medium specific enthalpy at dew point ";
-  //
+  SI.SpecificEnthalpy h "Medium specific enthalpy";  
+//
   SI.Mass m "Medium mass";
   SI.Mass mXi[Medium.nXi] "Masses of independent components in the fluid";
+  SI.MassFraction Xg "Medium mass fraction of gas";
   SI.Mass[Medium.nC] mC "Masses of trace substances in the fluid";
   SI.Volume V;
-  // C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
+  SI.Velocity Vel "Velocity of bubble";
+  SI.Diameter d_bubble "Diameter of bubble";
+  SI.Density d_sat "Density of bubble";  
+// C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
   Medium.ExtraProperty C[Medium.nC] "Trace substance mixture content";
   //
+  SI.MassFlowRate m_flow_bubble "Mass flow of leaving bubble";  
   SI.MassFlowRate mb_flow "Mass flows across boundaries";
   SI.MassFlowRate[Medium.nXi] mbXi_flow "Substance mass flows across boundaries";
   Medium.MassFlowRate ports_mXi_flow[nPorts, Medium.nXi];
@@ -49,12 +58,13 @@ model LiquidNode
   SI.EnthalpyFlowRate Hb_flow "Enthalpy flow across boundaries or energy source/sink";
   SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
   //
-  
-// Imported modules
+  // Imported modules
   Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts] annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
-    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b flowPort_b(redeclare package Medium = Modelica.Media.Air.MoistAir) annotation(
+    Placement(visible = true, transformation(origin = {-12, 84}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-24, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
   Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
@@ -68,12 +78,8 @@ initial equation
   elseif energyDynamics == Dynamics.SteadyStateInitial then
     der(medium.T) = 0;
   end if;
-//Mass
-  if massDynamics == Dynamics.FixedInitial then
-    medium.p = p_start;
-  elseif massDynamics == Dynamics.SteadyStateInitial then
-    der(medium.p) = 0;
-  end if;
+
+  m = V_start * medium.d ;
 //Substances
   if substanceDynamics == Dynamics.FixedInitial then
     medium.Xi = X_start[1:Medium.nXi];
@@ -86,19 +92,28 @@ initial equation
   elseif traceDynamics == Dynamics.SteadyStateInitial then
     der(mC_scaled) = zeros(Medium.nC);
   end if;
-
 equation
   medium.p = 101325 ;
-  
 // Saturation properties
   h_bubble = Medium.bubbleEnthalpy(medium.sat);
   h_dew = Medium.dewEnthalpy(medium.sat);
-
 // Total quantities
   m = V * medium.d;
   mXi = m * medium.Xi;
   H = m * medium.h;
   mC = m * C;
+// Boiling
+  h = medium.h;
+  h_dew * Xg + (1 - Xg) * h_bubble = h;
+  d_sat = Medium.dewDensity(medium.sat) ;
+//
+  Modelica.Constants.pi * d_bubble ^ 3 / 6 = max(Xg, 0.0) * medium.d / d_sat / n_bubbles;
+// quasi static flow: viscous friction force( Stocke's law) + bouyancy force = 0
+  Vel = Modelica.Constants.g_n * d_bubble ^ 2 / (18 * Medium.dynamicViscosity(Medium.setDewState(medium.sat)));
+  m_flow_bubble = Vel * A * (n_bubbles * Modelica.Constants.pi / 6 * d_bubble ^ 3) * d_sat;
+  flowPort_b.H_flow = -m_flow_bubble * h_dew ; 
+  flowPort_b.m_flow[1] = -m_flow_bubble ;
+  flowPort_b.m_flow[2] = 0.0 ;
   
 // Boundary flow quantities
   for i in 1:nPorts loop
@@ -109,25 +124,22 @@ equation
     mbXi_flow[j] = sum(ports_mXi_flow[:, j]);
   end for;
   
-  mb_flow = sum(fluidPort.m_flow);
+  mb_flow = sum(fluidPort.m_flow) - m_flow_bubble  ;
   Qb_flow = heatPort.Q_flow;
-  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow));
-
+  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - m_flow_bubble * h_dew ;
 // Balance equations
-  // Energy
+// Energy
   if energyDynamics == Dynamics.SteadyState then
     0 = Hb_flow + Qb_flow;
   else
     der(H) = Hb_flow + Qb_flow;
   end if;
-  
-  // Mass
+// Mass
   if massDynamics == Dynamics.SteadyState then
     0 = mb_flow;
   else
     der(m) = mb_flow;
   end if;
-  
 // Independant masses
   if substanceDynamics == Dynamics.SteadyState then
     zeros(Medium.nXi) = mbXi_flow;
