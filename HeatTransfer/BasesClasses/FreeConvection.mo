@@ -43,7 +43,7 @@ equation
   T_mean = (port_a.T + port_b.T) / 2 "port_a and port_b are defined in Element1D";
   state = Medium.setState_pTX(p = Medium.reference_p, T = T_mean);
 // Thermodynamic properties calculation
-  d = state.d;
+  d = Medium.density(state);
   mu = Medium.dynamicViscosity(state);
   cp = Medium.specificHeatCapacityCp(state);
   k = Medium.thermalConductivity(state);
