@@ -124,7 +124,7 @@ equation
   flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * h_dew ;
   flowPort_b.m_flow[Medium.Water] = -m_flow_evap - m_flow_bubble ;
   flowPort_b.m_flow[Medium.Air] = 0.0;
-  fluidPort_a.m_flow = m_flow_evap - m_flow_bubble  ;
+  fluidPort_a.m_flow = m_flow_evap + m_flow_bubble  ;
   fluidPort_a.h_outflow = inStream(fluidPort_a.h_outflow);
   fluidPort_a.Xi_outflow = inStream(fluidPort_a.Xi_outflow);
   fluidPort_a.C_outflow = inStream(fluidPort_a.C_outflow);
