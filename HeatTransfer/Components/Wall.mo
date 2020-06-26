@@ -41,7 +41,7 @@ model Wall
   parameter Modelica.SIunits.ThermalConductivity k = 0 "Wall conductivity" annotation(
   Dialog(group="Thermal properties"));
   
-  parameter Real add_on_conv(unit = "R+") = 1 "Custom add-on" annotation(
+  parameter Real add_on_conv = 1 "Custom add-on" annotation(
     Dialog(group = "Convection properties"));
   parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation_a = Correlations.vertical_plate_ASHRAE "free convection Correlation" annotation(
     Dialog(group = "Convection properties"));
@@ -65,7 +65,7 @@ model Wall
     Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps_b = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
-  parameter Real add_on_rad(unit = "R+") = 1 "Custom add-on" annotation(
+  parameter Real add_on_rad = 1 "Custom add-on" annotation(
     Dialog(group = "Radiative properties"));
 
 // Internal variables
@@ -90,7 +90,7 @@ model Wall
     Placement(visible = true, transformation(origin = {101, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.Interfaces.HeatPort_a port_surface_a annotation(
     Placement(visible = true, transformation(origin = {-100, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-40, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_b(A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_b, h_cv_const = h_cv_const_b) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_b(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_b, h_cv_const = h_cv_const_b) annotation(
     Placement(visible = true, transformation(origin = {57, 70}, extent = {{18, -18}, {-18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation_b(A = A, add_on = add_on_rad, eps = eps_b) annotation(
     Placement(visible = true, transformation(origin = {59.5, -70.5}, extent = {{22.5, -22.5}, {-22.5, 22.5}}, rotation = 180)));

@@ -29,7 +29,7 @@ model PartialWall
       else
         MeshFunction.uniformGrid(Th, N) "position of the vertices of the mesh" ;
                 
-    parameter Real add_on(unit = "R+") = 1 "Custom add-on";
+    parameter Real add_on = 1 "Custom add-on";
     parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance";
     parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if energyDynamics = FixedInitial";
   //
