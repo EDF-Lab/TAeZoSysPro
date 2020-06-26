@@ -1,49 +1,50 @@
-within TAeZoSysPro.HeatTransfer.BasesClasses;
-
+﻿within TAeZoSysPro.HeatTransfer.BasesClasses;
 model Conduction
-  type ConductionType = enumeration(
-    Linear "linear conduction", 
-    Radial "cylindric conduction") "Enumeration defining the type of conduction";
-    
+  encapsulated type ConductionType = enumeration(
+      Linear
+           "linear conduction",
+      Radial
+           "cylindric conduction") "Enumeration defining the type of conduction";
+
   //
   extends Modelica.Thermal.HeatTransfer.Interfaces.Element1D;
-  
+
   // User defined parameters
-  parameter Real add_on(unit = "R+") = 1 "Custom add-on";
-  parameter Modelica.SIunits.ThermalConductivity k = 0 "Thermal conductivity" annotation(
+  parameter Real add_on = 1 "Custom add-on";
+  parameter Modelica.SIunits.ThermalConductivity k = 0 "Thermal conductivity" annotation (
   Dialog(group="Thermal properties"));
-  parameter ConductionType conduction = ConductionType.Linear annotation(
+  parameter ConductionType conduction = ConductionType.Linear annotation (
   Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Thickness Th = 0 "Material thickness" annotation(
+  parameter Modelica.SIunits.Thickness Th = 0 "Material thickness" annotation (
   Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Area A = 0 "Cross section (if linear conduction)" annotation(
+  parameter Modelica.SIunits.Area A = 0 "Cross section (if linear conduction)" annotation (
   Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Length L = 0 "Cylinder length (if cylindric conduction)" annotation(
+  parameter Modelica.SIunits.Length L = 0 "Cylinder length (if cylindric conduction)" annotation (
   Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Radius Ri = 0 "Internal radius(if cylindric conduction)" annotation(
+  parameter Modelica.SIunits.Radius Ri = 0 "Internal radius(if cylindric conduction)" annotation (
   Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Conversions.NonSIunits.Angle_deg Angle = 360 "Angle of cylindrical part (if cylindric conduction)" annotation(
+  parameter Modelica.SIunits.Conversions.NonSIunits.Angle_deg Angle = 360 "Angle of cylindrical part (if cylindric conduction)" annotation (
   Dialog(group="Geometrical properties"));
 
   // Internal variables
-  Modelica.SIunits.Energy E "Energy passed throught the component" ;
-  
+  Modelica.SIunits.Energy E "Energy passed throught the component";
+
 initial equation
-  E = 0.0 ;
-    
+  E = 0.0;
+
 equation
 
   if conduction == ConductionType.Radial then
     Q_flow = add_on * (Modelica.SIunits.Conversions.from_deg(Angle) * L * k) / log((Ri + Th) / Ri) * dT;
-  
+
   elseif conduction == ConductionType.Linear then
     Q_flow = add_on * k * (A / Th) * dT;
 
   end if;
-  
-  der(E) = Q_flow ;
 
-  annotation(
+  der(E) = Q_flow;
+
+  annotation (
     Documentation(info = "
 <html>
   <head>
@@ -74,11 +75,11 @@ equation
     <p>     
       The basic constitutive equation for <b>cylindric</b> conduction is :
     </p>
-    	
+            
     <img 
       alt=\"equation for cylindric conduction\"
       src=\"modelica://TAeZoSysPro/Information/HeatTransfer/BasesClasses/EQ_Conduction_cylindric.PNG\" 
-	/>
+        />
 
     <p>
       Where :
@@ -93,13 +94,13 @@ equation
         <li> Angle is the revolution angle of the cylinder (from 0 to 360° for cylindric) </li>
         <li> L is the longitudinal length of the cylinder (for cylindric) </li>   
       </ul>
-    </p>	
+    </p>        
 
   </body>
   
 </html>"),
     Diagram,
-  Icon(graphics = {Line(origin = {20, 61}, points = {{0, 19}}), Line(origin = {13, 75}, points = {{-13, 3}}), Rectangle(origin = {-3, -1}, fillColor = {156, 156, 156}, fillPattern = FillPattern.Cross, extent = {{-37, 101}, {43, -99}}), Line(origin = {-9, 78}, points = {{-47, 0}, {71, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, 0}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, -76}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
+  Icon(graphics={  Line(origin = {20, 61}, points = {{0, 19}}), Line(origin = {13, 75}, points = {{-13, 3}}), Rectangle(origin = {-3, -1}, fillColor = {156, 156, 156},
+            fillPattern =                                                                                                                                                             FillPattern.Cross, extent = {{-37, 101}, {43, -99}}), Line(origin = {-9, 78}, points = {{-47, 0}, {71, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, 0}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {2, -76}, points = {{-58, 0}, {60, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
   __OpenModelica_commandLineOptions = "");
-
 end Conduction;
