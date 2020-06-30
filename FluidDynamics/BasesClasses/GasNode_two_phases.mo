@@ -242,7 +242,7 @@ equation
     
   mb_flow = sum(fluidPort.m_flow) + sum(flowPort.m_flow) - fogModel.m_flow_fog ;
   Qb_flow = heatPort.Q_flow ;
-  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - fogModel.m_flow_fog * Medium.enthalpyOfWater(medium.T) ;
+  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - fogModel.m_flow_fog * Medium.enthalpyOfWater(medium.T)+flowPort.H_flow ;
   
 // Balance equations
   // Energy
