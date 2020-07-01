@@ -73,7 +73,7 @@ annotation(
   </p>
 
   <p>
-    The parameters of this model are explained in detail in <a href=\"modelica:// TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a> (the base model for dampers).
+    The parameters of this model are explained in detail in <a href=\"modelica://TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a> (the base model for dampers).
   </p>
 
   <p>
@@ -85,7 +85,7 @@ annotation(
   </p>
 
   <p>
-    The treatment of parameters <b>Kv</b> and <b>Cv</b> differs from the explaination in the in the <a href=\"modelica://Modelica.Fluid.UsersGuide.ComponentDefinition.ValveCharacteristics\">User's Guide</a> but is more detailed in the <a href=\"modelica:// TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a>.
+    The treatment of parameters <b>Kv</b> and <b>Cv</b> differs from the explaination in the in the <a href=\"modelica://Modelica.Fluid.UsersGuide.ComponentDefinition.ValveCharacteristics\">User's Guide</a> but is more detailed in the <a href=\"modelica://TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a>.
   </p>
   
   <p>
