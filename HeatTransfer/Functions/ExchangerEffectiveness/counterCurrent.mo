@@ -1,8 +1,7 @@
 within TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness;
+function counterCurrent
 
-function counterCurrent 
-
-  extends baseFunc ;
+  extends baseFunc;
 
 algorithm
 
@@ -10,16 +9,16 @@ algorithm
     x = 0.98 - Cr,
     x_small = 1.0e-2,
     y1 = (1.0 - exp(-NTU * (1.0 - Cr))) / (1.0 - Cr * exp(-NTU * (1.0 - Cr))),
-    y2 = NTU / (NTU + 1.0) ) ;
-    
-  annotation(
-    inverse(NTU = Inverse.NTU_counterCurrent(Eff = Eff, Cr = Cr)),
+    y2 = NTU / (NTU + 1.0));
+
+  annotation (
+    inverse(NTU = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.Inverse.NTU_counterCurrent(Eff = Eff, Cr = Cr)),
     Documentation(info = "
 <html>
   <head>
     <title>counterCurrent</title>
   </head>
-	
+        
   <body lang=\"en-UK\">
     <p>
       This functions computes the exchanger effectiveness of for counter current flows.
@@ -35,8 +34,7 @@ algorithm
       src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/ExchangerEffectiveness/EQ_counterCurrent.png\"
       width = \"500\"
     />
-		
-	</body>
-</html>")) ;
-
+                
+        </body>
+</html>"));
 end counterCurrent;

@@ -1,29 +1,28 @@
 within TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.Inverse;
-
 function NTU_counterCurrent
 
-  extends Modelica.Icons.Function ;
-  
-  input Modelica.SIunits.Efficiency Eff "Exchanger effectiveness" ;
-  input Real Cr "Ratio of thermal condutance" ;
-  output Real NTU "Number of transfer unit" ;
+  extends Modelica.Icons.Function;
+
+  input Modelica.SIunits.Efficiency Eff "Exchanger effectiveness";
+  input Real Cr "Ratio of thermal condutance";
+  output Real NTU "Number of transfer unit";
 
 algorithm
-  
+
   NTU := Modelica.Fluid.Utilities.regStep(
     x = 0.98 - Cr,
     x_small = 1.0e-2,
     y1 = (1.0 / (1.0 - Cr)) * log((1.0 - max(Eff, 0.999)*Cr) / (1.0 - Cr)),
-    y2 = Eff / (1.0 - max(Eff, 0.999)) ) ;
-    
-  annotation(
-    inverse(Eff = Inverse.counterCurrent(NTU = NTU, Cr = Cr)),
+    y2 = Eff / (1.0 - max(Eff, 0.999)));
+
+  annotation (
+    inverse(Eff = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.counterCurrent(NTU = NTU, Cr = Cr)),
     Documentation(info = "
 <html>
   <head>
     <title>NTU_counterCurrent</title>
   </head>
-	
+        
   <body lang=\"en-UK\">
     <p>
       This functions computes the Number of Transfer Units (NTU) of an exchanger for counter current flows.
@@ -42,8 +41,7 @@ algorithm
     <p>
       A threshold is applied on the value of the effectiveness <b>Eff = 0.999</b> to avoid numerical troubles such as zero divisions or infinite values.
     </p>
-		
-	</body>
-</html>")) ;
-
+                
+        </body>
+</html>"));
 end NTU_counterCurrent;
