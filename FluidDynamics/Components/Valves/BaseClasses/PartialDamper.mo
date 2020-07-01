@@ -187,7 +187,7 @@ from inlet to outlet are neglected in the energy balance.
   
   <ul>
     <li> To avoid numerical singularities, the flow characteristic is modified for pressure drops less than <code>dp_small</code>. 
-         The default for <code>dp_small</code> is 1% of the nominal pressure drop <code>dp_nominal</code>.  
+         The default value for <code>dp_small</code> is 1% of the nominal pressure drop <code>dp_nominal</code>.  
          Increase <code>dp_small</code> if numerical problems occur in dampers with very low pressure drops</li></li>
     <li> To be used a guess values. Moreover the homotopy operator used <code>dp_nominal</code> and <code>m_flow_nominal</code> to compute the flow with the 'simplified' solution.
   </ul>      
