@@ -72,6 +72,34 @@ equation
   port_b.C_outflow = inStream(port_a.C_outflow);
 
 annotation(
+    Documentation(info=
+"<html>
+  <head>
+    <title>CommissioningDamper</title>
+  </head>
+  
+  <body>
+    <p>
+      This components computes the (Metric) flow coefficient <b>Kv</b> that insures the mass flow rate <b> m_flow_nominal </b> through the damper at the initialisation. 
+    </p>
+    
+    <p>
+      The flow coefficient Kv derives from the ISA-75.01.01-2007 standard for a compressible valve sizing (see <a href=\"modelica://TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a>). 
+    </p>   
+    
+    <p>
+      The nominal conditions (mainly pressure drop <code>dp_nominal</code> and mass flow rate <code>m_flow_nominal</code>) must be specified.
+    </p>
+    
+    <ul>
+      <li> To avoid numerical singularities, the flow characteristic is modified for pressure drops less than <code>dp_small</code>. 
+           The default value for <code>dp_small</code> is 1% of the nominal pressure drop <code>dp_nominal</code>.  
+           Increase <code>dp_small</code> if numerical problems occur in dampers with very low pressure drops</li>
+      <li> To be used a guess values. Moreover the homotopy operator used <code>dp_nominal</code> and <code>m_flow_nominal</code> to compute the flow with the 'simplified' solution.
+  </ul>
+    </p>  
+  </body>
+</html>"),
     Icon(graphics = {Rectangle(extent = {{-80, 80}, {80, -80}}), Bitmap(extent = {{-60, 60}, {60, -60}}, fileName = "modelica://TAeZoSysPro/FluidDynamics/Components/Valves/setting.png")}),
     Diagram);
 
