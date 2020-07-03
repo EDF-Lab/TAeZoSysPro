@@ -59,7 +59,7 @@ model LiquidNode
   SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
   //
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts] annotation(
+  Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
     Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
