@@ -29,6 +29,8 @@ model AnalyticExchanger
   SI.SpecificHeatCapacity cp_B ;
   SI.MassFlowRate m_flowA "Mass flow rate of fluid A" ;
   SI.MassFlowRate m_flowB "Mass flow rate of fluid B" ;
+  SI.PressureDifference dp_A "fluid A pressure drop";
+  SI.PressureDifference dp_B "fluid B pressure drop";
   
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPort_a port_A_in(replaceable package Medium = MediumA) annotation(
@@ -63,12 +65,14 @@ equation
     x_small = 10, 
     k1 = 2 * MediumA.density(stateA_in) / ksi_fixedA, 
     k2 = 2 * MediumA.density(stateA_in) / ksi_fixedA);
+    dp_A = port_A_in.p - port_A_out.p;
     
   m_flowB = CrossSectionB * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
     x = port_B_in.p - port_B_out.p, 
     x_small = 10, 
     k1 = 2 * MediumB.density(stateB_in) / ksi_fixedB, 
     k2 = 2 * MediumB.density(stateB_in) / ksi_fixedB);
+    dp_B = port_B_in.p - port_B_out.p;
     
 // heat exchange properties
   h_global = heatTransferCoeff() ;
