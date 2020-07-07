@@ -10,7 +10,7 @@ package MoistAir2
     Temperature(min=190, max=647),
     ThermoStates=Modelica.Media.Interfaces.Choices.IndependentVariables.dTX,
     redeclare replaceable record ThermodynamicState =
-        Modelica.Media.Interfaces.PartialMedium.ThermodynamicState);
+      Modelica.Media.Interfaces.PartialMedium.ThermodynamicState);
 
   import Modelica.Media.IdealGases.Common.Functions;
   constant Integer Water=1
@@ -34,11 +34,11 @@ package MoistAir2
   import SI = Modelica.SIunits;
   import Modelica.SIunits;
 
-  redeclare record extends ThermodynamicState
+  redeclare record ThermodynamicState
     "ThermodynamicState record for moist air"
-    SI.Density d "Density of medium";
-    SI.Temperature T "Temperature of medium";
-    SI.MassFraction[nX] X(start=reference_X)
+    Density d "Density of medium";
+    Temperature T "Temperature of medium";
+    MassFraction[nX] X(start=reference_X)
       "Mass fractions (= (component mass)/total mass  m_i/m)";
   end ThermodynamicState;
 
@@ -109,7 +109,7 @@ required from medium model \""
 </html>"));
   end BaseProperties;
 
-  redeclare function setState_pTX
+  redeclare function extends setState_pTX
     "Return thermodynamic state as function of pressure p, temperature T and composition X"
     extends Modelica.Icons.Function;
     input AbsolutePressure p "Pressure";
@@ -1081,7 +1081,7 @@ Derivative function for <a href=\"modelica://Modelica.Media.Air.MoistAir.h_pTX\"
           refChoice=ReferenceEnthalpy.UserDefined,
           h_off=25104.684)}*X;
 
-    p1 := pressure(state);
+    p1 := state.d*(state.X[Water]*steam.R + (1-state.X[Water])*dryair.R) * state.T;
 
     h_is := h + gamma/(gamma - 1.0)*(state.T*gasConstant(state))*((p2/p1)
       ^((gamma - 1)/gamma) - 1.0);
