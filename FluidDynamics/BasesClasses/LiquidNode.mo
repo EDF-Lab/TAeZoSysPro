@@ -7,6 +7,7 @@ model LiquidNode
   import SI = Modelica.SIunits;
   // Medium declaration
   replaceable package Medium = Modelica.Media.Water.WaterIF97_ph;
+  replaceable package MediumGas = Modelica.Media.Air.MoistAir;
   Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
   //User defined parameters
   // Assumptions
@@ -63,7 +64,7 @@ model LiquidNode
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
     Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b flowPort_b(redeclare package Medium = Modelica.Media.Air.MoistAir) annotation(
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b flowPort_b(redeclare package Medium = MediumGas) annotation(
     Placement(visible = true, transformation(origin = {-12, 84}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-24, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
@@ -93,7 +94,7 @@ initial equation
     der(mC_scaled) = zeros(Medium.nC);
   end if;
 equation
-  medium.p = 101325 ;
+  medium.p = sum(flowPort_b.d ./ MediumGas.MMX) * Modelica.Constants.R * flowPort_b.T;
 // Saturation properties
   h_bubble = Medium.bubbleEnthalpy(medium.sat);
   h_dew = Medium.dewEnthalpy(medium.sat);
