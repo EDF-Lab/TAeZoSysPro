@@ -8,9 +8,9 @@ package MoistAir2
     reference_X={0.01,0.99},
     fluidConstants={Modelica.Media.IdealGases.Common.FluidData.H2O, Modelica.Media.IdealGases.Common.FluidData.N2},
     Temperature(min=190, max=647),
-    ThermoStates=Modelica.Media.Interfaces.Choices.IndependentVariables.dTX,
+    ThermoStates=Modelica.Media.Interfaces.Choices.IndependentVariables.dTX/*,
     redeclare replaceable record ThermodynamicState =
-      Modelica.Media.Interfaces.PartialMedium.ThermodynamicState);
+      Modelica.Media.Interfaces.PartialMedium.ThermodynamicState*/);
 
   import Modelica.Media.IdealGases.Common.Functions;
   constant Integer Water=1
