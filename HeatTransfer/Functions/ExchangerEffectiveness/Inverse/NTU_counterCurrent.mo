@@ -26,7 +26,7 @@ algorithm
   <body lang=\"en-UK\">
     <p>
       This functions computes the Number of Transfer Units (NTU) of an exchanger for counter current flows.
-      The function is mainly used to supplier to the solver the inverse function of the effectiveness.
+      The function is mainly used to supply to the solver the inverse function of the effectiveness.
     </p> 
     <p>
       When both flows have the same thermal capacity ( <b>Cr = 1</b> ), a zero division occurs.
