@@ -60,11 +60,14 @@ model AnalyticWetExchanger
   SI.Efficiency Eff_2, Eff_wet "Exchanger effectiveness";
   SI.Area S_sensible "Sensible surface to achieved saturation on moist air";
   SI.Area S_wet "Sensible surface to achieved saturation on moist air";
-  SI.MassFraction wsat_eq_in, wA_in, wsat_out, wA_out_2 "Moisture content peer kg of dry air";
+  SI.MassFraction wsat_eq_in, wA_in, wsat_out, wA_out_2, wA_out "Moisture content peer kg of dry air";
   SI.SpecificEnthalpy hsat_eq_in, hA_mid_2, hA_out_2, hcond_out, hA_sat_in "Enthalpies peer kg of dry air";
   SI.SpecificHeatCapacity cp_eq "Specific heat capacity of the fictive fluid";
   SI.MassFlowRate m_flow_eq "Mass flow rate of the fictive fluid";
   SI.Power Q_flow_wet, Q_flow_dry, Q_flow_wet_2, Q_flow_dry_2;
+  SI.Power P_sensible "Sensible exchanged power";
+  SI.Power P_latent "Latent exchanged power";
+  
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPort_a port_in_A(replaceable package Medium = MediumA) annotation(
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {80, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -92,6 +95,7 @@ equation
 //momentum - steady assumptions
   m_flowA = CrossSectionA * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(x = port_in_A.p - port_out_A.p, x_small = 10, k1 = 2 * MediumA.density(stateA_in) / ksi_fixedA, k2 = 2 * MediumA.density(stateA_in) / ksi_fixedA);
   m_flowB = CrossSectionB * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(x = port_in_B.p - port_out_B.p, x_small = 10, k1 = 2 * MediumB.density(stateB_in) / ksi_fixedB, k2 = 2 * MediumB.density(stateB_in) / ksi_fixedB);
+  
 /*---------- Calculation of a fully dry exchanger ----------*/
   Cr_1 = min(QcA, QcB) / max(max(QcA, QcB), 1e3 * Modelica.Constants.small);
   NTU_1 = K_global * ExchangeSurface / max(min(QcA, QcB), 1e3 * Modelica.Constants.small);
@@ -99,11 +103,12 @@ equation
   Pex_1 = Eff_1 * min(QcA, QcB) * (TA_in - TB_in);
   Pex_1 + QcA * (TA_out_1 - TA_in) = 0;
   QcA * (TA_out_1 - TA_in) + QcB * (TB_out_1 - TB_in) = 0;
+  
 /*---------- Calculation of the sensible part for condensation configuration ----------*/
 // Compute the saturation temperature of the moist air
   p_water / port_in_A.p = stateA_in.X[MediumA.Water] * Modelica.Constants.R / MediumA.MMX[MediumA.Water] / MediumA.gasConstant(stateA_in);
   Tdew = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = p_water - 625, x_small = 5.0, y1 = Modelica.Media.Water.WaterIF97_base.saturationTemperature(max(620, p_water)), y2 = 273.15 + 0.1);
-// Determination of which the temperature of the gas corresponds to the dew temperature of the external surface knowing the thermal resistance
+// Determination of the temperature of the gas which corresponds to the dew temperature of the external surface knowing the thermal resistance
   hcv_A * (TA_mid_buffer - Tdew) = K_global * (TA_mid_buffer - TB_mid_2);
 //TA_mid_2 = min(TA_mid_buffer, TA_in) ;
   TA_mid_2 = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = TA_in - TA_mid_buffer - 0.01, x_small = 0.01, y1 = TA_mid_buffer, y2 = TA_in);
@@ -148,11 +153,14 @@ equation
   hcond_out = cpA * (Tsat_out - 273.15) + wsat_out * Ll;
   wsat_out = MediumA.xsaturation_pT(p = port_out_A.p, T = Tsat_out);
 //hcv_A * (TA_out_2 - Tsat_out) + hcv_A / cpA * (wA_out_2 - wsat_eq_in) * Ll = hcv_B * (Tsat_out - TB_in) ;
-  wA_out_2 = wsat_out;
+  wA_out_2 = wsat_out/0.8 "80% of the saturation moisture content at outlet";
 //retained configuration
   TA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = TA_out_2, y2 = TA_out_1);
+  wA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = wA_out_2, y2 = wA_in);
   Q_flow_dry = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_dry_2, y2 = Pex_1);
   Q_flow_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_wet_2, y2 = 0.0);
+  P_sensible = m_flowA * cpA * (TA_out - TA_in) ;
+  P_latent = m_flowA  * stateA_in.X[MediumA.Air] * (wA_out_2-wA_in) * Ll ; 
   Pex = Q_flow_dry + Q_flow_wet;
   QcB * (TB_out - TB_in) + Pex = 0.0;
 // ports handover

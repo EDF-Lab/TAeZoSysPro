@@ -12,7 +12,7 @@ model test_AnalyticWetExchanger
     Placement(visible = true, transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(RH = 0.33, T = 308.15)  annotation(
     Placement(visible = true, transformation(origin = {-70, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Sources.MassFlowSource_T Air_source(redeclare package Medium = Modelica.Media.Air.MoistAir, T = 273.15 + 35, m_flow = 13.04, nPorts = 1) annotation(
+  Modelica.Fluid.Sources.MassFlowSource_T Air_source(redeclare package Medium = Modelica.Media.Air.MoistAir, T = 273.15 + 35, X = {0.011482, 1 - 0.011482}, m_flow = 13.04, nPorts = 1) annotation(
     Placement(visible = true, transformation(origin = {-10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(Water_source.ports[1], analyticWetExchanger.port_in_B) annotation(
