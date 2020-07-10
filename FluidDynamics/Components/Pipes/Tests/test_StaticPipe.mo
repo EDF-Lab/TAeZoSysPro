@@ -5,7 +5,7 @@ model test_StaticPipe
     Placement(visible = true, transformation(origin = {-80, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere1(nPorts = 1)  annotation(
     Placement(visible = true, transformation(origin = {80, 0}, extent = {{20, -20}, {-20, 20}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Components.Pipes.StaticPipe pipe(crossArea = 1, ksi = 10)  annotation(
+  TAeZoSysPro.FluidDynamics.Components.Pipes.StaticPipe pipe(A = 1, ksi = 10)  annotation(
     Placement(visible = true, transformation(origin = {-3.55271e-15, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
 equation
   connect(atmosphere.Fluidport[1], pipe.port_a) annotation(
