@@ -17,8 +17,8 @@ model AnalyticExchanger
   replaceable function heatTransferCoeff = ExchangerHeatTransferCoeff.user_defined ;
   
   // User defined parameters
-  parameter SI.Area CrossSectionA = 4.26 "Cross section of the pipe for the fluid A" annotation(Dialog(group="Geometrical parameters")) ; 
-  parameter SI.Area CrossSectionB = 4.26 "Cross section of the pipe for the fluid B" annotation(Dialog(group="Geometrical parameters"));
+  parameter SI.Area CrossSectionA = 1 "Cross section of the pipe for the fluid A" annotation(Dialog(group="Geometrical parameters")) ; 
+  parameter SI.Area CrossSectionB = 1 "Cross section of the pipe for the fluid B" annotation(Dialog(group="Geometrical parameters"));
   parameter Real ksi_fixedA = 1.0 annotation(Dialog(group="Flow parameters"));
   parameter Real ksi_fixedB = 1.0 annotation(Dialog(group="Flow parameters"));
   
