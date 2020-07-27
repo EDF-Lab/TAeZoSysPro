@@ -25,17 +25,18 @@ package MoistAir
       Modelica.Blocks.Sources.Ramp ramp(
         height=20,
         duration=1,
-        offset=293.15)
-        annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+        offset=293.15) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
     equation
+
       X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
       T = ramp.y;
       h = X[Air]*dryair.cp*(T-273.15) + min(X_steam, X[Water])*(steam.cp*(T-273.15) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-273.15);
       T_guess = T_phX(p=p, h=h, X=X);
+
       annotation (
-        Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-            coordinateSystem(preserveAspectRatio=false)));
+        Icon(coordinateSystem(preserveAspectRatio=false)),
+        Diagram(coordinateSystem(preserveAspectRatio=false)));
     end test_T_phX;
 
     model test_d_phX
@@ -56,6 +57,26 @@ package MoistAir
       annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
             coordinateSystem(preserveAspectRatio=false)));
     end test_d_phX;
+
+    model test_pressure
+
+      parameter Modelica.SIunits.Pressure p = 101325;
+      parameter Modelica.SIunits.Temperature T = 303.15;
+      parameter Modelica.SIunits.MassFraction X[2] = {0.03,0.97};
+      ThermodynamicState state;
+      Modelica.SIunits.SpecificEnthalpy h;
+      Modelica.SIunits.Pressure p_guess;
+      Modelica.SIunits.MassFraction X_steam;
+
+    equation
+      X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
+      h = X[Air]*dryair.cp*(T-273.15) + min(X_steam, X[Water])*(steam.cp*(T-273.15) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-273.15);
+      state =  setState_phX(p=p, h=h, X=X);
+      p_guess = pressure(state);
+
+      annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+            coordinateSystem(preserveAspectRatio=false)));
+    end test_pressure;
   end Tests;
   extends Modelica.Media.Interfaces.PartialMedium(
     redeclare replaceable record FluidConstants =
@@ -604,7 +625,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy r0 "Vaporization enthalpy";
 
   algorithm
-    r0 := water.cp * (293.15-T) + steam.h_lv + steam.cp * (T-293.15);
+    r0 := water.cp * (273.15-T) + steam.h_lv + steam.cp * (T-2973.15);
 
     annotation (
       Inline=true,
@@ -613,7 +634,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
         "<html>
         <p>Enthalpy of vaporization of water is computed from temperature.</p>
         <p>As the enthalpy is a state function, it does not depend on the transformation path.
-           Therefore, the enthalpy of vaporisation at a given temperature is computed from the enthalpy of vaporisation at 20°C corrected by the sensible enthalpy diffence between the temperature T and 20°C </p>
+           Therefore, the enthalpy of vaporisation at a given temperature is computed from the enthalpy of vaporisation at 2°C corrected by the sensible enthalpy diffence between the temperature T and 0°C </p>
       </html>"));
   end enthalpyOfVaporization;
 
@@ -833,7 +854,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - 273.15))  / ((steam.cp-water.cp)*(T - 273.15) + steam.h_lv);
     X_steam := min(X_steam, X[Water]);
     X_liquid := max(X[Water] - X_steam, 0.0);
-    MMmix := steam.MM*X_steam/(1-X_liquid) + dryair.MM*X[Air]/(1-X_liquid);
+    MMmix := (X_steam/(1-X_liquid)/steam.MM + X[Air]/(1-X_liquid)/dryair.MM)^(-1);
     d := p / (Modelica.Constants.R/MMmix*T);
     annotation (
       smoothOrder=2,
