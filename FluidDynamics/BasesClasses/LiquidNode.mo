@@ -20,14 +20,9 @@ model LiquidNode
   final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation(
     Dialog(tab = "Assumptions", group = "Dynamics"));
   // Fixed start value
-  parameter SI.AbsolutePressure p_start = 101325 "Initial absolute static pressure" annotation(
-    Dialog(tab = "Initialization"));
   parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation(
     Dialog(tab = "Initialization"));
   parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default ;
-  parameter Modelica.SIunits.NumberDensityOfMolecules n_bubbles = 150 * 1e6 "Number density of bubble in node" ;
-  parameter SI.Area A = 0 "Interface surface Area" annotation(
-    Dialog(group = "Geometrical properties"));
   parameter SI.Volume V_start = 0 "Initial volume" annotation(
     Dialog(group = "Geometrical properties"));
   //
@@ -35,23 +30,15 @@ model LiquidNode
     Dialog(connectorSizing = true));
 
 // Internal variables
-  SI.Enthalpy H "Medium enthalpy";
-  SI.SpecificEnthalpy h_bubble "Medium specific enthalpy at bubble point ";
-  SI.SpecificEnthalpy h_dew "Medium specific enthalpy at dew point ";
-  SI.SpecificEnthalpy h "Medium specific enthalpy";  
+  SI.Enthalpy H "Medium enthalpy";  
 //
   SI.Mass m "Medium mass";
   SI.Mass mXi[Medium.nXi] "Masses of independent components in the fluid";
-  SI.MassFraction Xg "Medium mass fraction of gas";
   SI.Mass[Medium.nC] mC "Masses of trace substances in the fluid";
-  SI.Volume V;
-  SI.Velocity Vel "Velocity of bubble";
-  SI.Diameter d_bubble "Diameter of bubble";
-  SI.Density d_sat "Density of bubble";  
+  SI.Volume V;  
 // C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
   Medium.ExtraProperty C[Medium.nC] "Trace substance mixture content";
   //
-  SI.MassFlowRate m_flow_bubble "Mass flow of leaving bubble";  
   SI.MassFlowRate mb_flow "Mass flows across boundaries";
   SI.MassFlowRate[Medium.nXi] mbXi_flow "Substance mass flows across boundaries";
   Medium.MassFlowRate ports_mXi_flow[nPorts, Medium.nXi];
@@ -63,10 +50,7 @@ model LiquidNode
   Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
-    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b flowPort_b(redeclare package Medium = MediumGas) annotation(
-    Placement(visible = true, transformation(origin = {-12, 84}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-24, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-
+    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 protected
   Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
   parameter Medium.ExtraProperty C_start[Medium.nC](quantity=Medium.extraPropertiesNames) = Medium.C_default;
@@ -94,27 +78,14 @@ initial equation
     der(mC_scaled) = zeros(Medium.nC);
   end if;
 equation
-  medium.p = sum(flowPort_b.d ./ MediumGas.MMX) * Modelica.Constants.R * flowPort_b.T;
-// Saturation properties
-  h_bubble = Medium.bubbleEnthalpy(medium.sat);
-  h_dew = Medium.dewEnthalpy(medium.sat);
+  
+  medium.p = fluidPort[1].p ;
+
 // Total quantities
   m = V * medium.d;
   mXi = m * medium.Xi;
   H = m * medium.h;
   mC = m * C;
-// Boiling
-  h = medium.h;
-  h_dew * Xg + (1 - Xg) * h_bubble = h;
-  d_sat = Medium.dewDensity(medium.sat) ;
-//
-  Modelica.Constants.pi * d_bubble ^ 3 / 6 = max(Xg, 0.0) * medium.d / d_sat / n_bubbles;
-// quasi static flow: viscous friction force( Stocke's law) + bouyancy force = 0
-  Vel = Modelica.Constants.g_n * d_bubble ^ 2 / (18 * Medium.dynamicViscosity(Medium.setDewState(medium.sat)));
-  m_flow_bubble = Vel * A * (n_bubbles * Modelica.Constants.pi / 6 * d_bubble ^ 3) * d_sat;
-  flowPort_b.H_flow = -m_flow_bubble * h_dew ; 
-  flowPort_b.m_flow[1] = -m_flow_bubble ;
-  flowPort_b.m_flow[2] = 0.0 ;
   
 // Boundary flow quantities
   for i in 1:nPorts loop
@@ -125,9 +96,9 @@ equation
     mbXi_flow[j] = sum(ports_mXi_flow[:, j]);
   end for;
   
-  mb_flow = sum(fluidPort.m_flow) - m_flow_bubble  ;
+  mb_flow = sum(fluidPort.m_flow)  ;
   Qb_flow = heatPort.Q_flow;
-  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - m_flow_bubble * h_dew ;
+  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) ;
 // Balance equations
 // Energy
   if energyDynamics == Dynamics.SteadyState then
