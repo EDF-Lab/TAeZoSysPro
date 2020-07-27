@@ -135,7 +135,7 @@ equation
         fillPattern = FillPattern.Sphere, 
         lineThickness = 1, 
         extent = {{-10, -10}, {10, 10}}, 
-        endAngle = 360),
+        endAngle = 360),     
       Ellipse(
         visible = not Fan,
         extent={{-80,80},{80,-80}},
