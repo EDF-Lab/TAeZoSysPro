@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Components.Filters;
 
 model Filter
   //
-  package Medium = Modelica.Media.Air.SimpleAir ;
+  replaceable package Medium = Modelica.Media.Air.SimpleAir ;
   
   // User defined parameters
   parameter Real K(unit = "m3/s/Pa") = V_flow_nominal / dp_nominal "linear pressure loss coefficient" annotation(
