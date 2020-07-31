@@ -10,7 +10,7 @@ function NTU_coCurrent
 
 algorithm
 
-  NTU := -log(1.0-Eff*(1+Eff))/(1+Eff);
+  NTU := -log(1.0-Eff*(1+Cr))/(1+Cr);
 
   annotation (
     inverse(Eff = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.counterCurrent(NTU = NTU, Cr = Cr)),
