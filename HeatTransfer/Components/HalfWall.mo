@@ -35,7 +35,7 @@ model HalfWall
   
   parameter Modelica.SIunits.SpecificHeatCapacity cp = 0 "Wall specific heat capacity" annotation(
   Dialog(group="Thermal properties"));
-  parameter Modelica.SIunits.Density d = 0 "Wall density" annotation(
+  parameter Modelica.SIunits.Density d(displayUnit="kg/m3") = 0 "Wall density" annotation(
   Dialog(group="Thermal properties"));
   parameter Modelica.SIunits.ThermalConductivity k = 0 "Wall conductivity" annotation(
   Dialog(group="Thermal properties"));
