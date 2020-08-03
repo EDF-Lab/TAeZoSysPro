@@ -19,14 +19,16 @@ algorithm
     x[1] := 0 ;
     
     if symmetricalMesh then
-      x[2:end-1] := linspace(dx, L-dx, N-1) ;  
-      x[end] := x[end-1] + dx ;
+      x[2:N] := linspace(dx, L-dx, N-1);  
+      x[N+1] := L;
       
     else
-      x[2:end] := linspace(dx, L, N) ;   
+      x[2:end] := linspace(dx, L, N);    
+         
     end if ;
     
   else
+    dx := 0.0 ;
     x[1] := 0 ;
     x[2] := L/2 ;
     x[3] := L ;
