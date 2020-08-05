@@ -13,6 +13,7 @@ model Interface_liq_gas
   parameter SI.Emissivity eps = 0.96 "Emissivity of liquid interface" annotation(
     Dialog(group = "Geometrical properties"));
   parameter Modelica.SIunits.NumberDensityOfMolecules n_bubbles = 150 * 1e6 "Number density of bubble in node" ;
+  constant Modelica.SIunits.CoefficientOfFriction Cx = 0.47 "drag coefficient for a sphere" ;
     
 // Internal variables
   //for convection
@@ -43,6 +44,7 @@ model Interface_liq_gas
   SI.Velocity Vel "Ascending velocity of bubble in the liquid medium";
   SI.MassFlowRate m_flow_bubble "Mass flow rate from boiling";
   Real Xg "Mass fraction of gas in the liquid medium";
+  SI.ReynoldsNumber Re "Reynold number of a bubble";
   //
   SI.Energy E "Energy passed throught the component";
   
@@ -111,10 +113,10 @@ equation
   d_liq = MediumLiquid.density_ph(p = fluidPort_a.p, h = inStream(fluidPort_a.h_outflow)) ;
   //
   Modelica.Constants.pi * (d_bubble^3)/6 = max(Xg, 0.0) * d_liq / d_sat / n_bubbles ; 
-  // quasi static flow: viscous friction force( Stocke's law) + bouyancy force = 0
-  Vel = Modelica.Constants.g_n * d_bubble^2 / (18 * MediumLiquid.dynamicViscosity(MediumLiquid.setDewState(sat))) ;
+  // quasi static flow: friction force + bouyancy force = 0
+  Vel = sqrt(4/3*Modelica.Constants.g_n * d_bubble / Cx) ;
   m_flow_bubble = Vel * A * (n_bubbles * Modelica.Constants.pi / 6 * d_bubble ^ 3) * d_sat;
-
+  Re = MediumLiquid.bubbleDensity(sat) * Vel * d_bubble / MediumLiquid.dynamicViscosity(MediumLiquid.setBubbleState(sat)) ;
 //
   der(E) = heatPort_a.Q_flow;
   A_wall = A ;
