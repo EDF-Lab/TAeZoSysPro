@@ -1,6 +1,6 @@
 ﻿within TAeZoSysPro.FluidDynamics.BasesClasses;
-model GasNode_two_phases
 
+model GasNode_two_phases
   model FogModel
     Modelica.SIunits.Density d_condensable "Density of the condensable species";
     Modelica.SIunits.Density d_sat "Saturation density of the condensable species";
@@ -11,10 +11,8 @@ model GasNode_two_phases
     Modelica.SIunits.MassFlowRate m_flow_fog "Mass flow rate of droplet leaving the control volume";
     Modelica.SIunits.ReynoldsNumber Re "Reynolds number";
     input Medium.ThermodynamicState state;
-
     constant Modelica.SIunits.Density d_liquidPhase = 1000 "Density of the liquid phase of the condensation species";
     parameter Modelica.SIunits.NumberDensityOfMolecules n_drops = 150 * 1e6 "Number density of droplets in fog";
-
   equation
     // Temporary equations
     d_condensable = Medium.density(state) * state.X[Medium.Water];
@@ -22,17 +20,19 @@ model GasNode_two_phases
     // Saturation condition
     p_sat = Medium.saturationPressure(Medium.temperature(state));
     d_sat = p_sat / (Modelica.Constants.R / Medium.MMX[Medium.Water] * Medium.temperature(state));
+
     // mass of water = number density of droplets * Volume of fluid * Volume of droplet * density of droplets
-    d_drop / 2 = ( max(d_condensable - d_sat, 0) / (d_liquidPhase * n_drops * 4 / 3 * Modelica.Constants.pi))  ^(1/3);
+    d_drop / 2 = (max(d_condensable - d_sat, 0) / (d_liquidPhase * n_drops * 4 / 3 * Modelica.Constants.pi)) ^ (1 / 3);
 
     // quasi static flow: viscous friction force( Stocke's law) + bouyancy force + weight = 0
-    Vel = 2 * (d_drop / 2)^2 * Modelica.Constants.g_n * (d_liquidPhase - 1.2) / (9 * Medium.dynamicViscosity(state));
+    Vel = d_liquidPhase * d_drop^2 * Modelica.Constants.g_n / (18 * Medium.dynamicViscosity(state));
     Re = Medium.density(state) * Vel * d_drop / Medium.dynamicViscosity(state);
 
     // mass flow rate = velocity * wet surface * amount of droplets peer wet surface * density of droplet
     m_flow_fog = Vel * A * (n_drops * Modelica.Constants.pi / 6 * d_drop ^ 3) * d_liquidPhase;
-
-    annotation(Documentation(info = "
+    
+    annotation(
+      Documentation(info = "
   <html>
     <head>
       <title>FogModel</title>
@@ -127,68 +127,60 @@ model GasNode_two_phases
   end FogModel;
 
   // additionnal package
-    import Modelica.Fluid.Types;
-    import Modelica.Fluid.Types.Dynamics;
-    import SI = Modelica.SIunits;
-// Medium declaration
-    replaceable package Medium = Modelica.Media.Air.MoistAir;
-    Medium.BaseProperties medium(preferredMediumStates = (if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true));
-    // User defined parameters
+  import Modelica.Fluid.Types;
+  import Modelica.Fluid.Types.Dynamics;
+  import SI = Modelica.SIunits;
+  // Medium declaration
+  replaceable package Medium = Modelica.Media.Air.MoistAir;
+  Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
+  // User defined parameters
   // Assumptions
-    parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation (
-    Dialog(tab = "Assumptions", group="Dynamics"));
-    parameter Types.Dynamics massDynamics = Dynamics.FixedInitial "Formulation of mass balance" annotation (
-    Dialog(tab = "Assumptions", group="Dynamics"));
-    final parameter Types.Dynamics substanceDynamics = massDynamics "Formulation of substance balance" annotation (
-    Dialog(tab = "Assumptions", group="Dynamics"));
-    final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation (
-    Dialog(tab = "Assumptions", group="Dynamics"));
-    // Fixed start value
-    parameter SI.AbsolutePressure p_start = 101325 "Initial absolute static pressure" annotation (
+  parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation(
+    Dialog(tab = "Assumptions", group = "Dynamics"));
+  parameter Types.Dynamics massDynamics = Dynamics.FixedInitial "Formulation of mass balance" annotation(
+    Dialog(tab = "Assumptions", group = "Dynamics"));
+  final parameter Types.Dynamics substanceDynamics = massDynamics "Formulation of substance balance" annotation(
+    Dialog(tab = "Assumptions", group = "Dynamics"));
+  final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation(
+    Dialog(tab = "Assumptions", group = "Dynamics"));
+  // Fixed start value
+  parameter SI.AbsolutePressure p_start = 101325 "Initial absolute static pressure" annotation(
     Dialog(tab = "Initialization"));
-    parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation (
+  parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation(
     Dialog(tab = "Initialization"));
-    parameter Real RH_start(min = 0, max = 1) = 0.6 "Initial relative humidity (pmoisture/psat) <= 1" annotation (
+  parameter Real RH_start(min = 0, max = 1) = 0.6 "Initial relative humidity (pmoisture/psat) <= 1" annotation(
     Dialog(enable = Medium.mediumName == "Moist air", tab = "Initialization"));
-    //
-    parameter Integer nPorts = 1 "Number of fluidport" annotation (
+  //
+  parameter Integer nPorts = 1 "Number of fluidport" annotation(
     Dialog(connectorSizing = true));
-    parameter SI.Volume V = 1 "Geometric Volume of the gas node";
+  parameter SI.Volume V = 1 "Geometric Volume of the gas node";
   // Internal variables
   // Potential variables
-    SI.Mass m "Mass of mixture";
-    SI.Mass mXi[Medium.nXi] "Masses of independent components in the fluid";
-    SI.Mass[Medium.nC] mC "Masses of trace substances in the fluid";
-    // C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
-    Medium.ExtraProperty C[Medium.nC] "Trace substance mixture content";
-    SI.InternalEnergy U "Internal energy of mixing";
-    // Flow variables
+  SI.Mass m "Mass of mixture";
+  SI.Mass mXi[Medium.nXi] "Masses of independent components in the fluid";
+  SI.Mass[Medium.nC] mC "Masses of trace substances in the fluid";
+  // C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
+  Medium.ExtraProperty C[Medium.nC] "Trace substance mixture content";
+  SI.InternalEnergy U "Internal energy of mixing";
+  // Flow variables
   SI.MassFlowRate mb_flow "Mass flows across boundaries";
-    SI.MassFlowRate[Medium.nXi] mbXi_flow "Substance mass flows across boundaries";
-    Medium.MassFlowRate ports_mXi_flow[nPorts,Medium.nXi];
-    Medium.ExtraPropertyFlowRate[Medium.nC] mbC_flow "Trace substance mass flows across boundaries";
-    SI.EnthalpyFlowRate Hb_flow "Enthalpy flow across boundaries or energy source/sink";
-    SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
-
-    // Imported modules
-    Modelica.Fluid.Interfaces.FluidPort_a fluidPort[nPorts](redeclare each
-      package                                                                      Medium = Medium) annotation (
+  SI.MassFlowRate[Medium.nXi] mbXi_flow "Substance mass flows across boundaries";
+  Medium.MassFlowRate ports_mXi_flow[nPorts, Medium.nXi];
+  Medium.ExtraPropertyFlowRate[Medium.nC] mbC_flow "Trace substance mass flows across boundaries";
+  SI.EnthalpyFlowRate Hb_flow "Enthalpy flow across boundaries or energy source/sink";
+  SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
+  // Imported modules
+  Modelica.Fluid.Interfaces.FluidPort_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation (
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
     Placement(visible = true, transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation (
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    FogModel fogModel(state = medium.state, A = V^2/3);
-
+  FogModel fogModel(state = medium.state, A = V ^ 2 / 3);
 protected
-    Real[Medium.nC] mC_scaled(min=fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
-    parameter Medium.ExtraProperty C_start[Medium.nC](quantity=Medium.extraPropertiesNames) = Medium.C_default;
-
-    parameter Medium.MassFraction X_start[Medium.nX] = if Medium.mediumName == "Moist air" then
-                                                        cat(1, {Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1-Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)})
-                                                       else
-                                                        Medium.X_default;
-
+  Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
+  parameter Medium.ExtraProperty C_start[Medium.nC](quantity = Medium.extraPropertiesNames) = Medium.C_default;
+  parameter Medium.MassFraction X_start[Medium.nX] = if Medium.mediumName == "Moist air" then cat(1, {Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1 - Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}) else Medium.X_default;
 initial equation
 // initialization of balances
 //Energy
@@ -216,79 +208,66 @@ initial equation
     der(mC_scaled) = zeros(Medium.nC);
   end if;
 equation
-
-  assert(not
-            (energyDynamics<>Dynamics.SteadyState and massDynamics==Dynamics.SteadyState) or Medium.singleState, "Bad combination of dynamics options and Medium not conserving mass because V is fixed.");
-
+  assert(not (energyDynamics <> Dynamics.SteadyState and massDynamics == Dynamics.SteadyState) or Medium.singleState, "Bad combination of dynamics options and Medium not conserving mass because V is fixed.");
 // Total quantities
   m = V * medium.d;
-  mXi = m*medium.Xi;
-  U = m*medium.u;
-  mC = m*C;
-
+  mXi = m * medium.Xi;
+  U = m * medium.u;
+  mC = m * C;
 // Boundary flow quantities
   for i in 1:nPorts loop
     ports_mXi_flow[i, :] = fluidPort[i].m_flow * actualStream(fluidPort[i].Xi_outflow);
   end for;
-
   for j in 1:Medium.nXi loop
-    if j==Medium.Water then
-      mbXi_flow[j] = sum(ports_mXi_flow[:,j]) + flowPort.m_flow[j] - fogModel.m_flow_fog;
+    if j == Medium.Water then
+      mbXi_flow[j] = sum(ports_mXi_flow[:, j]) + flowPort.m_flow[j] - fogModel.m_flow_fog;
     else
-      mbXi_flow[j] = sum(ports_mXi_flow[:,j]) + flowPort.m_flow[j];
+      mbXi_flow[j] = sum(ports_mXi_flow[:, j]) + flowPort.m_flow[j];
     end if;
   end for;
-    
-  mb_flow = sum(fluidPort.m_flow) + sum(flowPort.m_flow) - fogModel.m_flow_fog ;
-  Qb_flow = heatPort.Q_flow ;
-  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - fogModel.m_flow_fog * Medium.enthalpyOfWater(medium.T)+flowPort.H_flow ;
-  
+  mb_flow = sum(fluidPort.m_flow) + sum(flowPort.m_flow) - fogModel.m_flow_fog;
+  Qb_flow = heatPort.Q_flow;
+  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) - fogModel.m_flow_fog * Medium.enthalpyOfWater(medium.T) + flowPort.H_flow;
 // Balance equations
-  // Energy
+// Energy
   if energyDynamics == Dynamics.SteadyState then
     0 = Hb_flow + Qb_flow;
   else
     der(U) = Hb_flow + Qb_flow;
   end if;
-
-  // Mass
+// Mass
   if massDynamics == Dynamics.SteadyState then
     0 = mb_flow;
   else
     der(m) = mb_flow;
   end if;
-
-  // Independant masses
+// Independant masses
   if substanceDynamics == Dynamics.SteadyState then
     zeros(Medium.nXi) = mbXi_flow;
   else
     der(mXi) = mbXi_flow;
   end if;
-
-  // Trace masses
+// Trace masses
   if traceDynamics == Dynamics.SteadyState then
     zeros(Medium.nC) = mbC_flow;
   else
     der(mC_scaled) = mbC_flow ./ Medium.C_nominal;
   end if;
-      mC = mC_scaled.*Medium.C_nominal;
-
+  mC = mC_scaled .* Medium.C_nominal;
 // port handovers
-  // fluidPorts
+// fluidPorts
   for i in 1:nPorts loop
     fluidPort[i].p = medium.p;
     fluidPort[i].h_outflow = medium.h;
     fluidPort[i].Xi_outflow = medium.Xi;
   end for;
-
-  // flowPort
+// flowPort
   flowPort.d = cat(1, mXi, {m - sum(mXi)}) / V;
   flowPort.T = medium.T;
-
-  // heatPort
+// heatPort
   heatPort.T = medium.T;
-
-  annotation(Documentation(info = "
+  annotation(
+    Documentation(info = "
 <html>
   <head>
     <title>GasNode</title>
@@ -350,11 +329,5 @@ equation
     </p>    			
   </body>
 </html>"),
-    Icon(graphics={  Rectangle(origin = {-7, -6}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
-            fillPattern =                                                                                             FillPattern.Sphere,
-            lineThickness =                                                                                                                               0.5, extent = {{-73, 66}, {47, -54}}), Polygon(origin = {0, 80}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
-            fillPattern =                                                                                                                                                                                                        FillPattern.Sphere,
-            lineThickness =                                                                                                                                                                                                        0.5, points = {{40, -20}, {-80, -20}, {-40, 20}, {80, 20}, {40, -20}}), Polygon(origin = {60, 21}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
-            fillPattern =                                                                                                                                                                                                        FillPattern.HorizontalCylinder,
-            lineThickness =                                                                                                                                                                                                        0.5, points = {{-20, -81}, {-20, 39}, {20, 79}, {20, -41}, {-20, -81}}), Text(origin = {0, -81}, extent = {{-100, 11}, {100, -11}}, textString = "V = %V")}, coordinateSystem(initialScale = 0.1)));
+    Icon(graphics = {Rectangle(origin = {-7, -6}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.Sphere, lineThickness = 0.5, extent = {{-73, 66}, {47, -54}}), Polygon(origin = {0, 80}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.Sphere, lineThickness = 0.5, points = {{40, -20}, {-80, -20}, {-40, 20}, {80, 20}, {40, -20}}), Polygon(origin = {60, 21}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.HorizontalCylinder, lineThickness = 0.5, points = {{-20, -81}, {-20, 39}, {20, 79}, {20, -41}, {-20, -81}}), Text(origin = {0, -81}, extent = {{-100, 11}, {100, -11}}, textString = "V = %V")}, coordinateSystem(initialScale = 0.1)));
 end GasNode_two_phases;
