@@ -7,18 +7,18 @@ model UpwindFirstOrder
   // inputs
   input Real CoeffTimeDer "Coefficient for time derivative" ;
   input Real CoeffSpaceDer "Coefficient for space derivative" ;
-  input Real SourceTerm[N+1] "Source term in the right hand side" ;
+  input Real SourceTerm[N] "Source term in the right hand side" ;
   input Modelica.SIunits.Position x[N+1] "Position array" ;
 //  input Boolean SteadyState = false "Steady state mode" ;
   
   // internal variable
-  Real[N+1] u "transported variables" annotation(HideResult = true ) ;
+  Real[N+1] u "transported variables" annotation(HideResult = false ) ;
   
 equation
 
-  for i in 2:size(u,1)-1 loop
+  for i in 2:size(u,1) loop
     
-    CoeffTimeDer * der(u[i]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i] - u[i-1]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1] - u[i]) / (x[i+1] - x[i]) = SourceTerm[i] "PDE domain";    
+    CoeffTimeDer * der(u[i]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i] - u[i-1]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1] - u[i]) / (x[i+1] - x[i]) = SourceTerm[i-1] "PDE domain";    
   
   end for ;
   
