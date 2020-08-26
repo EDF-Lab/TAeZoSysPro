@@ -3,10 +3,8 @@ within TAeZoSysPro.HeatTransfer.Components;
 model CabinetPower
   import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
   import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
-    
-  // Media
+    // Media
   replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT ;
-  
   // User defined temperature
   parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance" annotation(
   Dialog(group="Dynamic properties"));
@@ -40,10 +38,8 @@ model CabinetPower
     Dialog(group = "Assembly"));
   parameter Modelica.SIunits.Emissivity eps_casing = 1 "Casing emissivity" annotation(
     Dialog(group = "Assembly"));
-  
   // Internal variables
   Modelica.SIunits.Energy E_released "Energy released into the environement";
-  
   // Imported modules
   Modelica.Thermal.HeatTransfer.Components.BodyRadiation radiation_emitter_casing(Gr = A_conv_emitter / (1 / eps_emitter + A_conv_emitter / A_in_casing * (1 / eps_casing - 1)))  annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -102,21 +98,20 @@ equation
     Line(points = {{31, 74}, {31, 92}, {48, 92}, {48, 90}}, color = {191, 0, 0}));
   connect(Heatload_Variable, prescribedHeatFlow.Q_flow) annotation(
     Line(points = {{-115, 16}, {-86, 16}, {-86, 16}, {-84, 16}}, color = {0, 0, 127}));
-  connect(radiation_emitter_casing.port_b, radiation_outer_casing.port_a) annotation(
-    Line(points = {{10, 0}, {50, 0}, {50, 0}, {50, 0}}, color = {191, 0, 0}));
   connect(Inlet_Air_Temperature.T, convection_emitter.T_fluid) annotation(
     Line(points = {{54, 49.5}, {-32, 49.5}, {-32, 65.5}, {-49, 65.5}, {-49, 65.5}}, color = {0, 0, 127}));
   connect(Inlet_Air_Temperature.T, convection_inner_casing.T_fluid) annotation(
     Line(points = {{54, 49.5}, {46, 49.5}, {46, 65.5}, {39, 65.5}}, color = {0, 0, 127}));
   connect(prescribedHeatFlow.port, convection_emitter.port_a) annotation(
     Line(points = {{-64, 16}, {-57, 16}, {-57, 54}, {-57, 54}}, color = {191, 0, 0}));
-
 // Energy released is calculated
   der(E_released) = port_hood.Q_flow + port_conv.Q_flow + port_rad.Q_flow;
-  
 // Ports handover
   A_wall = A_rad_casing;
-  
+  connect(radiation_outer_casing.port_a, mass_casing.port) annotation(
+    Line(points = {{50, 0}, {30, 0}, {30, -18}, {32, -18}}, color = {191, 0, 0}));
+  connect(radiation_emitter_casing.port_b, mass_casing.port) annotation(
+    Line(points = {{10, 0}, {30, 0}, {30, -18}, {32, -18}}, color = {191, 0, 0}));
   annotation(
     uses(Modelica(version = "3.2.3")),
     Dialog(group = "Component two"),
