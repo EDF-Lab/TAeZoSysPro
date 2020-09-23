@@ -21,6 +21,8 @@ package MoistAir
       Modelica.SIunits.SpecificEnthalpy h;
       Modelica.SIunits.Temperature T, T_guess;
       Modelica.SIunits.MassFraction X_steam;
+      Modelica.SIunits.Temperature T_sat;
+  Modelica.SIunits.Pressure p_sat;
 
       Modelica.Blocks.Sources.Ramp ramp(
         height=20,
@@ -28,6 +30,8 @@ package MoistAir
         offset=293.15) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
     equation
+      T_sat = Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(1000);
+      p_sat = saturationPressure(T_sat) ;
 
       X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
       T = ramp.y;
@@ -41,8 +45,8 @@ package MoistAir
 
     model test_d_phX
       parameter Modelica.SIunits.Density d = 1.2;
-      parameter Modelica.SIunits.Temperature T = 293.15;
-      parameter Modelica.SIunits.MassFraction X[2] = {0.02,0.98};
+      parameter Modelica.SIunits.Temperature T = 303.15;
+      parameter Modelica.SIunits.MassFraction X[2] = {0.03,0.97};
 
       ThermodynamicState state;
       Modelica.SIunits.Pressure p;
@@ -625,7 +629,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy r0 "Vaporization enthalpy";
 
   algorithm
-    r0 := water.cp * (273.15-T) + steam.h_lv + steam.cp * (T-2973.15);
+    r0 := water.cp * (273.15-T) + steam.h_lv + steam.cp * (T-273.15);
 
     annotation (
       Inline=true,
@@ -798,19 +802,26 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     SI.MassFraction X_liq "Mass fraction of liquid";
     SI.Temperature T_sat "Steam saturation temperature at given steam pressure";
     SI.MassFraction X_steam "Mass fraction of steam in medium";
+    Integer i ; 
 
   algorithm
+    i := 0 ;
     //h = X_air*dryair.cp*(T_sat-T_ref)+X_steam*(steam.cp*(T_sat-T_ref)+h_lv)+(1-X_air-X_steam)*water.cp*(T_sat-T_ref)
     T := (h - X[Water] * steam.h_lv) / (X[Air]*dryair.cp + X[Water]*steam.cp) + 273.15;
     Y := massToMoleFractions(X=X, MMX=MMX);
     T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
+    Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
     if T < T_sat then /* liquid water*/
-      while abs((T - T_sat) / T_sat)>1e-5 loop
+      while abs((T - T_sat) / T_sat)>1e-5 loop    
       T := T_sat;
       X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - 273.15))  / ((steam.cp-water.cp)*(T - 273.15) + steam.h_lv);
       X_liq := X[Water] - X_steam;
-      Y := massToMoleFractions(X={X_steam/(1-X_liq), (1-X_steam)/(1-X_liq)}, MMX=MMX);
+      Y := massToMoleFractions(X={X_steam/(1-X_liq), X[Air]/(1-X_liq)}, MMX=MMX);
       T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
+      Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", X_steam = "+String(X_steam)+", X_liq = "+String(X_liq)) ;
+      Modelica.Utilities.Streams.print("sum_X = "+String((X_steam + X[Air])/(1-X_liq))) ;
+      i := i+1 ;
+      Modelica.Utilities.Streams.print("i = "+String(i)) ;
       end while;
       T := T_sat;
     else
@@ -895,10 +906,9 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     X_liquid :=max(d*X[Water] - d_sat, 0)/d;
     X_steam :=X[Water] - X_liquid;
     X_air :=1 - X[Water];
-    /* h        := {SingleGasNasa.h_Tlow(data=steam,  T=T, refChoice=ReferenceEnthalpy.UserDefined, h_off=46479.819+2501014.5),
-                 SingleGasNasa.h_Tlow(data=dryair, T=T, refChoice=ReferenceEnthalpy.UserDefined, h_off=25104.684)}*
-      {X_steam, X_air} + enthalpyOfLiquid(T)*X_liquid;*/
-    h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + enthalpyOfWater(T)*X_liquid;
+  
+    //h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + enthalpyOfWater(T)*X_liquid;
+    h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + X_liquid*water.cp*(T-273.15);  
     annotation (
       derivative=h_dTX_der,
       Inline=false,
