@@ -47,6 +47,7 @@ model PartialWall
 
   // Internal variables
     Modelica.SIunits.Energy E "Energy stored in the wall";
+    final parameter Modelica.SIunits.Position[N+2] x_node = cat(1, {0},{(x[i+1]+x[i])/2 for i in 1:N}, {Th}) ;
 
   // Imported components
     Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
