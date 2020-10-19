@@ -92,6 +92,7 @@ package MoistAir
     final reducedX=true,
     final singleState=false,
     reference_X={0.01,0.99},
+    reference_T = 293.15,
     Temperature(min=190, max=647),
     ThermoStates=Modelica.Media.Interfaces.Choices.IndependentVariables.dTX);
 
@@ -182,7 +183,7 @@ required from medium model \""
     state.T = T;
     state.X = X;
 
-    phi = min(d*X[Water] - d_sat)/d_sat;
+    phi = min(d*X[Water], d_sat)/d_sat;
     annotation (Documentation(info="<html>
   <p>
     This model computes thermodynamic properties of moist air from three independent (thermodynamic or/and numerical) state variables. 
@@ -631,7 +632,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy r0 "Vaporization enthalpy";
 
   algorithm
-    r0 := water.cp * (273.15-T) + steam.h_lv + steam.cp * (T-273.15);
+    r0 := water.cp * (reference_T-T) + steam.h_lv + steam.cp * (T-reference_T);
 
     annotation (
       Inline=true,
@@ -651,7 +652,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy h "Liquid enthalpy";
 
   algorithm
-    h := water.cp*(T - 273.15);
+    h := water.cp*(T - reference_T);
 
   annotation (
     Inline=true,
@@ -669,7 +670,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy h "Specific enthalpy";
 
   algorithm
-    h := steam.cp * (T - 273.15) * X[Water] + dryair.cp * (T - 273.15) * (1.0 - X[Water]);
+    h := (steam.cp * (T - reference_T) + steam.h_lv) * X[Water] + dryair.cp * (T - reference_T) * (1.0 - X[Water]);
     annotation (
       Inline=true,
       smoothOrder=5,
@@ -685,7 +686,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy h "Specific enthalpy";
 
   algorithm
-    h := steam.cp * (T-273.15);
+    h := steam.cp * (T-reference_T) + steam.h_lv;
     annotation (
       Inline=true,
       smoothOrder=5,
@@ -701,7 +702,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     output SpecificEnthalpy h "Specific enthalpy";
 
   algorithm
-    h := dryair.cp * (T-273.15);
+    h := dryair.cp * (T-reference_T);
     annotation (
       Inline=true,
       smoothOrder=5,
@@ -820,14 +821,14 @@ algorithm
   algorithm
     i := 0 ;
     //h = X_air*dryair.cp*(T_sat-T_ref)+X_steam*(steam.cp*(T_sat-T_ref)+h_lv)+(1-X_air-X_steam)*water.cp*(T_sat-T_ref)
-    T := (h - X[Water] * steam.h_lv) / (X[Air]*dryair.cp + X[Water]*steam.cp) + 273.15;
+    T := (h - X[Water] * steam.h_lv) / (X[Air]*dryair.cp + X[Water]*steam.cp) + reference_T;
     Y := massToMoleFractions(X=X, MMX=MMX);
     T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
     Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
     if T < T_sat then /* liquid water*/
       while abs((T - T_sat) / T_sat)>1e-5 loop    
       T := T_sat;
-      X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - 273.15))  / ((steam.cp-water.cp)*(T - 273.15) + steam.h_lv);
+      X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - reference_T))  / ((steam.cp-water.cp)*(T - reference_T) + steam.h_lv);
       X_liq := X[Water] - X_steam;
       Y := massToMoleFractions(X={X_steam/(1-X_liq), X[Air]/(1-X_liq)}, MMX=MMX);
       T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
@@ -876,7 +877,7 @@ algorithm
     SI.MolarMass MMmix "Molar mass of gas mixture";
   algorithm
     T := T_phX(p=p, h=h, X=X);
-    X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - 273.15))  / ((steam.cp-water.cp)*(T - 273.15) + steam.h_lv);
+    X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - reference_T))  / ((steam.cp-water.cp)*(T - reference_T) + steam.h_lv);
     X_steam := min(X_steam, X[Water]);
     X_liquid := max(X[Water] - X_steam, 0.0);
     MMmix := (X_steam/(1-X_liquid)/steam.MM + X[Air]/(1-X_liquid)/dryair.MM)^(-1);
@@ -922,7 +923,7 @@ algorithm
     X_air :=1 - X[Water];
   
     //h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + enthalpyOfWater(T)*X_liquid;
-    h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + X_liquid*water.cp*(T-273.15);  
+    h := X_air*dryair.cp*(T-reference_T) + X_steam*(steam.cp*(T-reference_T)+steam.h_lv) + X_liquid*water.cp*(T-reference_T);  
     annotation (
       derivative=h_dTX_der,
       Inline=false,
@@ -975,7 +976,7 @@ algorithm
     dX_steam := dX[Water] - dX_liq;
 
     h_der := X_steam*steam.cp*dT + dX_steam*steam.cp*(T-273.15) + X_air*dryair.cp*dT
-      + dX_air*dryair.cp*(T-273.15) + X_liquid*enthalpyOfWater_der(T=T, dT=dT) + dX_liq*enthalpyOfWater(T);
+      + dX_air*dryair.cp*(T-reference_T) + X_liquid*enthalpyOfWater_der(T=T, dT=dT) + dX_liq*enthalpyOfWater(T);
 
     annotation (
       Inline=false,
@@ -1009,7 +1010,7 @@ algorithm
     /* h        := {SingleGasNasa.h_Tlow(data=steam,  T=T, refChoice=ReferenceEnthalpy.UserDefined, h_off=46479.819+2501014.5),
                  SingleGasNasa.h_Tlow(data=dryair, T=T, refChoice=ReferenceEnthalpy.UserDefined, h_off=25104.684)}*
       {X_steam, X_air} + enthalpyOfLiquid(T)*X_liquid;*/
-    h := (X_steam*steam.cp + X_air*dryair.cp)*(T-273.15) + enthalpyOfWater(T)*X_liquid;
+    h := (X_steam*steam.cp + X_air*dryair.cp)*(T-reference_T) + enthalpyOfWater(T)*X_liquid;
     annotation (
       derivative=h_pTX_der,
       Inline=false,
@@ -1075,8 +1076,8 @@ algorithm
           0);
     dX_steam := dX[Water] - dX_liq;
 
-    h_der := X_steam*steam.cp*dT + dX_steam*steam.cp*(T-273.15)
-      + X_air*dryair.cp*dT + dX_air*dryair.cp*(T-273.15)
+    h_der := X_steam*steam.cp*dT + dX_steam*steam.cp*(T-reference_T)
+      + X_air*dryair.cp*dT + dX_air*dryair.cp*(T-reference_T)
       + X_liquid*enthalpyOfWater_der(T=T, dT=dT) + dX_liq*enthalpyOfWater(T);
 
     annotation (
@@ -1105,7 +1106,7 @@ algorithm
   protected
     AbsolutePressure p1 "Upstream pressure";
   algorithm
-    h := {steam.cp*(state.T-273.15), dryair.cp*(state.T-273.15)}*state.X;
+    h := {steam.cp*(state.T-reference_T), dryair.cp*(state.T-reference_T)}*state.X;
 
     p1 := state.d*(state.X[Water]*steam.R + (1-state.X[Water])*dryair.R) * state.T;
 
@@ -1147,7 +1148,7 @@ algorithm
     X_steam :=X[Water] - X_liquid;
     X_air :=1 - X[Water];
     R_gas := dryair.R*X_air/(1 - X_liquid) + steam.R*X_steam/(1 - X_liquid);
-    u := X_steam*steam.cp*(T-273.15) + X_air*dryair.cp*(T-273.15) + enthalpyOfWater(T)*X_liquid - R_gas*T;
+    u := X_steam*steam.cp*(T-reference_T) + X_air*dryair.cp*(T-reference_T) + enthalpyOfWater(T)*X_liquid - R_gas*T;
 
     annotation (derivative=specificInternalEnergy_dTX_der, Documentation(info=
            "<html>
@@ -1207,7 +1208,7 @@ algorithm
     dR_gas := (steam.R*(dX_steam*(1 - X_liquid) + dX_liq*X_steam) + dryair.R*
       (dX_air*(1 - X_liquid) + dX_liq*X_air))/(1 - X_liquid)/(1 - X_liquid);
 
-    u_der := X_steam*steam.cp*dT + dX_steam*steam.cp*(T-273.15) + X_air*dryair.cp*dT + dX_air*dryair.cp(T-273.15) + X_liquid*enthalpyOfWater_der(T=T, dT=dT) +
+    u_der := X_steam*steam.cp*dT + dX_steam*steam.cp*(T-reference_T) + X_air*dryair.cp*dT + dX_air*dryair.cp(T-reference_T) + X_liquid*enthalpyOfWater_der(T=T, dT=dT) +
       dX_liq*enthalpyOfWater(T) - dR_gas*T - R_gas*dT;
     annotation (Documentation(info="<html>
   Derivative function for <a href=\"modelica://Modelica.Media.Air.MoistAir.specificInternalEnergy_dTX\">specificInternalEnergy_dTX</a>.
@@ -1253,11 +1254,11 @@ algorithm
     p[Water] := d * X_steam * steam.R * T;
     p[Air] := d * X_air * dryair.R * T;
 
-    s:= (1 - X[Water])*dryair.cp*Modelica.Math.log(T/273.15)
-    + X[Water]*steam.cp*Modelica.Math.log(T/273.15)
+    s:= (1 - X[Water])*dryair.cp*Modelica.Math.log(T/reference_T)
+    + X[Water]*steam.cp*Modelica.Math.log(T/reference_T)
     - Modelica.Constants.R*(Utilities.smoothMax(X[Water]/MMX[Water],0.0,1e-9)*Modelica.Math.log(max(p[Water], Modelica.Constants.eps)/reference_p)
     + Utilities.smoothMax((1 - X[Water])/MMX[Air],0.0,1e-9)*Modelica.Math.log(max(p[Air], Modelica.Constants.eps)/reference_p))
-    + X_liquid * water.cp * Modelica.Math.log(T / 273.15);
+    + X_liquid * water.cp * Modelica.Math.log(T / reference_T);
     annotation (
       derivative=s_dTX_der,
       Inline=false,
@@ -1316,8 +1317,8 @@ algorithm
     dp[Air] := dd * X_air * dryair.R * T + d * (dX_air * dryair.R * T + X_air * dryair.R * dT);
 
 
-    ds := (1 - X[Water]) * dryair.cp*dT/T + dX_air * dryair.cp * Modelica.Math.log(T/273.15)
-          + X[Water] * steam.cp*dT/T + dX[Water] * Modelica.Math.log(T/273.15)
+    ds := (1 - X[Water]) * dryair.cp*dT/T + dX_air * dryair.cp * Modelica.Math.log(T/reference_T)
+          + X[Water] * steam.cp*dT/T + dX[Water] * Modelica.Math.log(T/reference_T)
           - Modelica.Constants.R*(1/MMX[Water]*(Utilities.smoothMax_der(
             X[Water],
             0.0,
@@ -1337,7 +1338,7 @@ algorithm
             X[Air],
             0.0,
             1e-9)))
-          + dX_liq * water.cp * Modelica.Math.log(T / 273.15) + X_liquid * water.cp * dT/T;
+          + dX_liq * water.cp * Modelica.Math.log(T / reference_T) + X_liquid * water.cp * dT/T;
 
 
     annotation (
