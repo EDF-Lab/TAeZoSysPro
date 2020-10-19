@@ -23,7 +23,7 @@ package MoistAir
       Modelica.SIunits.MassFraction X_steam;
       Modelica.SIunits.Temperature T_sat;
   Modelica.SIunits.Pressure p_sat;
-
+      
       Modelica.Blocks.Sources.Ramp ramp(
         height=20,
         duration=1,
@@ -32,7 +32,6 @@ package MoistAir
     equation
       T_sat = Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(1000);
       p_sat = saturationPressure(T_sat) ;
-
       X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
       T = ramp.y;
       h = X[Air]*dryair.cp*(T-273.15) + min(X_steam, X[Water])*(steam.cp*(T-273.15) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-273.15);
@@ -52,12 +51,12 @@ package MoistAir
       Modelica.SIunits.Pressure p;
       Modelica.SIunits.SpecificEnthalpy h;
       Modelica.SIunits.Density d_guess;
-
+      Modelica.SIunits.Temperature T_guess ;
     equation
      state = setState_dTX(d=d, T=T, X=X);
      p = pressure(state);
      h = specificEnthalpy(state);
-     d_guess = d_phX(p=p, h=h, X=X)
+     (d_guess, T_guess) = d_phX(p=p, h=h, X=X)
       annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
             coordinateSystem(preserveAspectRatio=false)));
     end test_d_phX;
@@ -70,12 +69,15 @@ package MoistAir
       ThermodynamicState state;
       Modelica.SIunits.SpecificEnthalpy h;
       Modelica.SIunits.Pressure p_guess;
-      Modelica.SIunits.MassFraction X_steam;
+      Modelica.SIunits.Temperature T_guess;  
+      Modelica.SIunits.MassFraction X_steam(start = X[1]), X_steam_guess;
 
     equation
       X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
+      X_steam_guess = Xsaturation(state) ;
       h = X[Air]*dryair.cp*(T-273.15) + min(X_steam, X[Water])*(steam.cp*(T-273.15) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-273.15);
       state =  setState_phX(p=p, h=h, X=X);
+      T_guess = T_phX(p=p, h=h, X=X) ;
       p_guess = pressure(state);
 
       annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
@@ -116,7 +118,7 @@ package MoistAir
     constant SI.SpecificHeatCapacityAtConstantPressure cp = 4181 "Specific heat capacity of liquid water at 293.15K (20°C)";
   end water;
   constant SI.MolarMass[2] MMX={steam.MM,dryair.MM} "Molar masses of components";
-  constant FluidConstants[nS] fluidConstants = {IdealGases.Common.FluidData.H2O,IdealGases.Common.FluidData.N2} "Constant data for the fluid";
+  constant FluidConstants[nS] fluidConstants = {Modelica.Media.IdealGases.Common.FluidData.H2O,Modelica.Media.IdealGases.Common.FluidData.N2} "Constant data for the fluid";
 
   import SI = Modelica.SIunits;
   import Modelica.SIunits;
@@ -768,8 +770,19 @@ Saturation pressure of water in the liquid and the solid region is computed usin
   redeclare function extends pressure
     "Returns pressure of ideal gas as a function of the thermodynamic state record"
 
-  algorithm
-    p := state.d * (dryair.R*state.X[Air] + steam.R* min(state.X[Water], Xsaturation(state))) * state.T;
+protected
+  SI.MassFraction X_liquid "Mass fraction of liquid or solid water";
+  SI.MassFraction X_steam "Mass fraction of steam water";
+  SI.MassFraction X_air "Mass fraction of air";
+  SI.Density d_sat
+    "Steam water density of saturation boundary in kg_water/m3";
+algorithm
+  d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+  X_liquid :=max(state.d*state.X[Water] - d_sat, 0)/state.d;
+  X_steam :=state.X[Water] - X_liquid;
+  X_air :=1 - state.X[Water];
+    
+    p := state.d * (dryair.R*X_air + steam.R*X_steam) * state.T;
   annotation (
     smoothOrder=5,
     Documentation(info=
@@ -855,6 +868,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     input SpecificEnthalpy h "Specific enthalpy";
     input MassFraction X[:]=reference_X "Mass fractions";
     output Density d "Density";
+  
   protected
     SI.Temperature T;
     SI.MassFraction X_steam "Steam mass fraction in the medium";
