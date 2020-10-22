@@ -126,11 +126,11 @@ equation
   <body lang=\"en-UK\">
   
     <p>
-      This component models the thermal response of half wall in interface with a rest ambiance where the thermal exchanges are mainly driven by natural convection and radiation.
+      This component models the thermal response of half wall in interface with a rest ambiance where the thermal exchanges are mainly driven by natural convection, radiation and condensation.
     </p>
     
     <p>		
-      This component is an assembly of the <b>PartialWall</b> module, the <b>FreeConvection</b> module and a <b>CarrollRadiation</b> module.
+      This component is an assembly of the <b>PartialWall</b> module, the <b>FreeConvection</b> module, the <b>Condensation</b> and the <b>CarrollRadiation</b> module.
     </p> 
 
     <p>		
