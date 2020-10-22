@@ -74,7 +74,7 @@ model Wall
 // Components inside wall are defined
   TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = true)  annotation(
     Placement(visible = true, transformation(origin = {0.5, 0.5}, extent = {{-29.5, -29.5}, {29.5, 29.5}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_a(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_a, h_cv_const = h_cv_const_a) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_a(redeclare package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_a, h_cv_const = h_cv_const_a) annotation(
     Placement(visible = true, transformation(origin = {-55, 70}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation_a(A = A, add_on = add_on_rad, eps = eps_a)  annotation(
     Placement(visible = true, transformation(origin = {-58.5, -70.5}, extent = {{-22.5, -22.5}, {22.5, 22.5}}, rotation = 180)));
@@ -90,7 +90,7 @@ model Wall
     Placement(visible = true, transformation(origin = {101, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.Interfaces.HeatPort_a port_surface_a annotation(
     Placement(visible = true, transformation(origin = {-100, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-40, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_b(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_b, h_cv_const = h_cv_const_b) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection freeConvection_b(redeclare package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation_b, h_cv_const = h_cv_const_b) annotation(
     Placement(visible = true, transformation(origin = {57, 70}, extent = {{18, -18}, {-18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation_b(A = A, add_on = add_on_rad, eps = eps_b) annotation(
     Placement(visible = true, transformation(origin = {59.5, -70.5}, extent = {{22.5, -22.5}, {-22.5, 22.5}}, rotation = 180)));
