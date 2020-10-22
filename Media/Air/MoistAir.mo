@@ -1378,14 +1378,17 @@ algorithm
 
   redeclare function extends specificHeatCapacityCp
     "Return specific heat capacity at constant pressure as a function of the thermodynamic state record"
-
+protected
     SI.Density d_sat
       "Steam water density of saturation boundary in kg_water/m3";
+    SI.MassFraction X_liquid ;
+    SI.MassFraction X_steam ;
+    SI.MassFraction X_air ;
   algorithm
-    d_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
-    X_liquid := max(d*X[Water] - d_sat, 0)/d;
-    X_steam := X[Water] - X_liquid;
-    X_air := 1 - X[Water];
+    d_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+    X_liquid := max(state.d * state.X[Water] - d_sat, 0)/state.d;
+    X_steam := state.X[Water] - X_liquid;
+    X_air := 1 - state.X[Water];
     cp := steam.cp*X_steam + dryair.cp*X_air + water.cp*X_liquid;
 
     annotation (
