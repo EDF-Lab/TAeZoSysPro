@@ -4,7 +4,7 @@ model CabinetPower
   import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
   import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
     // Media
-  replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   // User defined temperature
   parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance" annotation(
   Dialog(group="Dynamic properties"));

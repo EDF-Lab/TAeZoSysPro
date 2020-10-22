@@ -9,7 +9,7 @@ model HalfWall
   /*outer */
   TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection;
   //Media
-  replaceable package Medium = TAeZoSysPro.Media.Air.MoistAir;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   // User defined parameters
   parameter MeshGrid mesh = MeshGrid.biotAndGeometricalGrowth "Selection of meshing function" annotation(
     Dialog(group = "Meshing properties"));

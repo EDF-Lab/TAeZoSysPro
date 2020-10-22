@@ -9,8 +9,8 @@ model DiscreteExchanger
 //
   import SI = Modelica.SIunits ;
   // Medium declaration
-  replaceable package MediumA = Modelica.Media.Air.ReferenceAir.Air_pT ;
-  replaceable package MediumB = Modelica.Media.Air.ReferenceAir.Air_pT ;
+  replaceable package MediumA = TAeZoSysPro.Media.MyMedia ;
+  replaceable package MediumB = TAeZoSysPro.Media.MyMedia ;
   //
   replaceable function effectiveness = ExchangerEffectiveness.counterCurrent ;
   replaceable function heatTransferCoeff = ExchangerHeatTransferCoeff.user_defined ;

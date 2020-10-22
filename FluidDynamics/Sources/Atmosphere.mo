@@ -2,8 +2,7 @@ within TAeZoSysPro.FluidDynamics.Sources;
 
 model Atmosphere
   // Medium declaration
-  //replaceable package Medium = TAeZoSysPro.Aeraulic.Media.MyMedia;
-  replaceable package Medium = Modelica.Media.Air.MoistAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
 
 // User defined parameters
   parameter Boolean use_p_in = false "Get the pressure from the input connector" annotation(

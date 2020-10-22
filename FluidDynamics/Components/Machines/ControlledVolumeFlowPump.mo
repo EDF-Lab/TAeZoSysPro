@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Components.Machines;
 
 model ControlledVolumeFlowPump "Pump with controlled volume flow rate"
 
-  replaceable package Medium = Modelica.Media.Water.StandardWater ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
 
   // User defined parameters
   parameter Boolean Fan = false "If true fan icon else pump icon" annotation(Evaluate=true, HideResult=true, choices(checkBox=true)) ;

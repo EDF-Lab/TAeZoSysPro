@@ -3,7 +3,7 @@ within TAeZoSysPro.FluidDynamics.BasesClasses;
 model Interface_liq_gas
   import SI = Modelica.SIunits;
 //
-  replaceable package Medium = Modelica.Media.Air.MoistAir;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   replaceable package MediumLiquid = Modelica.Media.Water.StandardWater;  
 // User defined parameters
   parameter SI.Area A = 0 "Interface surface Area" annotation(

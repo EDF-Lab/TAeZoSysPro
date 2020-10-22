@@ -13,7 +13,7 @@ model AnalyticWetExchanger
       B : refers to the water fluid
     */
   // Medium declaration
-  replaceable package MediumA = Modelica.Media.Air.MoistAir;
+  replaceable package MediumA = TAeZoSysPro.Media.MyMedia;
   replaceable package MediumB = Modelica.Media.Water.WaterIF97_ph;
   //replaceable package MediumB = Modelica.Media.Air.MoistAir ;
   // User defined parameters

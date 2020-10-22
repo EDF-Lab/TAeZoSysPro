@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model SimpleOpening 
 
-  replaceable package Medium = Modelica.Media.Air.MoistAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";

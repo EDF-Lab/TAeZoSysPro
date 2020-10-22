@@ -1,6 +1,6 @@
 within TAeZoSysPro.HeatTransfer.Components;
 model Ventilation
-  replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT "Medium in the component";
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia "Medium in the component";
   // User defined parameters
   parameter Boolean Use_External_MassFlow = false;
   // Internal variables

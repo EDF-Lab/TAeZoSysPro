@@ -1,7 +1,7 @@
 within TAeZoSysPro.FluidDynamics.Components.Valves;
 
 model CommissioningDamper
-  replaceable package Medium = Modelica.Media.Interfaces.PartialMedium "Medium in the component" annotation (choicesAllMatching = true);
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia "Medium in the component";
 
   // User defined parameters
   parameter Medium.MassFlowRate m_flow_nominal "Nominal mass flow rate" annotation(Dialog(group="Nominal operating point")) ;

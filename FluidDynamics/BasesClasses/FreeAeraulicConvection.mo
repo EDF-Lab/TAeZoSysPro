@@ -6,7 +6,7 @@ model FreeAeraulicConvection
   import TAeZoSysPro.HeatTransfer.Functions.FreeConvection ;
   import SI = Modelica.SIunits ;
   //
-  replaceable package Medium = Modelica.Media.Air.MoistAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   // User defined parameters
   parameter Real add_on = 1 "Custom add-on";
   parameter SI.Area A = 0 "Wall Area " annotation(

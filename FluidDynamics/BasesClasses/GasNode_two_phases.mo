@@ -131,7 +131,7 @@ model GasNode_two_phases
   import Modelica.Fluid.Types.Dynamics;
   import SI = Modelica.SIunits;
   // Medium declaration
-  replaceable package Medium = Modelica.Media.Air.MoistAir;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
   // User defined parameters
   // Assumptions

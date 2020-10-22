@@ -10,8 +10,7 @@ model PartialDamper "Base model for dampers"
     Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.linear constrainedby Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.baseFun "Inherent flow characteristic" 
     annotation(choicesAllMatching=true);
   replaceable package Medium =
-      Modelica.Media.Interfaces.PartialMedium "Medium in the component"
-      annotation (choicesAllMatching = true);
+      TAeZoSysPro.Media.MyMedia "Medium in the component" ;
   
   // User defined parameters
   // *** Asumptions ***

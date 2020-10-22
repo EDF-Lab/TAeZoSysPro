@@ -1,7 +1,7 @@
 within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model HorizontalOpening
-  package Medium = Modelica.Media.Air.MoistAir ;
+  package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";

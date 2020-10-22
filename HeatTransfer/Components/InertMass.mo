@@ -8,7 +8,7 @@ model InertMass
   /*outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
 
 //Media
-  replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   // User defined parameters
   parameter Modelica.SIunits.Area A_conv = 0 "Convective surface area " annotation(
   Dialog(group="Geometrical properties"));

@@ -4,8 +4,8 @@ model HeatExchanger
   import TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness;
   import TAeZoSysPro.HeatTransfer.Functions.ExchangerHeatTransferCoeff;
   //
-  replaceable package MediumA = Modelica.Media.Air.ReferenceAir.Air_pT;
-  replaceable package MediumB = Modelica.Media.Air.ReferenceAir.Air_pT;
+  replaceable package MediumA = TAeZoSysPro.Media.MyMedia;
+  replaceable package MediumB = TAeZoSysPro.Media.MyMedia;
   MediumA.ThermodynamicState stateA;
   MediumB.ThermodynamicState stateB;
 

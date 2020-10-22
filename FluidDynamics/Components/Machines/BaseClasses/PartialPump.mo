@@ -4,7 +4,7 @@ partial model PartialPump "Base model for pumps"
   // Import of libraries
   import Modelica.Constants;
 
-  replaceable package Medium = Modelica.Media.Water.StandardWater ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
 
 // User defined parameter
   parameter Boolean checkValve = false "= true to prevent reverse flow" annotation(

@@ -3,7 +3,7 @@ within TAeZoSysPro.FluidDynamics.BasesClasses;
 model MolecularDiffusion
 
   //Media delcaration
-  package Medium = Modelica.Media.Air.MoistAir;
+  package Medium = TAeZoSysPro.Media.MyMedia;
   
   // User defined parameters
   parameter Modelica.SIunits.Thickness Th = 1 "Thickness between concentration potential difference";

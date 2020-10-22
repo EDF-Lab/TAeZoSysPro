@@ -7,7 +7,7 @@ model LumpVolume
   //replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT;
 //  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
   
-  replaceable package Medium = Modelica.Media.Air.SimpleAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   Medium.BaseProperties medium(preferredMediumStates= true, p = p) ;     //preferredMediumStates = true for having a static state selection
   
   // User defined parameters

@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.Components.Pipes;
 
 model StaticPipe
 
-  replaceable package Medium = Modelica.Media.Air.MoistAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
   parameter Modelica.SIunits.Area A "Inner cross section area" annotation(

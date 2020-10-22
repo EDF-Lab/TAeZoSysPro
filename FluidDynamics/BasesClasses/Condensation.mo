@@ -2,7 +2,7 @@ within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model Condensation
   // medium declaration
-  replaceable package Medium = Modelica.Media.Air.MoistAir;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
 
   Medium.ThermodynamicState state "State of fluid at infinite conditions";
   

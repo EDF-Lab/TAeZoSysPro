@@ -1,7 +1,7 @@
 within TAeZoSysPro.HeatTransfer.Sensors;
 
 model Density "Ideal one port density sensor"
-  replaceable package Medium = Modelica.Media.Air.SimpleAir ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   extends Modelica.Icons.RotationalSensor;
   Modelica.Blocks.Interfaces.RealOutput d(final quantity="Density",
                                           final unit="kg/m3",
