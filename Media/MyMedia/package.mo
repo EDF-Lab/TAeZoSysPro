@@ -3,8 +3,9 @@ within TAeZoSysPro.Media;
 package MyMedia
   extends Modelica.Icons.Package;
 
-// extend the package of the media to propagate it to all components using MyMedia as default media
-  extends Modelica.Media.Air.ReferenceAir.Air_pT ;
+// inherite extend the package of the media to propagate it to all components using MyMedia as default media
+//extends Modelica.Media.Air.ReferenceAir.Air_pT ;
+extends TAeZoSysPro.Media.Air.MoistAir ;
   
   annotation(
   Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
