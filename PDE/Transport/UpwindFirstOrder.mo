@@ -3,23 +3,25 @@ within TAeZoSysPro.PDE.Transport;
 model UpwindFirstOrder
   // user defined parameters
   parameter Integer N = 3 "Number of discrete layers";
+  parameter Integer N_quantity = 1 "Number of quantity transported";
   
   // inputs
-  input Real CoeffTimeDer "Coefficient for time derivative" ;
+  input Real CoeffTimeDer=1 "Coefficient for time derivative" ;
   input Real CoeffSpaceDer "Coefficient for space derivative" ;
   input Real SourceTerm[N] "Source term in the right hand side" ;
   input Modelica.SIunits.Position x[N+1] "Position array" ;
 //  input Boolean SteadyState = false "Steady state mode" ;
   
   // internal variable
-  Real[N+1] u "transported variables" annotation(HideResult = false ) ;
+  Real[N+1, N_quantity] u "transported variables" annotation(HideResult = false ) ;
   
 equation
 
-  for i in 2:size(u,1) loop
-    
-    CoeffTimeDer * der(u[i]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i] - u[i-1]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1] - u[i]) / (x[i+1] - x[i]) = SourceTerm[i-1] "PDE domain";    
-  
+  for n_quantity in 1:N_quantity loop /* loop on transported quantity */
+    for i in 2:N loop /* loop on discrete node */
+      
+      CoeffTimeDer * der(u[i, n_quantity]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i, n_quantity] - u[i-1, n_quantity]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1, n_quantity] - u[i, n_quantity]) / (x[i+1] - x[i]) = SourceTerm[i-1] "PDE domain";    
+    end for ;
   end for ;
   
  annotation(
