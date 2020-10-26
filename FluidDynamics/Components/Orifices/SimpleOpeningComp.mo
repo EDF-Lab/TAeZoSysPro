@@ -57,7 +57,7 @@ equation
   
 // solution 1: The velocity is computed from the Mach number and the velocity of sound
   c = Medium.velocityOfSound(Medium.setState_pTX(p = min(p_a, p_b), T = T, X = state.X));
-  Vel = M * c;
+  Vel = M * c * sign(dp);
   
 // Calculation density at the orifice
   d = Medium.density(state) / (1 + (gamma - 1) / 2 * M ^ 2) ^ (1 / (1 - gamma));
