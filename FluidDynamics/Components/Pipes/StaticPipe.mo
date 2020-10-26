@@ -47,7 +47,7 @@ equation
   port_a.Xi_outflow = inStream(port_b.Xi_outflow);
   port_b.Xi_outflow = inStream(port_a.Xi_outflow);
   
-  annotation (defaultComponentName="pipe",
+  annotation (defaultComponentName="staticPipe",
 Documentation(info ="
 <html>
   <head>
@@ -96,12 +96,5 @@ Documentation(info ="
 </html>"),
 Icon(coordinateSystem(
         preserveAspectRatio=false,
-        extent={{-100,-100},{100,100}}), graphics={Rectangle(
-          extent={{-100,40},{100,-40}},
-          fillPattern=FillPattern.Solid,
-          fillColor={95,95,95},
-          pattern=LinePattern.None), Rectangle(
-          extent={{-100,44},{100,-44}},
-          fillPattern=FillPattern.HorizontalCylinder,
-          fillColor={0,127,255})}));
+        extent={{-100,-100},{100,100}}), graphics={Rectangle( fillColor = {0, 127, 255}, fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, 44}, {100, -44}})}));
 end StaticPipe;
