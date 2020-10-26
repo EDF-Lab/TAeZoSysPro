@@ -82,5 +82,5 @@ extends Modelica.Icons.Package ;
 	</body>
 	
 </html>"),
-    Icon(coordinateSystem(initialScale = 0.1), graphics = {Bitmap(origin = {44, -20},extent = {{-100, 100}, {60, -60}}, fileName = "modelica://TAeZoSysPro/Information/PDE/img_package.png")}));
+    Icon(coordinateSystem(initialScale = 0.1), graphics = {Bitmap(origin = {40.5, 22.5}, extent = {{-112.5, -112.5}, {67.5, 67.5}}, fileName = "modelica://TAeZoSysPro/Information/PDE/img_package.png")}));
 end PDE;
