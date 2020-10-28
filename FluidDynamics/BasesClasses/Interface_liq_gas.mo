@@ -4,7 +4,7 @@ model Interface_liq_gas
   import SI = Modelica.SIunits;
 //
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
-  replaceable package MediumLiquid = Modelica.Media.Water.StandardWater;  
+  replaceable package MediumLiquid = Modelica.Media.Water.WaterIF97_ph;  
 // User defined parameters
   parameter SI.Area A = 0 "Interface surface Area" annotation(
     Dialog(group = "Geometrical properties"));
@@ -19,6 +19,7 @@ model Interface_liq_gas
   //for convection
   Medium.Temperature T_mean "Mean temperature between fluid and wall";
   SI.TemperatureDifference dT "Temperature difference Interface - gas";
+  SI.Pressure p "Pressure of the atmosphere";
   SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
   SI.Density d "Density of fluid at T_mean";
   SI.SpecificHeatCapacity cp "Specific heat capacity of fluid at T_mean";
@@ -76,8 +77,9 @@ equation
   T_mean = (heatPort_a.T + flowPort_b.T) / 2 "port_a and port_b are defined in Element1D";
   dT = heatPort_a.T - flowPort_b.T;
   prescribedTemperature.T = heatPort_a.T;
-  state = Medium.setState_pTX(p = Medium.reference_p, T = T_mean);
-  sat = MediumLiquid.setSat_p(p = fluidPort_a.p) ;
+  p = Medium.pressure(Medium.setState_dTX(d = sum(flowPort_b.d), T = flowPort_b.T, X=flowPort_b.d/sum(flowPort_b.d)));
+  state = Medium.setState_dTX(d = sum(flowPort_b.d), T = T_mean, X=flowPort_b.d/sum(flowPort_b.d));
+  sat = MediumLiquid.setSat_p(p = p) ;
   
 // Thermodynamic properties calculation
   d = Medium.density(state);
@@ -126,6 +128,7 @@ equation
   flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * h_dew ;
   flowPort_b.m_flow[Medium.Water] = -m_flow_evap - m_flow_bubble ;
   flowPort_b.m_flow[Medium.Air] = 0.0;
+  fluidPort_a.p = p;
   fluidPort_a.m_flow = m_flow_evap + m_flow_bubble  ;
   fluidPort_a.h_outflow = inStream(fluidPort_a.h_outflow);
   fluidPort_a.Xi_outflow = inStream(fluidPort_a.Xi_outflow);
