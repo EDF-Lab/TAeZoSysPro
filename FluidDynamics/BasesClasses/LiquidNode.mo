@@ -77,10 +77,9 @@ initial equation
   elseif traceDynamics == Dynamics.SteadyStateInitial then
     der(mC_scaled) = zeros(Medium.nC);
   end if;
+
 equation
   
-  medium.p = fluidPort[1].p ;
-
 // Total quantities
   m = V * medium.d;
   mXi = m * medium.Xi;
