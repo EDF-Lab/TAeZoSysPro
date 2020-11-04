@@ -1403,7 +1403,7 @@ protected
     "Return specific heat capacity at constant volume as a function of the thermodynamic state record, only valide for phi<1"
 
   algorithm
-    cp := (steam.cp-steam.R)*state.X[Water] + (dryair.cp-dryair.R)*(1-state.X[Water]);
+    cv := (steam.cp-steam.R)*state.X[Water] + (dryair.cp-dryair.R)*(1-state.X[Water]);
     annotation (
       Inline=true,
       smoothOrder=2,
