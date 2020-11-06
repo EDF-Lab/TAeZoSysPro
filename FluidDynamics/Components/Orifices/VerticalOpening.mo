@@ -20,7 +20,7 @@ model VerticalOpening
   Modelica.SIunits.Density d;
   Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
   Modelica.SIunits.MachNumber M "Mach number at the opening";
-  Medium.ThermodynamicState state ;
+  Medium.ThermodynamicState state, state_a, state_b;
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
@@ -34,14 +34,17 @@ protected
   parameter Modelica.SIunits.Height H_fluidStream = H * Cd ^0.5 "Minimal height between top and bottom flow path";
   Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
-  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;  
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
+  parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ;  
 
 equation
 //
   X_a = 1 / sum(port_a.d) * port_a.d;
   X_b = 1 / sum(port_b.d) * port_b.d;
-  h_a = Medium.specificEnthalpy_pTX(p = p_a, T = port_a.T, X = X_a );
-  h_b = Medium.specificEnthalpy_pTX(p = p_b, T = port_b.T, X = X_b );
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = X_a );
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = X_b );
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);
     
 // pressure reconstruction
   p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
@@ -51,7 +54,7 @@ equation
 //
   d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp, 
-    x_small = 0.01, 
+    x_small = dp_small, 
     y1 = sum(port_a.d), 
     y2 = sum(port_b.d));
   
@@ -60,14 +63,14 @@ equation
     
     m_flow_i[i] = A * Cd / N * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
       x = dp_i[i], 
-      x_small = 0.01, 
+      x_small = dp_small, 
       k1 = 2.0 * sum(port_a.d), 
       k2 = 2.0 * sum(port_b.d)); 
   end for ;
       
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp_i[i], 
-    x_small = 0.01, 
+    x_small = dp_small, 
     y1 = X_a, 
     y2 = X_b ) for i in 1:N} ;
 
@@ -76,9 +79,9 @@ equation
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
   state = Medium.setSmoothState(
     x = dp, 
-    x_small = 0.01, 
-    state_a = Medium.setState_pTX(p = p_a, T = port_a.T, X = X_a), 
-    state_b = Medium.setState_pTX(p = p_b, T = port_b.T, X = X_b));
+    x_small = dp_small, 
+    state_a = state_a, 
+    state_b = state_b);
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
@@ -90,7 +93,7 @@ equation
   
   port_a.H_flow = m_flow_i * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp_i, 
-    x_small = 0.01, 
+    x_small = dp_small, 
     y1 = h_a, 
     y2 = h_b ) ;
   port_a.H_flow + port_b.H_flow = 0;

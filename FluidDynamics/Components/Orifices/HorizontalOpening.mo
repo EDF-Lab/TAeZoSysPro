@@ -8,6 +8,7 @@ model HorizontalOpening
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
   parameter Modelica.SIunits.Length L_down = 1 "Distance from bottom node";
   parameter Modelica.SIunits.Length L_up = 1 "Distance from top node";
+  
 
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
@@ -23,7 +24,7 @@ model HorizontalOpening
   Modelica.SIunits.HeatFlowRate Q_flow_buoyancy ;
   Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
   Modelica.SIunits.MachNumber M "Mach number at the opening";
-  Medium.ThermodynamicState state ;  
+  Medium.ThermodynamicState state, state_a, state_b;  
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
@@ -35,14 +36,17 @@ protected
   Modelica.SIunits.MassFraction[Medium.nX] X_a "Mass fraction vector at port a";
   Modelica.SIunits.MassFraction[Medium.nX] X_b "Mass fraction vector at port b";
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
-  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ; 
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
+  parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ; 
   
 equation
 //
   X_a = 1 / sum(port_a.d) * port_a.d;
   X_b = 1 / sum(port_b.d) * port_b.d;
-  h_a = Medium.specificEnthalpy_pTX(p = p_a, T = port_a.T, X = X_a );
-  h_b = Medium.specificEnthalpy_pTX(p = p_b, T = port_b.T, X = X_b );
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = X_a );
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = X_b );
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);
   
 // pressure reconstruction
   p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
@@ -54,13 +58,13 @@ equation
 
   d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp, 
-    x_small = 0.01, 
+    x_small = dp_small, 
     y1 = sum(port_a.d), 
     y2 = sum(port_b.d));
 
   m_flow = Cd * A * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
     x = dp, 
-    x_small = 0.01, 
+    x_small = dp_small, 
     k1 = 2.0 * sum(port_a.d), 
     k2 = 2.0 * sum(port_b.d));
 
@@ -68,8 +72,8 @@ equation
   state = Medium.setSmoothState(
     x = dp, 
     x_small = 0.01, 
-    state_a = Medium.setState_pTX(p = p_a, T = port_a.T, X = X_a), 
-    state_b = Medium.setState_pTX(p = p_b, T = port_b.T, X = X_b));
+    state_a = state_a, 
+    state_b = state_b);
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_up, p_down) / max(p_up, p_down)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
@@ -89,10 +93,8 @@ equation
 // Ports handover
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b) + m_flow_buoyancy * (X_a - X_b);
   port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
-  port_a.H_flow = m_flow * Medium.specificEnthalpy_pTX(
-    p = if noEvent(dp >= 0.0) then p_a else p_b, 
-    T = if noEvent(dp >= 0.0) then port_a.T else port_b.T, 
-    X = if noEvent(dp >= 0.0) then X_a else X_b) + Q_flow_buoyancy ;
+  port_a.H_flow = m_flow * Medium.specificEnthalpy(
+    state = if noEvent(dp >= 0.0) then state_a else state_b) + Q_flow_buoyancy ;
   port_b.H_flow + port_a.H_flow = 0.0 ;
   
   annotation(defaultComponentName="horizontalOpening",
