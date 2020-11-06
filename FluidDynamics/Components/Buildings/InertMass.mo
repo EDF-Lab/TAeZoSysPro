@@ -36,7 +36,7 @@ model InertMass
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection = true "Implicit connection with the FviewCalculator" annotation(
+  parameter Boolean UseImplicitConnection = false "Implicit connection with the FviewCalculator" annotation(
     Dialog(group = "Radiative properties"));
   parameter Integer RadiativeIndex = 1 "Index number in the FviewCalculator module" annotation(
     Dialog(group = "Radiative properties"));
