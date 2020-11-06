@@ -34,7 +34,7 @@ package MoistAir
       p_sat = saturationPressure(T_sat) ;
       X_steam = massFraction_pTphi(p = p, T = T, phi = 1);
       T = ramp.y;
-      h = X[Air]*dryair.cp*(T-273.15) + min(X_steam, X[Water])*(steam.cp*(T-273.15) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-273.15);
+      h = X[Air]*dryair.cp*(T-reference_T) + min(X_steam, X[Water])*(steam.cp*(T-reference_T) + steam.h_lv) + max(X[Water] - X_steam,0.0)*water.cp*(T-reference_T);
       T_guess = T_phX(p=p, h=h, X=X);
 
       annotation (
@@ -148,7 +148,6 @@ package MoistAir
       */
     Real phi "Relative humidity";
 
-  protected
     MassFraction X_liquid "Mass fraction of liquid or solid water";
     MassFraction X_steam "Mass fraction of steam water";
     MassFraction X_air "Mass fraction of air";
@@ -805,19 +804,19 @@ algorithm
   function T_phX
     "Return temperature as a function of pressure p, specific enthalpy h and composition X"
     extends Modelica.Icons.Function;
-
+  
     input AbsolutePressure p "Pressure";
     input SpecificEnthalpy h "Specific enthalpy";
     input MassFraction[:] X "Mass fractions of composition";
     output Temperature T "Temperature";
-
+  
   protected
     SI.MoleFraction Y[2] "Mole fraction of species in the medium";
     SI.MassFraction X_liq "Mass fraction of liquid";
     SI.Temperature T_sat "Steam saturation temperature at given steam pressure";
     SI.MassFraction X_steam "Mass fraction of steam in medium";
     Integer i ; 
-
+  
   algorithm
     i := 0 ;
     //h = X_air*dryair.cp*(T_sat-T_ref)+X_steam*(steam.cp*(T_sat-T_ref)+h_lv)+(1-X_air-X_steam)*water.cp*(T_sat-T_ref)
@@ -830,7 +829,7 @@ algorithm
       T := T_sat;
       X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - reference_T))  / ((steam.cp-water.cp)*(T - reference_T) + steam.h_lv);
       X_liq := X[Water] - X_steam;
-      Y := massToMoleFractions(X={X_steam/(1-X_liq), X[Air]/(1-X_liq)}, MMX=MMX);
+      Y := massToMoleFractions(X={X_steam/(1-X_liq), (1-X_steam)/(1-X_liq)}, MMX=MMX);
       T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
       Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", X_steam = "+String(X_steam)+", X_liq = "+String(X_liq)) ;
       Modelica.Utilities.Streams.print("sum_X = "+String((X_steam + X[Air])/(1-X_liq))) ;
@@ -842,7 +841,7 @@ algorithm
       X_steam := X[Water];
       X_liq := 0.0;
     end if;
-
+  
     annotation(Documentation(info=
       "<html>
       <p>
@@ -925,7 +924,7 @@ algorithm
     //h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + enthalpyOfWater(T)*X_liquid;
     h := X_air*dryair.cp*(T-reference_T) + X_steam*(steam.cp*(T-reference_T)+steam.h_lv) + X_liquid*water.cp*(T-reference_T);  
     annotation (
-      derivative=h_dTX_der,
+  //    derivative=h_dTX_der,
       Inline=false,
       Documentation(info="<html>
   Specific enthalpy of moist air is computed from density, temperature and composition with X[1] as the total water mass fraction. The fog region is included for both, ice and liquid fog.
