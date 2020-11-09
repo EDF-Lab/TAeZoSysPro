@@ -151,7 +151,7 @@ package MoistAir
     MassFraction X_liquid "Mass fraction of liquid or solid water";
     MassFraction X_steam "Mass fraction of steam water";
     MassFraction X_air "Mass fraction of air";
-    MassFraction d_sat
+    Density d_sat
       "Steam water density of saturation boundary in kg_water/m3";
   equation
     assert(T >= 190 and T <= 647, "
@@ -396,7 +396,7 @@ required from medium model \""
   </html>"));
   end relativeHumidity;
 
-  replaceable function gasConstant
+  function gasConstant
     "Return ideal gas constant as a function from thermodynamic state, remains valid with liquid water in the mixture"
     extends Modelica.Icons.Function;
     input ThermodynamicState state "Thermodynamic state";
@@ -823,18 +823,18 @@ algorithm
     T := (h - X[Water] * steam.h_lv) / (X[Air]*dryair.cp + X[Water]*steam.cp) + reference_T;
     Y := massToMoleFractions(X=X, MMX=MMX);
     T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
-    Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
+    //Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
     if T < T_sat then /* liquid water*/
-      while abs((T - T_sat) / T_sat)>1e-5 loop    
+      while abs((T - T_sat) / T_sat)>1e-4 loop    
       T := T_sat;
       X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - reference_T))  / ((steam.cp-water.cp)*(T - reference_T) + steam.h_lv);
       X_liq := X[Water] - X_steam;
       Y := massToMoleFractions(X={X_steam/(1-X_liq), (1-X_steam)/(1-X_liq)}, MMX=MMX);
       T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
-      Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", X_steam = "+String(X_steam)+", X_liq = "+String(X_liq)) ;
-      Modelica.Utilities.Streams.print("sum_X = "+String((X_steam + X[Air])/(1-X_liq))) ;
+      //Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", X_steam = "+String(X_steam)+", X_liq = "+String(X_liq)) ;
+      //Modelica.Utilities.Streams.print("sum_X = "+String((X_steam + X[Air])/(1-X_liq))) ;
       i := i+1 ;
-      Modelica.Utilities.Streams.print("i = "+String(i)) ;
+      //Modelica.Utilities.Streams.print("i = "+String(i)) ;
       end while;
       T := T_sat;
     else
