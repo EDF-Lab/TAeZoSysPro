@@ -105,7 +105,7 @@ equation
   betaV = h_cv / (sum(flowPort_b.d) * cp);
   m_flow_evap = betaV * (d_sat - flowPort_b.d[Medium.Water]) * A;
   Q_flow_evap = m_flow_evap * Medium.enthalpyOfVaporization(heatPort_a.T);
-  H_flow_evap = m_flow_evap * h_dew ; 
+  H_flow_evap = m_flow_evap * Medium.enthalpyOfCondensingGas(heatPort_a.T); 
 
 // Boiling
   h_dew = MediumLiquid.dewEnthalpy(sat) ;
@@ -125,7 +125,7 @@ equation
   
 // Ports handovers
   heatPort_a.Q_flow = carrollRadiation.Q_flow + Q_flow_conv + Q_flow_evap + m_flow_bubble * (h_dew - h_bubble) ;
-  flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * h_dew ;
+  flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * Medium.enthalpyOfCondensingGas(flowPort_b.T);
   flowPort_b.m_flow[Medium.Water] = -m_flow_evap - m_flow_bubble ;
   flowPort_b.m_flow[Medium.Air] = 0.0;
   fluidPort_a.p = p;
