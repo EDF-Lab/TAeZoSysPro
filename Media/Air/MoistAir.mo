@@ -493,6 +493,23 @@ required from medium model \""
 </html>"));
   end saturationDensity;
 
+  replaceable function saturationDensity_der
+    "Derivative function for 'saturationDensity'"
+    extends Modelica.Icons.Function;
+    input Temperature T "Saturation temperature";
+    input Real dTsat(unit="K/s") "Time derivative of saturation temperature";
+    output Real dsat_der(unit="kg/m3/s") "Saturation pressure";
+
+  algorithm
+    dsat_der := 1/(steam.MM) * (Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.dptofT(T) / T - Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T) / T^2) * dTsat; 
+    annotation (
+      Inline=false,
+      smoothOrder=5,
+      Documentation(info="<html>
+  Derivative function of <a href=\"modelica://TAeZoSysPro.Media.Air.MoistAir.saturationDensity\">saturationDensity</a>
+  </html>"));
+  end saturationDensity_der;
+
   replaceable function saturationPressure "Return saturation pressure of water as a function of temperature T between 190 and 647.096 K"
     extends Modelica.Icons.Function;
     input Temperature Tsat "Saturation temperature";
