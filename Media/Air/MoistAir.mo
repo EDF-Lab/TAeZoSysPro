@@ -83,6 +83,19 @@ package MoistAir
       annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
             coordinateSystem(preserveAspectRatio=false)));
     end test_pressure;
+
+    model test_saturationDensity
+    
+      parameter Modelica.SIunits.Temperature T = 303.15;
+      Modelica.SIunits.Density d_sat;
+      Modelica.SIunits.Density d_sat_IF97; 
+    
+    equation
+
+      d_sat = saturationDensity(T);
+      d_sat_IF97 = Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+      
+    end test_saturationDensity;
   end Tests;
   extends Modelica.Media.Interfaces.PartialMedium(
     redeclare replaceable record FluidConstants =
@@ -464,6 +477,21 @@ required from medium model \""
     end for;
     annotation (smoothOrder=5);
   end massToMoleFractions;
+
+  replaceable function saturationDensity "Return saturation density of steam as a function of temperature T"
+    extends Modelica.Icons.Function;
+    input Temperature T "Saturation temperature";
+    output Density dsat "Saturation density";
+
+  algorithm
+    dsat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T) / (steam.R*T);
+    annotation (
+      Inline=true,
+      Documentation(info=
+"<html>
+  Saturation density of steam is computed as function of the Temperature using the saturation pressure function <a href=\"modelica://Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat;\"> psat</a> and the perfect gas law.
+</html>"));
+  end saturationDensity;
 
   replaceable function saturationPressure "Return saturation pressure of water as a function of temperature T between 190 and 647.096 K"
     extends Modelica.Icons.Function;
