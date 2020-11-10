@@ -825,7 +825,7 @@ algorithm
     T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p*Y[Water]);
     //Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
     if T < T_sat then /* liquid water*/
-      while abs((T - T_sat) / T_sat)>1e-4 loop    
+      while abs((T - T_sat) / T_sat)>1e-5 loop    
       T := T_sat;
       X_steam := ( h - (X[Air] * (dryair.cp - water.cp) + water.cp)  * (T - reference_T))  / ((steam.cp-water.cp)*(T - reference_T) + steam.h_lv);
       X_liq := X[Water] - X_steam;
