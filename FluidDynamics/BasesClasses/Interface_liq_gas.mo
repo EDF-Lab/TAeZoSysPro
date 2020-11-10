@@ -125,7 +125,7 @@ equation
   
 // Ports handovers
   heatPort_a.Q_flow = carrollRadiation.Q_flow + Q_flow_conv + Q_flow_evap + m_flow_bubble * (h_dew - h_bubble) ;
-  flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * Medium.enthalpyOfCondensingGas(flowPort_b.T);
+  flowPort_b.H_flow = -Q_flow_conv - H_flow_evap - m_flow_bubble * Medium.enthalpyOfCondensingGas(heatPort_a.T);
   flowPort_b.m_flow[Medium.Water] = -m_flow_evap - m_flow_bubble ;
   flowPort_b.m_flow[Medium.Air] = 0.0;
   fluidPort_a.p = p;
