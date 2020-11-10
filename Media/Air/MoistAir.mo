@@ -322,7 +322,7 @@ required from medium model \""
     input ThermodynamicState state "Thermodynamic state record";
     output MassFraction X_sat "Steam mass fraction of sat. boundary";
   algorithm
-    X_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T) / (Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T) + state.d * state.X[Air]);
+    X_sat := saturationDensity(state.T) / (saturationDensity(state.T) + state.d * state.X[Air]);
 
     annotation (smoothOrder=2, Documentation(info="<html>
   Absolute humidity per unit mass of moist air at saturation is computed from density and temperature in the state record. Note, that this mass fraction refers to mass of moist air at saturation.
@@ -335,7 +335,7 @@ required from medium model \""
     input ThermodynamicState state "Thermodynamic state record";
     output MassFraction x_sat "Absolute humidity per unit mass of dry air";
   algorithm
-    x_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T) / (state.d * state.X[Air]);
+    x_sat := saturationDensity(state.T) / (state.d * state.X[Air]);
     annotation (smoothOrder=2, Documentation(info="<html>
   Absolute humidity per unit mass of dry air at saturation is computed from density and temperature in the thermodynamic state record.
   </html>"));
@@ -402,7 +402,7 @@ required from medium model \""
   protected
     SI.Density d_sat "Saturation density of water in mosit air";
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+    d_sat :=saturationDensity(state.T);
     phi :=min(state.d*state.X[Water] - d_sat)/d_sat;
     annotation (smoothOrder=2, Documentation(info="<html>
   Relative humidity is computed from the thermodynamic state record with 1.0 as the upper limit at saturation.
@@ -420,7 +420,7 @@ required from medium model \""
     Density d_sat "Steam water density of saturation boundary in kg_water/m3";
 
   algorithm
-    d_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+    d_sat := saturationDensity(state.T);
     X_liquid :=max(state.d*state.X[Water] - d_sat, 0)/state.d;
     R := dryair.R*(1 - state.X[Water])/(1-X_liquid) + steam.R*(state.X[Water]-X_liquid)/(1-X_liquid);
     annotation(smoothOrder=2, Documentation(info="<html>
@@ -1425,7 +1425,7 @@ protected
     SI.MassFraction X_steam ;
     SI.MassFraction X_air ;
   algorithm
-    d_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+    d_sat := saturationDensity(state.T);
     X_liquid := max(state.d * state.X[Water] - d_sat, 0)/state.d;
     X_steam := state.X[Water] - X_liquid;
     X_air := 1 - state.X[Water];
