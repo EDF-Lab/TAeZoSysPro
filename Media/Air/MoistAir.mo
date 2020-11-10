@@ -175,7 +175,7 @@ required from medium model \""
                              + mediumName + "\".");
     MM = 1/(Xi[Water]/MMX[Water] + (1.0 - Xi[Water])/MMX[Air]);
 
-    d_sat = Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat = saturationDensity(T);
     X_liquid = max(d*X[Water] - d_sat, 0) / d;
     X_steam = Xi[Water] - X_liquid;
     X_air = 1 - Xi[Water];
@@ -805,7 +805,7 @@ protected
   SI.Density d_sat
     "Steam water density of saturation boundary in kg_water/m3";
 algorithm
-  d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(state.T);
+  d_sat :=saturationDensity(state.T);
   X_liquid :=max(state.d*state.X[Water] - d_sat, 0)/state.d;
   X_steam :=state.X[Water] - X_liquid;
   X_air :=1 - state.X[Water];
@@ -944,7 +944,7 @@ algorithm
     SI.Density d_sat
       "Steam water density of saturation boundary in kg_water/m3";
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat :=saturationDensity(T);
     X_liquid :=max(d*X[Water] - d_sat, 0)/d;
     X_steam :=X[Water] - X_liquid;
     X_air :=1 - X[Water];
@@ -981,7 +981,7 @@ algorithm
     Real dd_sat(unit="kg/(m3.s)") "Time derivative of saturation density";
 
   algorithm
-    d_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat := saturationDensity(T);
     X_liquid := Utilities.smoothMax(
           max(d*X[Water] - d_sat, 0) / d,
           0.0,
@@ -990,9 +990,7 @@ algorithm
     X_air :=1 - X[Water];
 
     dX_air := -dX[Water];
-    //dd_sat = dd_sat/dp*dp/dT*dT
-    dd_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.drhov_dp(Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T)) *
-  Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat_der(T, dT);
+    dd_sat := saturationDensity_der(T, dT);
     dX_liq := Utilities.smoothMax_der(
           max(d*X[Water] - d_sat, 0) / d,
           0.0,
@@ -1170,7 +1168,7 @@ algorithm
                          "Steam water density of saturation boundary in kg_water/m3";
     Real R_gas "Ideal gas constant";
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat :=saturationDensity(T);
     X_liquid :=max(d*X[Water] - d_sat, 0)/d;
     X_steam :=X[Water] - X_liquid;
     X_air :=1 - X[Water];
@@ -1208,7 +1206,7 @@ algorithm
     Real dd_sat(unit="kg/(m3.s)") "Time derivative of saturation density";
     Real dR_gas(unit="J/(kg.K.s)") "Time derivative of ideal gas constant";
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat :=saturationDensity(T);
     X_liquid := Utilities.spliceFunction(
           max(d*X[Water] - d_sat, 0)/d,
           0.0,
@@ -1219,9 +1217,7 @@ algorithm
     R_gas := steam.R*X_steam/(1 - X_liquid) + dryair.R*X_air/(1 - X_liquid);
 
     dX_air := -dX[Water];
-    //dd_sat = dd_sat/dp*dp/dT*dT
-    dd_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.drhov_dp(Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T)) *
-  Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat_der(T, dT);
+    dd_sat := saturationDensity_der(T, dT);
     dX_liq := Utilities.spliceFunction_der(
           (d*X[Water] - d_sat)/d,
           0.0,
@@ -1273,7 +1269,7 @@ algorithm
     SI.MassFraction d_sat
       "Steam water density of saturation boundary in kg_water/m3";
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat :=saturationDensity(T);
     X_liquid :=max(d*X[Water] - d_sat, 0)/d;
     X_steam :=X[Water] - X_liquid;
     X_air :=1 - X[Water];
@@ -1318,7 +1314,7 @@ algorithm
     Real dd_sat(unit="kg/(m3.s)") "Time derivative of saturation density";
 
   algorithm
-    d_sat :=Modelica.Media.Water.IF97_Utilities.BaseIF97.Regions.rhov_T(T);
+    d_sat :=saturationDensity(T);
     X_liquid := Utilities.smoothMax(
           max(d*X[Water] - d_sat, 0) / d,
           0.0,
