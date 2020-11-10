@@ -5,7 +5,9 @@ package MyMedia
 
 // inherite extend the package of the media to propagate it to all components using MyMedia as default media
 //extends Modelica.Media.Air.ReferenceAir.Air_pT ;
+//extends Modelica.Media.Air.SimpleAir ;
 extends TAeZoSysPro.Media.Air.MoistAir ;
+//extends Modelica.Media.Air.MoistAir ;
   
   annotation(
   Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
