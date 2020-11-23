@@ -41,7 +41,7 @@ model CabinetPower
   // Internal variables
   Modelica.SIunits.Energy E_released "Energy released into the environement";
   // Imported modules
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation radiation_emitter_casing(Gr = A_conv_emitter / (1 / eps_emitter + A_conv_emitter / A_in_casing * (1 / eps_casing - 1)))  annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation radiation_emitter_casing(Gr = A_rad_emitter / (1 / eps_emitter + A_rad_emitter / A_in_casing * (1 / eps_casing - 1)))  annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation radiation_outer_casing(A = A_rad_casing, eps = eps_casing)   annotation(
     Placement(visible = true, transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
