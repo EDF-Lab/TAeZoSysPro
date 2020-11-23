@@ -8,7 +8,7 @@ model LumpVolume
 //  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
   
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
-  Medium.BaseProperties medium(preferredMediumStates= true, p = p) ;     //preferredMediumStates = true for having a static state selection
+  Medium.BaseProperties medium(preferredMediumStates= true, p = p, Xi = Medium.reference_X[1:Medium.nXi]) ;     //preferredMediumStates = true for having a static state selection
   
   // User defined parameters
   parameter Modelica.SIunits.Volume V = 1 "Air node volume [m3]";
