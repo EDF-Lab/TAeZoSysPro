@@ -21,6 +21,7 @@ model SimpleOpeningComp
   Modelica.SIunits.MachNumber M "Mach number at the orifice";
   Modelica.SIunits.Temperature T "Temperature at the orifice";
   Medium.ThermodynamicState state "State of upstream flow";
+  Medium.ThermodynamicState state_a, state_b "States at ports";
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
@@ -40,11 +41,13 @@ equation
   p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
   p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
   dp = p_a - p_b;
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = X_a );
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = X_b );  
   state = Medium.setSmoothState(
     x = dp, 
     x_small = 0.01, 
-    state_a = Medium.setState_pTX(p = p_a, T = port_a.T, X = X_a), 
-    state_b = Medium.setState_pTX(p = p_b, T = port_b.T, X = X_b));
+    state_a = state_a, 
+    state_b = state_b);
   
 // gamma is supposed contant along the flow
   gamma = Medium.isentropicExponent(state);
