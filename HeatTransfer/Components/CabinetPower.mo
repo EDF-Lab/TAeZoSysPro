@@ -10,6 +10,9 @@ model CabinetPower
   Dialog(group="Dynamic properties"));
   parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if energyDynamics = FixedInitial" annotation(
   Dialog(group="Dynamic properties"));
+  parameter Real add_on_conv = 1 "Custom add_on for convection" annotation(
+  Dialog(group="Dynamic properties"));
+  
   //
   parameter Modelica.SIunits.Area A_conv_emitter = 0 "Convection area emitter" annotation(
     Dialog(group = "Emitter"));
@@ -63,11 +66,11 @@ model CabinetPower
     Placement(visible = true, transformation(origin = {31, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor Inlet_Air_Temperature annotation(
     Placement(visible = true, transformation(origin = {59.5, 49.5}, extent = {{-5.5, -5.5}, {5.5, 5.5}}, rotation = 180)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection_dT_decoupled convection_emitter(replaceable package Medium = Medium, A = A_conv_emitter, Lc = Lc_emitter, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection_dT_decoupled convection_emitter( A = A_conv_emitter, Lc = Lc_emitter, add_on = add_on_conv, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
     Placement(visible = true, transformation(origin = {-57, 64}, extent = {{-10, 10}, {10, -10}}, rotation = 90)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection_dT_decoupled convection_inner_casing(replaceable package Medium = Medium, A = A_in_casing, Lc = Lc_casing, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection_dT_decoupled convection_inner_casing( A = A_in_casing, Lc = Lc_casing, add_on = add_on_conv, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
     Placement(visible = true, transformation(origin = {31, 64}, extent = {{-10, 10}, {10, -10}}, rotation = 90)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection_outer_casing(replaceable package Medium = Medium, A = A_conv_casing, Lc = Lc_casing, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection_outer_casing( A = A_conv_casing, Lc = Lc_casing, add_on = add_on_conv, correlation = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation.vertical_plate_ASHRAE) annotation(
     Placement(visible = true, transformation(origin = {60, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow prescribedHeatFlow annotation(
     Placement(visible = true, transformation(origin = {-74, 16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
