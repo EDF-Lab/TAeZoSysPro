@@ -93,8 +93,7 @@ equation
 // Ports handover
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b) + m_flow_buoyancy * (X_a - X_b);
   port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
-  port_a.H_flow = m_flow * Medium.specificEnthalpy(
-    state = if noEvent(dp >= 0.0) then state_a else state_b) + Q_flow_buoyancy ;
+  port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));
   port_b.H_flow + port_a.H_flow = 0.0 ;
   
   annotation(defaultComponentName="horizontalOpening",

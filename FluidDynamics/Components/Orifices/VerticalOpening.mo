@@ -91,11 +91,7 @@ equation
   port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
-  port_a.H_flow = m_flow_i * TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp_i, 
-    x_small = dp_small, 
-    y1 = h_a, 
-    y2 = h_b ) ;
+  port_a.H_flow = sum( smooth(0, if dp_i[i] >= 0.0 then m_flow_i[i] * h_a else m_flow_i[i] * h_b) for i in 1:N);
   port_a.H_flow + port_b.H_flow = 0;
   
   annotation(defaultComponentName="verticalOpening",
