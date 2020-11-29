@@ -118,14 +118,14 @@ package MoistAir
   record dryair
     constant SI.SpecificHeatCapacity R = Modelica.Media.IdealGases.Common.SingleGasesData.Air.R;
     constant SI.MolarMass MM = Modelica.Media.IdealGases.Common.SingleGasesData.Air.MM;
-    constant SI.SpecificHeatCapacityAtConstantPressure cp = 1005 "Specific heat capacity of dry air at 273.15K (0°C)";
+    constant SI.SpecificHeatCapacityAtConstantPressure cp = 1006.4 "Specific heat capacity of dry air at 293.15K (20°C)";
   end dryair;
 
   record steam
     constant SI.SpecificHeatCapacity R = Modelica.Media.IdealGases.Common.SingleGasesData.H2O.R;
     constant SI.MolarMass MM = Modelica.Media.IdealGases.Common.SingleGasesData.H2O.MM;
-    constant SI.SpecificEnergy h_lv = 2500.9e3 "Enthalpy of vaporization of water at 273.15K (0°C)";
-    constant SI.SpecificHeatCapacityAtConstantPressure cp = 1859 "Specific heat capacity of steam at 273.15K (0°C)";
+    constant SI.SpecificEnergy h_lv = 2453.55e3 "Enthalpy of vaporization of water at 293.15K (20°C)";
+    constant SI.SpecificHeatCapacityAtConstantPressure cp = 1886.0 "Specific heat capacity of steam at 293.15K (20°C)";
   end steam;
 
   record water
