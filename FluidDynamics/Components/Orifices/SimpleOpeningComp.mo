@@ -40,7 +40,7 @@ equation
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );  
   state = Medium.setSmoothState(
     x = dp, 
-    x_small = 0.01, 
+    x_small = dp_small, 
     state_a = state_a, 
     state_b = state_b);
 
@@ -85,7 +85,11 @@ equation
 
 
 // Port handover
-  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
+  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
+    x = dp, 
+    x_small = dp_small, 
+    y1 = state_a.X, 
+    y2 = state_b.X);
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));
   port_a.H_flow + port_b.H_flow = 0;
