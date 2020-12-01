@@ -62,7 +62,7 @@ equation
   end for ;
       
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp_i[i], 
+    x = Vel[i], 
     x_small = 1e-14, 
     y1 = state_a.X, 
     y2 = state_b.X ) for i in 1:N} ;
