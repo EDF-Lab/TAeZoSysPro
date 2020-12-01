@@ -29,8 +29,6 @@ model VerticalOpening
     Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
-  Modelica.SIunits.MassFraction[Medium.nX] X_a "Mass fraction vector at port a";
-  Modelica.SIunits.MassFraction[Medium.nX] X_b "Mass fraction vector at port b";
   parameter Modelica.SIunits.Height H_fluidStream = H * Cd ^0.5 "Minimal height between top and bottom flow path";
   Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
@@ -39,10 +37,9 @@ protected
 
 equation
 //
-  X_a = 1 / sum(port_a.d) * port_a.d;
-  X_b = 1 / sum(port_b.d) * port_b.d;
-  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = X_a );
-  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = X_b );
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d));
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d));
+
   h_a = Medium.specificEnthalpy(state_a);
   h_b = Medium.specificEnthalpy(state_b);
     

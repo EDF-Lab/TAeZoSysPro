@@ -25,16 +25,13 @@ model SimpleOpening
     Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
-  Modelica.SIunits.MassFraction[Medium.nX] X_a "Mass fraction vector at port a";
-  Modelica.SIunits.MassFraction[Medium.nX] X_b "Mass fraction vector at port b";
   parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ;
 
 equation
 //
-  X_a = 1 / sum(port_a.d) * port_a.d;
-  X_b = 1 / sum(port_b.d) * port_b.d;
-  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = X_a );
-  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = X_b );
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );
+
 // pressure reconstruction
   p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
   p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
