@@ -42,8 +42,8 @@ equation
   h_a = Medium.specificEnthalpy(state_a);
   h_b = Medium.specificEnthalpy(state_b);
 // pressure reconstruction
-  p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
-  p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
+  p_a = Medium.pressure(state_a);
+  p_b = Medium.pressure(state_b);
   p_up = p_a + sum(port_a.d) * Modelica.Constants.g_n * L_up;
   p_down = p_b - sum(port_b.d) * Modelica.Constants.g_n * L_down;
   dp = p_up - p_down;

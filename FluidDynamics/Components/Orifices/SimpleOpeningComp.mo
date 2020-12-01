@@ -34,15 +34,17 @@ equation
 //
   state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );  
-// pressure reconstruction
-  p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
-  p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
-  dp = p_a - p_b;
   state = Medium.setSmoothState(
     x = dp, 
     x_small = 0.01, 
     state_a = state_a, 
     state_b = state_b);
+
+// pressure reconstruction
+  p_a = Medium.pressure(state_a);
+  p_b = Medium.pressure(state_b);
+  dp = p_a - p_b;
+
   
 // gamma is supposed contant along the flow
   gamma = Medium.isentropicExponent(state);

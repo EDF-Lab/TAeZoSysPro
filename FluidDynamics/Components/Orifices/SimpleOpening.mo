@@ -33,8 +33,8 @@ equation
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );
 
 // pressure reconstruction
-  p_a = sum(port_a.d ./ Medium.MMX) * Modelica.Constants.R * port_a.T;
-  p_b = sum(port_b.d ./ Medium.MMX) * Modelica.Constants.R * port_b.T;
+  p_a = Medium.pressure(state_a);
+  p_b = Medium.pressure(state_b);
   dp = p_a - p_b;
 //
   d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
