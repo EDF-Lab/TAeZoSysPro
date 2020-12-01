@@ -8,8 +8,8 @@ model HorizontalOpening
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
   parameter Modelica.SIunits.Length L_down = 1 "Distance from bottom node";
   parameter Modelica.SIunits.Length L_up = 1 "Distance from top node";
+  parameter Modelica.SIunits.Length NotionalLength = 1e-4 "Opening's thickness";
   
-
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
@@ -32,50 +32,48 @@ model HorizontalOpening
 protected
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
   Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
-  parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ; 
+  parameter Modelica.SIunits.Velocity Vel_small = 0.001 ; 
+
+initial equation
+//  Vel = 0.0;
   
 equation
 //
   state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );
 
-  h_a = Medium.specificEnthalpy(state_a);
-  h_b = Medium.specificEnthalpy(state_b);
 // pressure reconstruction
   p_a = Medium.pressure(state_a);
   p_b = Medium.pressure(state_b);
   p_up = p_a + sum(port_a.d) * Modelica.Constants.g_n * L_up;
   p_down = p_b - sum(port_b.d) * Modelica.Constants.g_n * L_down;
-  dp = p_up - p_down;
+  dp = p_up - p_down; 
   
-
-  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp, 
-    x_small = dp_small, 
-    y1 = sum(port_a.d), 
-    y2 = sum(port_b.d));
-
-  m_flow = Cd * A * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
-    x = dp, 
-    x_small = dp_small, 
-    k1 = 2.0 * sum(port_a.d), 
-    k2 = 2.0 * sum(port_b.d));
+// specific enthalpy reconstruction
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);  
+    
+  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel, x_small = 1e-14, y1 = sum(port_a.d), y2 = sum(port_b.d));
+  dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d * der(Vel);
+  m_flow = Vel * A * Cd * d;
 
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
   state = Medium.setSmoothState(
-    x = dp, 
-    x_small = 0.01, 
+    x = Vel, 
+    x_small = Vel_small, 
     state_a = state_a, 
     state_b = state_b);
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_up, p_down) / max(p_up, p_down)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
   assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
-          
-  Vel * d * A * Cd = m_flow ;
   
 // Ports handover
-  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(x = dp, x_small = 0.01, y1 = X_a, y2 = X_b);
+  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
+    x = Vel, 
+    x_small = 1e-10, 
+    y1 = state_a.X, 
+    y2 = state_b.X);
   port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
   port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));
   port_b.H_flow + port_a.H_flow = 0.0 ;

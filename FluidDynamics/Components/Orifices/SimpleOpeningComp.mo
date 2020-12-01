@@ -30,6 +30,10 @@ model SimpleOpeningComp
     Placement(visible = true, transformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
+  Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
+  parameter Modelica.SIunits.PressureDifference dp_small = 0.001 ;
+  
 equation
 //
   state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
@@ -45,6 +49,9 @@ equation
   p_b = Medium.pressure(state_b);
   dp = p_a - p_b;
 
+// specific enthalpy reconstruction
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);
   
 // gamma is supposed contant along the flow
   gamma = Medium.isentropicExponent(state);

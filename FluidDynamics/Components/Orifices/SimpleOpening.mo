@@ -6,6 +6,7 @@ model SimpleOpening
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
+  parameter Modelica.SIunits.Length NotionalLength = 0.1 "Opening's thickness";
   
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
@@ -25,7 +26,9 @@ model SimpleOpening
     Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
-  parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ;
+  Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
+  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
+  parameter Modelica.SIunits.Velocity Vel_small = 0.001 ;
 
 equation
 //
@@ -36,25 +39,30 @@ equation
   p_a = Medium.pressure(state_a);
   p_b = Medium.pressure(state_b);
   dp = p_a - p_b;
+  
+// specific enthalpy reconstruction
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);
+  
 //
   d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp, 
-    x_small = dp_small, 
+    x = Vel, 
+    x_small = Vel_small, 
     y1 = sum(port_a.d), 
     y2 = sum(port_b.d));
     
-  m_flow = Cd * A * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
-    x = dp, 
-    x_small = dp_small, 
-    k1 = 2.0 * sum(port_a.d), 
-    k2 = 2.0 * sum(port_b.d));
+  NotionalLength * d * der(Vel) = dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(
+    x = Vel, 
+    x_small = Vel_small, 
+    k1 = sum(port_a.d), 
+    k2 = sum(port_b.d));
+    
+  m_flow = Vel * A * Cd * d;
   
-  Vel * d * A * Cd = m_flow ;
-
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
   state = Medium.setSmoothState(
-    x = dp, 
-    x_small = dp_small, 
+    x = Vel, 
+    x_small = Vel_small, 
     state_a = state_a, 
     state_b = state_b);
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
@@ -64,10 +72,10 @@ equation
   
 // Port handover
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp, 
-    x_small = dp_small, 
-    y1 = X_a, 
-    y2 = X_b);
+    x = Vel, 
+    x_small = Vel_small, 
+    y1 = state_a.X, 
+    y2 = state_b.X);
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
   port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));

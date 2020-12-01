@@ -9,15 +9,17 @@ model VerticalOpening
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
   parameter Modelica.SIunits.Height H = 1 "Opening's Height";
   parameter Integer N = 5 "Number discrete layer along the height of the opening";  
+  parameter Modelica.SIunits.Length NotionalLength = 1e-4 "Opening's thickness";
   
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
   Modelica.SIunits.PressureDifference dp_i[N];
   Modelica.SIunits.PressureDifference dp;
-  Modelica.SIunits.MassFlowRate m_flow_i[N] ;  
+  Modelica.SIunits.MassFlowRate m_flow_i[N] ; 
+  Modelica.SIunits.Velocity Vel[N] ;   
   Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
-  Modelica.SIunits.Density d;
+  Modelica.SIunits.Density d[N];
   Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
   Modelica.SIunits.MachNumber M "Mach number at the opening";
   Medium.ThermodynamicState state, state_a, state_b;
@@ -33,50 +35,44 @@ protected
   Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
   Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
-  parameter Modelica.SIunits.PressureDifference dp_small = 0.01 ;  
+  parameter Modelica.SIunits.Velocity Vel_small = 0.001 ;  
 
+initial equation
+  Vel = fill(0.0, N);
+  
 equation
 //
   state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d));
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d));
 
-  h_a = Medium.specificEnthalpy(state_a);
-  h_b = Medium.specificEnthalpy(state_b);
-    
 // pressure reconstruction
   p_a = Medium.pressure(state_a);
   p_b = Medium.pressure(state_b);
   dp = p_a - p_b;
-
-//
-  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp, 
-    x_small = dp_small, 
-    y1 = sum(port_a.d), 
-    y2 = sum(port_b.d));
+  
+// specific enthalpy reconstruction
+  h_a = Medium.specificEnthalpy(state_a);
+  h_b = Medium.specificEnthalpy(state_b);
   
   for i in 1:N loop  
-    dp_i[i] = dp + Modelica.Constants.g_n * (H_fluidStream / 2 -H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
-    
-    m_flow_i[i] = A * Cd / N * TAeZoSysPro.FluidDynamics.Utilities.regRoot2(
-      x = dp_i[i], 
-      x_small = dp_small, 
-      k1 = 2.0 * sum(port_a.d), 
-      k2 = 2.0 * sum(port_b.d)); 
+    dp_i[i] = dp + Modelica.Constants.g_n * (H_fluidStream / 2 - H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
+    d[i] = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel[i], x_small = 1e-10, y1 = sum(port_a.d), y2 = sum(port_b.d));
+    dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d[i] * der(Vel[i]);
+    m_flow_i[i] = Vel[i] * Cd * A / N * d[i];       
   end for ;
       
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp_i[i], 
-    x_small = dp_small, 
-    y1 = X_a, 
-    y2 = X_b ) for i in 1:N} ;
+    x_small = 1e-14, 
+    y1 = state_a.X, 
+    y2 = state_b.X ) for i in 1:N} ;
 
   m_flow = sum(m_flow_i) ;
 
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
   state = Medium.setSmoothState(
-    x = dp, 
-    x_small = dp_small, 
+    x = sum(Vel)/N, 
+    x_small = Vel_small, 
     state_a = state_a, 
     state_b = state_b);
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
