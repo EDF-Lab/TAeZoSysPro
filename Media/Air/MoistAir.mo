@@ -187,8 +187,10 @@ required from medium model \""
     R = dryair.R*(X_air/(1 - X_liquid)) + steam.R*X_steam/(1 - X_liquid);
     //
     u = h - R*T;
-    d = p/(R*T);
-    /* Note, u and d are computed under the assumption that the volume of the liquid
+//    u = X_air*720*(T-reference_T) + X_steam*(1000*(T-reference_T)+steam.h_lv) + X_liquid*4185*(T-reference_T);
+//    u = h - p/d;
+    p = d*(1-X_liquid)*R*T;
+    /* Note, is computed under the assumption that the volume of the liquid
          water is negligible with respect to the volume of air and of steam
       */
     state.d = d;
