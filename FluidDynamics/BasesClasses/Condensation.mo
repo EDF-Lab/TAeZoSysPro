@@ -41,7 +41,7 @@ equation
   flowPort.m_flow[Medium.Water] = m_flow;
   flowPort.m_flow[Medium.Air] = 0;
   flowPort.H_flow = m_flow * Medium.enthalpyOfCondensingGas(heatPort.T);
-  flowPort.H_flow + heatPort.Q_flow = 0.0 ;
+  heatPort.Q_flow = -m_flow * Medium.enthalpyOfVaporization(heatPort.T) ;
 
 //Output condensation data
   m_flow_cond = m_flow ;
