@@ -1459,15 +1459,9 @@ protected
 
     import Modelica.Media.Incompressible.TableBased.Polynomials_Temp;
   algorithm
-    eta := 1e-6*Polynomials_Temp.evaluateWithRange(
-        {9.7391102886305869E-15,-3.1353724870333906E-11,4.3004876595642225E-08,
-        -3.8228016291758240E-05,5.0427874367180762E-02,1.7239260139242528E+01},
-        Modelica.SIunits.Conversions.to_degC(123.15),
-        Modelica.SIunits.Conversions.to_degC(1273.15),
-        Modelica.SIunits.Conversions.to_degC(state.T));
-    annotation (smoothOrder=2, Documentation(info="<html>
-  <p>Dynamic viscosity is computed from temperature using a simple polynomial for dry air. Range of validity is from 123.15 K to 1273.15 K. The influence of pressure and moisture is neglected.</p>
-  <p>Source: VDI Waermeatlas, 8th edition.</p>
+    eta := 1.81063e-5;
+    annotation (smoothOrder=5, Documentation(info="<html>
+  <p>Dynamic viscosity is constant and the value is computed from the NIST at the reference temperature and pressure and for dry air</p>
   </html>"));
   end dynamicViscosity;
 
@@ -1476,16 +1470,10 @@ protected
     import Modelica.Media.Incompressible.TableBased.Polynomials_Temp;
     import Cv = Modelica.SIunits.Conversions;
   algorithm
-    lambda := 1e-3*Polynomials_Temp.evaluateWithRange(
-        {6.5691470817717812E-15,-3.4025961923050509E-11,5.3279284846303157E-08,
-        -4.5340839289219472E-05,7.6129675309037664E-02,2.4169481088097051E+01},
-        Cv.to_degC(123.15),
-        Cv.to_degC(1273.15),
-        Cv.to_degC(state.T));
+    lambda := 0.0258738;
 
     annotation (smoothOrder=2, Documentation(info="<html>
-  <p>Thermal conductivity is computed from temperature using a simple polynomial for dry air. Range of validity is from 123.15 K to 1273.15 K. The influence of pressure and moisture is neglected.</p>
-  <p>Source: VDI Waermeatlas, 8th edition.</p>
+  <p>Thermal conductivity is constant and the value is computed from the NIST at the reference temperature and pressure and for dry air</p>
   </html>"));
   end thermalConductivity;
 
