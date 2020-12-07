@@ -70,9 +70,7 @@ initial equation
 
 equation
 // mass balance
-  d_a = Medium.density_phX(p = port_a.p, 
-                           h = inStream(port_a.h_outflow), 
-                           X = cat(1, inStream(port_a.Xi_outflow), {1 - sum(inStream(port_a.Xi_outflow))})) ;
+  d_a = Medium.density_phX(p = port_a.p, h = inStream(port_a.h_outflow), X = cat(1, inStream(port_a.Xi_outflow), {1 - sum(inStream(port_a.Xi_outflow))}));
   d_b = Medium.density_phX(p = port_b.p, 
                            h = inStream(port_b.h_outflow), 
                            X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))})) ;
@@ -111,7 +109,19 @@ Documentation(info ="
   <body lang=\"en-UK\">
     <p>
       This components allows to model the mass flow rate through a pipe from a pressure difference at boundaries and the pressure loss coefficient <b>ksi</b>.
-      The flow regime is steady state. 
+    </p>
+
+    <p>
+      Compared with a static pipe, the following assumptions are performed:
+      <ol>
+        <li> The mass balance is assumed quasi-static
+        <li> Density is assumed constant along the exchanger</li>
+        <ul>
+          <li> Mass conservation within the control volume is not respected</li>
+          <li> Change of kinetic energy from contraction or expansion in neglected</li>
+          <li> Change of temperature from kinetic energy variation is neglected</li>
+        </ul>
+      </ol>      		
     </p>
     
     <p>
