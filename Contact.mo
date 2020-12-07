@@ -18,10 +18,10 @@ class Contact
 		<p>
 		</p>
 		
-		<ul><font face=\"Century Gothic\"> Kury Ingénierie  </font><p></p><font face=\"Century Gothic\">
-			12 avenue Léon Cambillard </font><p></p><font face=\"Century Gothic\">
-			92140 Clamart  </font><p></p><font face=\"Century Gothic\">
-			Email: <a href=\"mailto:pascal.borel@kury.fr\">pascal.borel@kury.fr</a> </font>
+		<ul><font face=\"Century Gothic\"> EDF R&D  </font><p></p><font face=\"Century Gothic\">
+			6 Quai Watier </font><p></p><font face=\"Century Gothic\">
+			78400 Chatou  </font><p></p><font face=\"Century Gothic\">
+			Email: <a href=\"mailto:pascal.borel@edf.fr\">pascal.borel@edf.fr</a> </font>
 		</ul>
 		
 		<p
@@ -40,7 +40,7 @@ class Contact
 		<font face=\"Century Gothic\">
 			12 avenue Léon Cambillard </font><p></p><font face=\"Century Gothic\">
 			92140 Clamart </font><p></p><font face=\"Century Gothic\">
-			Email: <a href=\"mailto:felix-externe.marsollier@edf.fr\">felix.marsollier@kury.fr</a></font> </ul><div><br></div>
+			Email: <a href=\"mailto:felix.marsollier@kury.fr\">felix.marsollier@kury.fr</a></font> </ul><div><br></div>
 		
 		<p>
 		</p>
@@ -53,15 +53,14 @@ class Contact
 			<dt> 
 			</dt>
 			
-			<dd> Kury Ingénierie </dd>
 			<dd> EDVANCE </dd>
 		</dl>
 
 		<p>
 			<b>--------------------------------------------------------------<br>
-			Licensed by KURY INGENIERIE & EDVANCE under the Modelica License 2<br>
-			Copyright &copy; KURY INGENIERIE & EDVANCE 2016 - 2017<br>
-			Author : KURY INGENIERIE & EDVANCE (2017)<br>
+			Licensed by KEDVANCE under the Modelica License 2<br>
+			Copyright &copy; EDVANCE 2016 - 2017<br>
+			Author : EDVANCE (2017)<br>
 			Version : 3.0.0<br>
 			--------------------------------------------------------------</b>
 		</p>
