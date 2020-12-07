@@ -93,7 +93,6 @@ Documentation(info ="
   <body lang=\"en-UK\">
     <p>
       This components allows to model the mass flow rate through from either static boundary pressure difference or buoyancy effect through a horizontal orifice in a wall spliting two ambiances.
-      The flow regime is steady state. 
     </p>
     
     <p>
@@ -113,7 +112,7 @@ Documentation(info ="
     />
        
     <p>
-      In the flow, all the boundary pressure difference is converted in kinetic energy.
+      In the flow, all the boundary pressure difference is converted in kinetic energy at steady state.
     </p> 
           
     <img	
@@ -126,9 +125,24 @@ Documentation(info ="
     </p>    
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening3.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening7.PNG\"
     />
-    			
+    
+    <p>	
+      <b>Where</b>:
+      <ul>
+        <li> <code>dp</code> is the pressure difference between port_a.p and port_b.p </li>
+        <li> <code>d</code> is the upstream density </li>
+        <li> <code>Vel</code> is fluid velocity </li>              
+        <li> <code>m_flow</code> is the mass flow rate through the orifice </li>
+        <li> <code>A</code> is cross section of the orifice </li>
+        <li> <code>Cd</code> is the discharge coefficient </li>
+      </ul>				
+    </p>
+
+    <p>
+      To avoid infinite derivative at Vel=0, The square is replaced by the function <b>regSquare2</b> of the MSL that replace the square by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square is defined by the parameter <b> Vel_small </b>
+    </p>    			
   </body>
 </html>"),
     Icon(graphics = {Line(origin = {-20, 30}, points = {{-60, -30}, {0, -30}}, thickness = 2), Line(origin = {20, -30}, points = {{0, 30}, {60, 30}}, thickness = 2), Text(origin = {-54, 17}, extent = {{-46, 33}, {94, 13}}, textString = "L_up=%L_up"), Line(origin = {49.9541, 34.6789}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}), Text(origin = {6, -33}, extent = {{-46, 33}, {34, 13}}, textString = "A=%A"), Text(origin = {6, -63}, extent = {{-46, 33}, {94, 13}}, textString = "L_down=%L_down"), Line(origin = {-49.9541, -27.3945}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),

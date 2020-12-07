@@ -102,7 +102,6 @@ Documentation(info ="
   <body lang=\"en-UK\">
     <p>
       This components allows to model the mass flow rate through from either static boundary pressure difference or buoyancy effect through a vertical orifice in a wall spliting two ambiances.
-      The flow regime is steady state. 
     </p>
     
     <p>
@@ -139,11 +138,22 @@ Documentation(info ="
     
     <p>
       It is equivalent to have a pressure loss factor equation to one.
-      Therefore, the relation to compute mass flow rate through the orifice derives:
     </p>    
 
     <img	
       src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening4.PNG\"
+    />
+
+    <p>
+      The Fundamental principle of the dynamics derives:
+    </p>
+    
+    <p>
+      Therefore, the relation to compute mass flow rate through the orifice derives:
+    </p>
+    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening5.PNG\"
     />
  		
     <p>	
@@ -161,7 +171,7 @@ Documentation(info ="
     </p>
 
     <p>
-      To avoid infinite derivative at dp_i=0, The square root is replaced by the function <b>regRoot2</b> of the MSL that replace the square root by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square root is <b> abs(dp≤0.01) Pa </b>
+      To avoid infinite derivative at Vel_i=0, The square is replaced by the function <b>regSquare2</b> of the MSL that replace the square by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square is defined by the parameter <b> Vel_small </b>
     </p>			
   </body>
 </html>"),
