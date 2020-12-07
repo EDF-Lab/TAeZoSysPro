@@ -152,19 +152,34 @@ equation
 
 annotation(Documentation(info = "
 <html>
-	<head>
-		<title>DryExchanger</title>
-		
-	</head>
+  <head>
+    <title>DiscreteExchanger</title>		
+  </head>
 	
-	<body lang=\"en-UK\">
-	
-		<p>
-			This component models a dry heat exchange. It is a duplication of the component <a href= \"modelica://TAeZoSysPro.HeatTransfer.Components.HeatExchanger\">HeatExchanger</a>
+  <body lang=\"en-UK\">	
+    <p>
+      This component models a dry heat exchange. It is a duplication of the component <a href= \"modelica://TAeZoSysPro.HeatTransfer.Components.HeatExchanger\">HeatExchanger</a>
 			from the HeatTransfer package adapted to use fluidports.  
-		</p>
+    </p>
 		
-	</body>
+    <p>
+      Compared with a static exchanger, the following assumptions are performed:
+      <ol>
+        <li> The mass balance is assumed quasi-static
+        <ul>
+          <li> The mass fraction is not transported thus it is assumed constant</li>
+        </ul>
+        <li> Reverse flow is not allowed</li>
+        <li> Density is assumed constant along the exchanger</li>
+        <ul>
+          <li> Mass conservation within the control volume is not respected</li>
+          <li> Change of kinetic energy from contraction or expansion in neglected</li>
+          <li> Change of temperature from kinetic energy variation is neglected</li>
+        </ul>
+      </ol>      		
+    </p>		
+		
+  </body>
 </html>"),
     Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(origin = {-2, 0}, lineColor = {0, 161, 241}, fillColor = {211, 211, 211}, pattern = LinePattern.None, fillPattern = FillPattern.HorizontalCylinder, lineThickness = 0.5, extent = {{-86, 14}, {90, -14}}), Line(origin = {-48.1691, -0.0769465}, points = {{-12, 0}, {12, 0}}, color = {94, 94, 94}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Text(origin = {-48, -2}, lineThickness = 0.5, extent = {{-26, 12}, {122, -8}}, textString = "Fluid A", fontSize = 8), Line(origin = {45.8309, -0.336488}, points = {{-12, 0}, {12, 0}}, color = {94, 94, 94}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {33.5697, -26.3828}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {69.0506, -52.8561}, rotation = 90, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {-35.3005, -26.0775}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Polygon(origin = {-18, -50}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid, lineThickness = 0.5, points = {{-62, 36}, {-62, 14}, {78, 14}, {78, -18}, {98, -18}, {98, 36}, {-62, 36}}), Polygon(origin = {18, 50}, rotation = 180, fillColor = {213, 0, 0}, fillPattern = FillPattern.Solid, lineThickness = 0.5, points = {{-62, 36}, {-62, 14}, {78, 14}, {78, -16}, {98, -16}, {98, 36}, {-62, 36}}), Line(origin = {-70.0865, 48.0933}, rotation = 90, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Text(origin = {-48, 26}, lineThickness = 0.5, extent = {{-26, 6}, {122, -8}}, textString = "Fluid B", fontSize = 8), Line(origin = {-34.2845, 24.4902}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {39.9145, 24.3595}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {-34.1619, -25.5166}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {70.1888, -52.2955}, rotation = 90, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5), Line(origin = {34.7078, -25.8219}, rotation = 180, points = {{-12, 0}, {12, 0}}, color = {207, 207, 207}, thickness = 0.5, arrow = {Arrow.None, Arrow.Filled}, arrowSize = 5)}));
 
