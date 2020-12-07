@@ -3,14 +3,19 @@ package MoistAir
   package Tests
 
     model test_enthalpyOfVaporization
-
+  package Medium = Modelica.Media.Water.StandardWater;
       Modelica.SIunits.Temperature T;
       Modelica.SIunits.SpecificEnergy h_lv;
-
+    Modelica.SIunits.SpecificEnergy h_lv_check;
+      Medium.SaturationProperties sat;
+      Medium.ThermodynamicState dewState, bubbleState; 
     equation
-      T = 273.15;
+      T = 273.16+time;
       h_lv = TAeZoSysPro.Media.Air.MoistAir.enthalpyOfVaporization(T);
-
+  sat = Medium.setSat_T(T);
+      dewState = Medium.setDewState(sat); 
+      bubbleState = Medium.setBubbleState(sat); 
+      h_lv_check = dewState.h - bubbleState.h;
       annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
             coordinateSystem(preserveAspectRatio=false)));
     end test_enthalpyOfVaporization;
@@ -108,7 +113,7 @@ package MoistAir
     reference_T = 293.15,
     Temperature(min=190, max=647),
     ThermoStates=Modelica.Media.Interfaces.Choices.IndependentVariables.dTX);
-
+  import Modelica.Media.Interfaces.Types.ExtraProperty;
   constant Integer Water=1
     "Index of water (in substanceNames, massFractions X, etc.)";
   constant Integer Air=2
@@ -1421,8 +1426,7 @@ algorithm
   redeclare function extends specificHeatCapacityCp
     "Return specific heat capacity at constant pressure as a function of the thermodynamic state record"
 protected
-    SI.Density d_sat
-      "Steam water density of saturation boundary in kg_water/m3";
+    SI.Density d_sat "Steam water density of saturation boundary in kg_water/m3";
     SI.MassFraction X_liquid ;
     SI.MassFraction X_steam ;
     SI.MassFraction X_air ;
@@ -1432,6 +1436,7 @@ protected
     X_steam := state.X[Water] - X_liquid;
     X_air := 1 - state.X[Water];
     cp := steam.cp*X_steam + dryair.cp*X_air + water.cp*X_liquid;
+//    cp := steam.cp*state.X[Water] + dryair.cp*(1-state.X[Water]);
 
     annotation (
       Inline=false,
