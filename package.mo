@@ -1,5 +1,4 @@
 package TAeZoSysPro
-  extends Modelica.Icons.UnderConstruction ;
 
 annotation(
     Documentation(info = "
