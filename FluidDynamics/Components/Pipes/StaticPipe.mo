@@ -22,6 +22,10 @@ model StaticPipe
     Placement(visible = true, transformation(origin = {-100, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Fluid.Interfaces.FluidPort_b port_b(replaceable package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+  //
+  final parameter Modelica.SIunits.PressureDifference dp_small = 0.01;
+
 equation
 
 // mass balance
@@ -34,7 +38,7 @@ equation
 
   dp = port_a.p - port_b.p;
   m_flow = A * Modelica.Fluid.Utilities.regRoot2(x = dp,
-                                                 x_small = 0.1,
+                                                 x_small = dp_small,
                                                  k1 = 2.0 * d_a / ksi,
                                                  k2 = 2.0 * d_b / ksi) ;
   Vel * d_a * A = m_flow ;
