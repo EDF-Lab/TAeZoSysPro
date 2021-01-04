@@ -58,7 +58,7 @@ class Contact
 
 		<p>
 			<b>--------------------------------------------------------------<br>
-			Licensed by KEDVANCE under the Modelica License 2<br>
+			Licensed by EDVANCE under the Modelica License 2<br>
 			Copyright &copy; EDVANCE 2016 - 2017<br>
 			Author : EDVANCE (2017)<br>
 			Version : 3.0.0<br>
