@@ -305,7 +305,7 @@ required from medium model \"" + mediumName + "\".");
     input Temperature T "Saturation temperature";
     output Density dsat "Saturation density";
   algorithm
-    dsat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T) / (steam.R * T);
+    dsat := saturationPressure(T) / (steam.R * T);
     annotation(
       Inline = true,
       Documentation(info = "<html>
