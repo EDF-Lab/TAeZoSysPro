@@ -320,7 +320,8 @@ required from medium model \"" + mediumName + "\".");
     input Real dTsat(unit = "K/s") "Time derivative of saturation temperature";
     output Real dsat_der(unit = "kg/m3/s") "Saturation pressure";
   algorithm
-    dsat_der := 1 / steam.MM * (Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.dptofT(T) / T - Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T) / T ^ 2) * dTsat;
+//    dsat_der := 1 / steam.R * saturationPressure_der(T, dTsat)   * (Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.dptofT(T) / T - Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T) / T ^ 2) * dTsat;
+  dsat_der := 1 / steam.R * (saturationPressure_der(T, dTsat) / T - saturationPressure(T) / T^2 * dTsat) 
     annotation(
       Inline = false,
       smoothOrder = 5,
