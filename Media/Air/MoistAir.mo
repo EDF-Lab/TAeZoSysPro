@@ -250,6 +250,63 @@ required from medium model \"" + mediumName + "\".");
 </html>"));
   end gasConstant;
 
+  function r_dTX "Return ideal gas constant as a function from thermodynamic d, T and X, remains valid with liquid water in the mixture"
+  input SI.Density d "Density";
+  input SI.Temperature T "Temperature";
+  input SI.MassFraction X[:] "Mass fractions of moist air";
+  output SI.SpecificHeatCapacity R "Mixture gas constant";
+  protected
+    MassFraction X_liquid "Mass fraction of liquid or solid water";
+    Density d_sat "Steam water density of saturation boundary in kg_water/m3";
+  algorithm
+    d_sat := saturationDensity(T);
+    X_liquid := max(d * X[Water] - d_sat, 0) / d;
+    R := dryair.R * (1 - X[Water]) / (1 - X_liquid) + steam.R * (X[Water] - X_liquid) / (1 - X_liquid);
+    annotation(
+      Documentation(info = "<html>
+  The ideal gas constant for moist air is computed from the density d, temperature T and composition X where the mass fractions of dry air and steam are corrected of the mass fraction of liquid that does not count for the gas contant calculation.
+</html>"));
+  end r_dTX;
+
+  function r_dTX_der "Return ideal gas constant derivative as a function from thermodynamic d, T and X, remains valid with liquid water in the mixture"
+    input SI.Density d "Density";
+    input SI.Temperature T "Temperature";
+    input SI.MassFraction X[:] "Mass fractions of moist air";
+    input Real dd(unit = "kg/(m3.s)") "Density derivative";
+    input Real dT(unit = "K/s") "Temperature derivative";
+    input Real dX[:](each unit = "1/s") "Composition derivative";
+    output Real R_der(unit = "J/(kg.s.K)") "Time derivative of specific enthalpy";
+  protected
+    SI.MassFraction X_liquid "Mass fraction of liquid or solid water";
+    SI.MassFraction X_steam "Mass fraction of steam water";
+    SI.MassFraction X_air "Mass fraction of air";
+    SI.Density d_sat "Steam water density of saturation boundary in kg_water/m3";
+    Real dX_steam(unit = "1/s") "Time derivative of steam mass fraction";
+    Real dX_air(unit = "1/s") "Time derivative of dry air mass fraction";
+    Real dX_liq(unit = "1/s") "Time derivative of liquid/solid water mass fraction";
+    Real dd_sat(unit = "kg/(m3.s)") "Time derivative of saturation density";
+  
+  algorithm
+    d_sat := saturationDensity(T);
+    X_liquid := Utilities.smoothMax(X[Water] - d_sat / d, 0.0, 1e-5);
+    X_steam := X[Water] - X_liquid;
+    X_air := 1 - X[Water];
+    
+    dd_sat := saturationDensity(T, dT);
+    dX_liq := Utilities.smoothMax_der(
+      X[Water] - d_sat / d, 0.0, 1e-5, 
+      dX[Water] - dd_sat/d + d_sat * dd / d^2, 0, 0);
+    dX_steam := dX[Water] - dX_liq;
+    dX_air := -dX[Water];
+    
+    R_der := (dryair.R * dX_air + steam.R * dX_steam) / (1 - X_liquid) + dX_liq / (1 - X_liquid)^2 * (dryair.R * X_air + steam.R * X_steam) 
+  
+    annotation(
+      Documentation(info = "<html>
+  The ideal gas constant derivative for moist air is computed from the density d, temperature T and composition X where the mass fractions of dry air and steam are corrected of the mass fraction of liquid that does not count for the gas contant calculation.
+</html>"));
+  end r_dTX_der;
+
   function gasConstant_X "Return ideal gas constant as a function from composition X (only valid for phi<1)"
     extends Modelica.Icons.Function;
     input SI.MassFraction X[:] "Gas phase composition";
