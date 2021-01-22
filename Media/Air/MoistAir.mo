@@ -362,22 +362,26 @@ Saturation pressure of water in the liquid and the solid region is computed usin
   </html>"));
   end saturationPressure_der;
 
-  replaceable function saturationPressureLiquid "Return saturation pressure of water as a function of temperature T in the range of 273.16 to 647.096 K"
+  replaceable function saturationPressureLiquid "Return saturation pressure of water as a function of temperature T in the range of 273.15K to 647.096K (region 4 from the IF97 definition)"
     extends Modelica.Icons.Function;
     input SI.Temperature Tsat "Saturation temperature";
     output SI.AbsolutePressure psat "Saturation pressure";
   protected
-    SI.Temperature Tcritical = 647.096 "Critical temperature";
-    SI.AbsolutePressure pcritical = 22.064e6 "Critical pressure";
-    Real r1 = 1 - Tsat / Tcritical "Common subexpression";
-    Real a[:] = {-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719, 1.80122502} "Coefficients a[:]";
-    Real n[:] = {1.0, 1.5, 3.0, 3.5, 4.0, 7.5} "Coefficients n[:]";
+//    SI.Temperature Tcritical = 647.096 "Critical temperature";
+//    SI.AbsolutePressure pcritical = 22.064e6 "Critical pressure";
+//    Real r1 = 1 - Tsat / Tcritical "Common subexpression";
+//    Real a[:] = {-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719, 1.80122502} "Coefficients a[:]";
+//    Real n[:] = {1.0, 1.5, 3.0, 3.5, 4.0, 7.5} "Coefficients n[:]";
+    constant SI.Temperature T_limit_low = 273.16; 
+    constant SI.Temperature T_limit_high = 679.096;
+    SI.Temperature T "Temperature in definition range";     
   algorithm
 //   psat := exp(((a[1]*r1^n[1] + a[2]*r1^n[2] + a[3]*r1^n[3] + a[4]*r1^n[4]
 //      + a[5]*r1^n[5] + a[6]*r1^n[6])*Tcritical)/Tsat)*pcritical;
-    psat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(Tsat);
+    T := max(Tsat, T_limit_low); 
+    psat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T);
     annotation(
-      derivative = saturationPressureLiquid_der,
+//      derivative = saturationPressureLiquid_der,
       Inline = false,
       smoothOrder = 5,
       Documentation(info = "<html>
