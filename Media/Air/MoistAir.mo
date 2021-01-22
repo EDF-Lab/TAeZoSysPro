@@ -307,6 +307,7 @@ required from medium model \"" + mediumName + "\".");
   algorithm
     dsat := saturationPressure(T) / (steam.R * T);
     annotation(
+      derivative = saturationDensity_der,
       Inline = true,
       Documentation(info = "<html>
   Saturation density of steam is computed as function of the Temperature using the saturation pressure function <a href=\"modelica://Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat;\"> psat</a> and the perfect gas law.
