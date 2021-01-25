@@ -292,7 +292,7 @@ required from medium model \"" + mediumName + "\".");
     X_steam := X[Water] - X_liquid;
     X_air := 1 - X[Water];
     
-    dd_sat := saturationDensity(T, dT);
+    dd_sat := saturationDensity_der(T, dT);
     dX_liq := Utilities.smoothMax_der(
       X[Water] - d_sat / d, 0.0, 1e-5, 
       dX[Water] - dd_sat/d + d_sat * dd / d^2, 0, 0);
