@@ -59,7 +59,8 @@ required from medium model \"" + mediumName + "\".");
       X_steam = Xi[Water] - X_liquid;
       X_air = 1 - Xi[Water];
       h = h_dTX(d, T, Xi);
-      R = dryair.R * (X_air / (1 - X_liquid)) + steam.R * X_steam / (1 - X_liquid);
+//      R = dryair.R * (X_air / (1 - X_liquid)) + steam.R * X_steam / (1 - X_liquid);
+      R = r_dTX(d, T, Xi);
 //
       u = h - R * T;
 //    u = X_air*720*(T-reference_T) + X_steam*(1000*(T-reference_T)+steam.h_lv) + X_liquid*4185*(T-reference_T);
