@@ -264,6 +264,7 @@ required from medium model \"" + mediumName + "\".");
     X_liquid := max(d * X[Water] - d_sat, 0) / d;
     R := dryair.R * (1 - X[Water]) / (1 - X_liquid) + steam.R * (X[Water] - X_liquid) / (1 - X_liquid);
     annotation(
+      derivative = r_dTX_der,
       Documentation(info = "<html>
   The ideal gas constant for moist air is computed from the density d, temperature T and composition X where the mass fractions of dry air and steam are corrected of the mass fraction of liquid that does not count for the gas contant calculation.
 </html>"));
@@ -439,7 +440,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     T := max(Tsat, T_limit_low); 
     psat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.psat(T);
     annotation(
-//      derivative = saturationPressureLiquid_der,
+      derivative = saturationPressureLiquid_der,
       Inline = false,
       smoothOrder = 5,
       Documentation(info = "<html>
@@ -778,9 +779,10 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     X_air := 1 - X[Water];
 //h := X_air*dryair.cp*(T-273.15) + X_steam*(steam.cp*(T-273.15)+steam.h_lv) + enthalpyOfWater(T)*X_liquid;
     h := X_air * dryair.cp * (T - reference_T) + X_steam * (steam.cp * (T - reference_T) + steam.h_lv) + X_liquid * water.cp * (T - reference_T);
-//    derivative=h_dTX_der,
+
     annotation(
       Inline = false,
+      derivative=h_dTX_der,
       Documentation(info = "<html>
   Specific enthalpy of moist air is computed from density, temperature and composition with X[1] as the total water mass fraction. The fog region is included for both, ice and liquid fog.
   </html>"));
