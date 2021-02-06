@@ -8,10 +8,10 @@ model MolecularDiffusion
   // User defined parameters
   parameter Modelica.SIunits.Thickness Th = 1 "Thickness between concentration potential difference";
   parameter Modelica.SIunits.CrossSection A = 0;
+  parameter Modelica.SIunits.DiffusionCoefficient D=25*1e-6;
   
   // Internal variables
   Real grad_X[Medium.nX](each quantity="spatial gradient",each unit="m-1") "gradient of mass fraction" ;
-  Modelica.SIunits.DiffusionCoefficient D;
   Modelica.SIunits.MassFlowRate[Medium.nX] m_flow;
   Modelica.SIunits.Density d_mean ;
   Modelica.SIunits.Temperature T_mean ;
@@ -34,7 +34,6 @@ equation
   h[2] = Medium.enthalpyOfNonCondensingGas(T_mean) ;
   
   //
-  D = 0.01 ;
   
   // for a binary gas mixture
   grad_X = 1 / Th * ( X_b - X_a ) ;
@@ -71,7 +70,7 @@ equation
     </p>		
 		
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_MolecularDiffusion.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_MolecularDiffusion.png\"
     />	
 		
     <p>	
@@ -90,7 +89,7 @@ equation
     </p>
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_MolecularDiffusion2.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_MolecularDiffusion2.png\"
     />
     		
     <p>		
