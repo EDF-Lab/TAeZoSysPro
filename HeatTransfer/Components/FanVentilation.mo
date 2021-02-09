@@ -38,7 +38,7 @@ equation
 
   cp = Medium.specificHeatCapacityCp(Medium.setState_pTX(p = Medium.reference_p, T = (port_a.T + port_b.T)/2));
 
-  d = Medium.density_pT(p = Medium.reference_p, T = port_a.T);
+  d = Medium.density_pTX(p = Medium.reference_p, T = port_a.T, X = Medium.reference_X);
 
   if  Use_External_MassFlow then
     m_flow = m_flow_in_internal;
