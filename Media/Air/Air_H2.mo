@@ -66,7 +66,7 @@ package Air_H2
     R := dihydrogen.R*state.X[H2] + dryair.R*(1-state.X[H2]);
   end gasConstant ;
   
-  function extends gasConstant_X
+  function gasConstant_X
     extends Modelica.Icons.Function;
     input Modelica.SIunits.MassFraction X[:];
     output Real R(final unit="J/(kg.K)");
