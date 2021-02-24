@@ -18,7 +18,9 @@ modelica library to model fluid dynamic of HVAC systems
 2-Major corrections:
 	- Correction in the called fonction to computed the derivative function of the saturation density of the MoistAir media (f4dc88331a0807266a3e40273d170f6f54fed3bb)
 	- Correction in the calcualtion of the derivative function of the saturation density of the MoistAir media
+	- Correction in the "UpwindFirstOrder" model when the flow was in reverse direction
 	
 3-Enhancements
 	- FanVentilation: works with multi-species media
 	- The saturation pressure fonctions have been changed to work with a MoistAir bellow the triple point condition. It does not mean that the media can model a condensable moist air bellow the triple point conditions
+	- The orifices (except the compressible opening) can be initialised to a given velocity with a steady state condition. The flow regime can now be steady state or inertial.
