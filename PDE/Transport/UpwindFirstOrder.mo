@@ -21,9 +21,9 @@ equation
 
   for n_quantity in 1:N_quantity loop /* loop on transported quantity */
     //left boundary
-    CoeffTimeDer * der(u[1, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u_ghost_left[n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[2, n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) + SourceTerm[1] "PDE domain";
+    CoeffTimeDer * der(u[1, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u_ghost_left[n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) - (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[2, n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) + SourceTerm[1] "PDE domain";
     //right boundary
-    CoeffTimeDer * der(u[N, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[N-1, n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u_ghost_right[n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) + SourceTerm[N] "PDE domain";
+    CoeffTimeDer * der(u[N, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[N-1, n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) - (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u_ghost_right[n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) + SourceTerm[N] "PDE domain";
     //domain  
     for i in 2:N-1 loop /* loop on discrete node */
       CoeffTimeDer * der(u[i, n_quantity]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i, n_quantity] - u[i-1, n_quantity]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1, n_quantity] - u[i, n_quantity]) / (x[i+1] - x[i]) = SourceTerm[i] "PDE domain";    
