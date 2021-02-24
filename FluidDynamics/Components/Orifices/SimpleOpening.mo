@@ -1,12 +1,15 @@
 within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model SimpleOpening 
-
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
+  
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
   parameter Modelica.SIunits.Length NotionalLength = 0.1 "Opening's thickness";
+  parameter Dynamics massDynamics = Dynamics.SteadyStateInitial "Formulation of mass balance";
+  parameter Modelica.SIunits.Velocity Vel_start = 0.0 "Start value for velocity, if not steady state";
   
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
@@ -28,8 +31,17 @@ model SimpleOpening
 protected
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
   Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
+  
   parameter Modelica.SIunits.Velocity Vel_small = 0.001 ;
+  
+initial equation
+  if massDynamics == Dynamics.SteadyStateInitial then
+    der(Vel) = 0;
+    
+  elseif massDynamics == Dynamics.FixedInitial then
+    Vel = Vel_start ;
 
+  end if;
 equation
 //
   state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
@@ -50,13 +62,20 @@ equation
     x_small = Vel_small, 
     y1 = sum(port_a.d), 
     y2 = sum(port_b.d));
-    
+
+if massDynamics == Dynamics.SteadyState then
+  dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(
+    x = Vel, 
+    x_small = Vel_small, 
+    k1 = sum(port_a.d), 
+    k2 = sum(port_b.d)) = 0.0;
+else   
   NotionalLength * d * der(Vel) = dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(
     x = Vel, 
     x_small = Vel_small, 
     k1 = sum(port_a.d), 
     k2 = sum(port_b.d));
-    
+end if;    
   m_flow = Vel * A * Cd * d;
   
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid

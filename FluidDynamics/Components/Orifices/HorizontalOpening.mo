@@ -1,6 +1,7 @@
 within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model HorizontalOpening
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
   package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
@@ -9,6 +10,8 @@ model HorizontalOpening
   parameter Modelica.SIunits.Length L_down = 1 "Distance from bottom node";
   parameter Modelica.SIunits.Length L_up = 1 "Distance from top node";
   parameter Modelica.SIunits.Length NotionalLength = 1e-4 "Opening's thickness";
+  parameter Dynamics massDynamics = Dynamics.SteadyStateInitial "Formulation of mass balance";
+  parameter Modelica.SIunits.Velocity Vel_start = 0.0 "Start value for velocity, if not steady state";
   
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
@@ -35,7 +38,13 @@ protected
   parameter Modelica.SIunits.Velocity Vel_small = 0.001 ; 
 
 initial equation
-//  Vel = 0.0;
+  if massDynamics == Dynamics.SteadyStateInitial then
+    der(Vel) = 0;
+    
+  elseif massDynamics == Dynamics.FixedInitial then
+    Vel = Vel_start ;
+
+  end if;
   
 equation
 //
@@ -54,7 +63,11 @@ equation
   h_b = Medium.specificEnthalpy(state_b);  
     
   d = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel, x_small = 1e-14, y1 = sum(port_a.d), y2 = sum(port_b.d));
-  dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d * der(Vel);
+  if massDynamics == Dynamics.SteadyState then 
+    dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = 0.0;
+  else 
+    dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d * der(Vel);
+  end if;
   m_flow = Vel * A * Cd * d;
 
 // assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid

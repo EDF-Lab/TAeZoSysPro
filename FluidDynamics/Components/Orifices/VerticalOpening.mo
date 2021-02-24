@@ -1,7 +1,7 @@
 within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model VerticalOpening
-
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
@@ -10,7 +10,9 @@ model VerticalOpening
   parameter Modelica.SIunits.Height H = 1 "Opening's Height";
   parameter Integer N = 5 "Number discrete layer along the height of the opening";  
   parameter Modelica.SIunits.Length NotionalLength = 1e-4 "Opening's thickness";
-  
+  parameter Dynamics massDynamics = Dynamics.SteadyStateInitial "Formulation of mass balance";
+  parameter Modelica.SIunits.Velocity Vel_start = 0.0 "Start value for velocity, if not steady state";
+    
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
@@ -38,7 +40,13 @@ protected
   parameter Modelica.SIunits.Velocity Vel_small = 0.001 ;  
 
 initial equation
-  Vel = fill(0.0, N);
+  if massDynamics == Dynamics.SteadyStateInitial then
+    der(Vel) = fill(0.0, N);
+    
+  elseif massDynamics == Dynamics.FixedInitial then
+    Vel = fill(Vel_start, N) ;
+
+  end if;
   
 equation
 //
@@ -57,7 +65,11 @@ equation
   for i in 1:N loop  
     dp_i[i] = dp + Modelica.Constants.g_n * (H_fluidStream / 2 - H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
     d[i] = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel[i], x_small = 1e-10, y1 = sum(port_a.d), y2 = sum(port_b.d));
-    dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d[i] * der(Vel[i]);
+    if massDynamics == Dynamics.SteadyState then
+      dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = 0.0;  
+    else /* inertial opening */  
+      dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d[i] * der(Vel[i]);
+    end if;
     m_flow_i[i] = Vel[i] * Cd * A / N * d[i];       
   end for ;
       
