@@ -40,7 +40,7 @@ model HalfWall
   parameter Modelica.SIunits.ThermalConductivity k = 0 "Wall conductivity" annotation(
   Dialog(group="Thermal properties"));
   
-  parameter Real add_on_conv(unit = "R+") = 1 "Custom add-on" annotation(
+  parameter Real add_on_conv = 1 "Custom add-on" annotation(
     Dialog(group = "Convection properties"));
   parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE "free convection Correlation" annotation(
     Dialog(group = "Convection properties"));
@@ -53,7 +53,7 @@ model HalfWall
     Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
-  parameter Real add_on_rad(unit = "R+") = 1 "Custom add-on" annotation(
+  parameter Real add_on_rad = 1 "Custom add-on" annotation(
     Dialog(group = "Radiative properties"));
 
 // Internal variables
