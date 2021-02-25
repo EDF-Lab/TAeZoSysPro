@@ -19,8 +19,10 @@ function polynomialFlow_inv
   
 algorithm
 //
-  for i in 1:OrderPolyFitting + 1 loop
-    A[:, i] := V_flow_nominal .^ (i - 1);
+  for j in 1:OrderPolyFitting + 1 loop
+    for i in 1:N loop
+      A[i, j] := V_flow_nominal[i] ^(j - 1);
+    end for;
   end for;
 
 // Compute the coefficient to fit the curve
