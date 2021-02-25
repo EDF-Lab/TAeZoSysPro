@@ -49,7 +49,7 @@ model LiquidNode
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort(T(start = 500.0, nominal = 500.0)) annotation(
     Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 protected
   Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
