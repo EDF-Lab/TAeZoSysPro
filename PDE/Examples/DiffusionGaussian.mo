@@ -19,7 +19,8 @@ model DiffusionGaussian
     N = N,
     x = linspace(0,L,N+1),
     CoeffTimeDer = 1,
-    CoeffSpaceDer = -Dth ) annotation(
+    CoeffSpaceDer = -Dth,
+    SourceTerm = zeros(N))  annotation (
     Placement(visible = true, transformation(origin = {0, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 initial equation
@@ -39,10 +40,9 @@ end for ;
   centralSecondOrder.u[end] = 1 / sqrt(4 * Modelica.Constants.pi * Dth * time)  * exp(-(L/2)^2/(4*Dth*time)) "Right boundary condition";
 
   // PDE domain
-  centralSecondOrder.SourceTerm = zeros(N);
+  //centralSecondOrder.SourceTerm = zeros(N);
   u_1order = centralSecondOrder.u
-  
-annotation(
-    experiment(StartTime = t_0, StopTime = 1, Tolerance = 1e-6, Interval = 0.0001));
+annotation (
+    experiment(StartTime = 1e-3, StopTime = 1, Tolerance = 1e-6, Interval = 0.0001));
 
 end DiffusionGaussian;

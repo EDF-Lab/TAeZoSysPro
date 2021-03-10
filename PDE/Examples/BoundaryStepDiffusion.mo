@@ -22,7 +22,8 @@ model BoundaryStepDiffusion
     N = N,
     x = linspace(0,L,N+1),
     CoeffTimeDer = 1,
-    CoeffSpaceDer = -Dth ) annotation(
+    CoeffSpaceDer = -Dth,
+    SourceTerm = zeros(N))  annotation (
     Placement(visible = true, transformation(origin = {0, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 initial equation
@@ -45,7 +46,7 @@ end for ;
   centralSecondOrder.u[end] = u_init "Right boundary condition";
 
   // PDE domain
-  centralSecondOrder.SourceTerm = zeros(N);
+  //centralSecondOrder.SourceTerm = zeros(N);
   u_1order = centralSecondOrder.u
  
 
