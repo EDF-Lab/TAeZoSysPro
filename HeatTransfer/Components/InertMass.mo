@@ -5,7 +5,6 @@ model InertMass
   import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
   import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
   
-  /*outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
 
 //Media
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
@@ -34,17 +33,14 @@ model InertMass
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection = true "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Integer RadiativeIndex = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
   parameter Real add_on_rad = 1 "Custom add-on" annotation(
     Dialog(group = "Radiative properties"));
 
 // imported module
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection(replaceable package Medium = Medium, A = A_conv, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection(redeclare
+      package                                                                         Medium = Medium, A = A_conv, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation (
     Placement(visible = true, transformation(origin = {-47, 70}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A_rad, add_on = add_on_rad, eps = eps)  annotation(
     Placement(visible = true, transformation(origin = {-56.5, -70.5}, extent = {{-22.5, -22.5}, {22.5, 22.5}}, rotation = 180)));
@@ -68,10 +64,6 @@ equation
   connect(port_a_rad, carrollRadiation.port_b) annotation(
     Line(points = {{-101, -70}, {-88, -70}, {-88, -70.5}, {-79, -70.5}}, color = {191, 0, 0}));
   
-  if UseImplicitConnection then
-    F_view = fviewCalculator.F_view[RadiativeIndex] ;
-    fviewCalculator.A_wall[RadiativeIndex] = A_rad ;
-  end if ;
 
   A_wall = A_rad ;
 
