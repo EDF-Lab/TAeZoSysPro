@@ -6,7 +6,7 @@ model CentralSecondOrder
   parameter Modelica.SIunits.Position x[N+1] "Position array" ;
     
   // inputs
-  input Real CoeffTimeDer "Coefficient for time derivative" ;
+  input Real CoeffTimeDer=1 "Coefficient for time derivative";
   input Real CoeffSpaceDer "Coefficient for space derivative" ;
   input Real SourceTerm[N] "Source term in the right hand side" ;
   input Boolean SteadyState = false "Steady state mode" ;
