@@ -56,6 +56,7 @@ model PartialWall
     Placement(visible = true, transformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     PDE.ThermalDiffusion.CentralSecondOrder centralSecondOrder(
       N = N,  
+      CoeffTimeDer=if energyDynamics == Dynamics.SteadyState then 0.0 else 1.0,  
       CoeffSpaceDer=-D_th, 
       SourceTerm = fill(0.0, N), 
       x=x,
@@ -90,13 +91,6 @@ equation
     
     port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1]) / ((x[end]-x[end-1])/2) * k * A = 0.0 "flux conservation" ;
 
-  if energyDynamics == Dynamics.SteadyState then
-    centralSecondOrder.CoeffTimeDer = 0.0 ;
-    
-  else
-    centralSecondOrder.CoeffTimeDer = 1.0 ;
-        
-  end if ;     
     
 //  port_a.T = centralSecondOrder.u[1] ;
 //  port_b.T = centralSecondOrder.u[end] ;
