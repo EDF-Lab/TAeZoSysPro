@@ -7,8 +7,6 @@ model Wall
   import TAeZoSysPro.HeatTransfer.Types.MeshGrid ;
   import MeshFunction = TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
   
-/*  outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection_a ;
-/*  outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator1 if UseImplicitConnection_b ;
 
 //Media
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
@@ -53,14 +51,6 @@ model Wall
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const_b = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection_a = false "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Boolean UseImplicitConnection_b = false "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Integer RadiativeIndex_a = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));
- parameter Integer RadiativeIndex_b = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));  
   parameter Modelica.SIunits.Emissivity eps_a = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps_b = 0 "Wall emissivity " annotation(
@@ -110,14 +100,6 @@ equation
   Bi_a = freeConvection_a.h_cv * (partialWall.x[2] - partialWall.x[1]) / k;
   Bi_b = freeConvection_b.h_cv * (partialWall.x[end] - partialWall.x[end-1]) / k;
   
-  if UseImplicitConnection_a then
-    F_view_a = fviewCalculator.F_view[RadiativeIndex_a] ;
-    fviewCalculator.A_wall[RadiativeIndex_a] = A ;
-  end if ;
-  if UseImplicitConnection_b then
-    F_view_b = fviewCalculator1.F_view[RadiativeIndex_b] ;
-    fviewCalculator1.A_wall[RadiativeIndex_b] = A ;
-  end if ;
 
 A_wall_a = A;
 A_wall_b = A;
