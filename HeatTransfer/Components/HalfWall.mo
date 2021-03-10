@@ -7,7 +7,6 @@ model HalfWall
   import TAeZoSysPro.HeatTransfer.Types.MeshGrid ;
   import MeshFunction = TAeZoSysPro.HeatTransfer.Functions.MeshGrid ;
   
-  /*outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
 
 //Media
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
@@ -47,10 +46,6 @@ model HalfWall
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection = false "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Integer RadiativeIndex = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
   parameter Real add_on_rad = 1 "Custom add-on" annotation(
@@ -62,7 +57,8 @@ model HalfWall
 // Components inside wall are defined
   TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = false)  annotation(
     Placement(visible = true, transformation(origin = {6.5, 0.5}, extent = {{-29.5, -29.5}, {29.5, 29.5}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation(
+  TAeZoSysPro.HeatTransfer.BasesClasses.FreeConvection convection(redeclare
+      package                                                                         Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation (
     Placement(visible = true, transformation(origin = {-47, 70}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A, add_on = add_on_rad, eps = eps)  annotation(
     Placement(visible = true, transformation(origin = {-56.5, -70.5}, extent = {{-22.5, -22.5}, {22.5, 22.5}}, rotation = 180)));
@@ -96,10 +92,6 @@ equation
 
   Bi = convection.h_cv*(partialWall.x[2]-partialWall.x[1]) / k ;
   
-  if UseImplicitConnection then
-    F_view = fviewCalculator.F_view[RadiativeIndex] ;
-    fviewCalculator.A_wall[RadiativeIndex] = A ;
-  end if ;
 
 A_wall = A;    //output y is set to Awall and it can be connected to FviewCalculator
   annotation(
