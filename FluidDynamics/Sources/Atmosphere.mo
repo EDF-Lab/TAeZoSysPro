@@ -16,7 +16,7 @@ model Atmosphere
   parameter Modelica.SIunits.Pressure p = 101325 "Atmosphere Pressure" ;
   parameter Real RH = 0.6 "Atmosphere relative humidity" ;
 
-  parameter Integer nPorts = 1 "Number of fluidport" annotation(Dialog(connectorSizing=true)) ;
+  parameter Integer nPorts = 0 "Number of fluidport" annotation(Dialog(connectorSizing=true));
   // Internal variables
   Medium.ThermodynamicState state ;
 
