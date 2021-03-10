@@ -29,7 +29,7 @@ model Interface_liq_gas
   SI.GrashofNumber Gr "Grashof Number";
   SI.RayleighNumber Ra "Rayleigh Number";
   SI.NusseltNumber Nu "Nusselt Number";
-  Real betaV(unit = "kg/m2/s") "Mass transfer coefficient";
+  Real betaV(unit = "m/s") "Mass transfer coefficient";
   SI.HeatFlowRate Q_flow_conv "Heat flow rate from convection";
   //for evapo-condensation
   SI.HeatFlowRate Q_flow_evap "Heat flow rate from evaporation";
