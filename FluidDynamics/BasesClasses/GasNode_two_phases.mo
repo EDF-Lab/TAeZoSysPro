@@ -1,5 +1,4 @@
 ﻿within TAeZoSysPro.FluidDynamics.BasesClasses;
-
 model GasNode_two_phases
   model FogModel
     Modelica.SIunits.Density d_condensable "Density of the condensable species";
@@ -64,11 +63,11 @@ model GasNode_two_phases
         First, the amount of liquid (droplets) derives from the difference between density of the water species and the saturation density of water in gas at current condition. Then the diameter of the droplet is computed from the equality between the amount of liquid and the product of the number of droplets and the volume of one droplet and the density of liquid (water) of the droplet. 
       </p>    
   
-      <img	
+      <img        
         src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel1.PNG\"
       />
   
-      <p>	
+      <p>        
         <b>Where</b>:
         <ul>
           <li> <code>d_sat</code> is the saturation density of the condensable species in the gas mixture </li>
@@ -78,18 +77,18 @@ model GasNode_two_phases
           <li> <code>T</code> is the temperature of the gas mixture </li>
           <li> <code>V</code> is the volume of the gas node </li>
           <li> <code>d_drop</code> is the diameter of a droplet </li>
-        </ul>				
+        </ul>                                
       </p>
   
       <p>    
         The dynamic behavior of the droplet derives from the fundammental dynamic principe where the balance of forces is the weight, the drag and the buoyancy. As droplets are non inertial, the sum of these 3 forces is zero. Therefore, the velocity of droplets derives:
       </p>
   
-      <img	
+      <img        
         src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel2.PNG\"
       />
   
-      <p>	
+      <p>        
         <b>Where</b>:
         <ul>
           <li> <code>F<sub>drag</sub></code> is the visquous force for a sphere in a laminar </li>
@@ -98,14 +97,14 @@ model GasNode_two_phases
           <li> <code>Vel</code> is the fall velocity of droplets</li>
           <li> <code>P</code> is the weight of a droplet</li>
           <li> <code>d<sub>droplet</sub></code> is the density of the liquid that the droplets is made of. As the current model is modelling only droplet of water, the <code>d<sub>droplet</sub></code> is fixed at 1000 kg.m-3</li>         
-        </ul>				
+        </ul>                                
       </p> 
       
       <p>
         The drops falling 'on the floor of the gas node' are removed from the system gas node (the control volume indeed). The flow lost is therefore:
       </p>
   
-      <img	
+      <img        
         src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel3.PNG\"
       />
       
@@ -119,9 +118,9 @@ model GasNode_two_phases
         Finally, the volume flow rate leaving the node is computed with the assumption of no slip condition.
       </p>
       
-      <img	
+      <img        
         src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_FogModel4.PNG\"
-      />   			
+      />                           
     </body>
   </html>"));
   end FogModel;
@@ -135,23 +134,23 @@ model GasNode_two_phases
   Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
   // User defined parameters
   // Assumptions
-  parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation(
+  parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation (
     Dialog(tab = "Assumptions", group = "Dynamics"));
-  parameter Types.Dynamics massDynamics = Dynamics.FixedInitial "Formulation of mass balance" annotation(
+  parameter Types.Dynamics massDynamics = Dynamics.FixedInitial "Formulation of mass balance" annotation (
     Dialog(tab = "Assumptions", group = "Dynamics"));
-  final parameter Types.Dynamics substanceDynamics = massDynamics "Formulation of substance balance" annotation(
+  final parameter Types.Dynamics substanceDynamics = massDynamics "Formulation of substance balance" annotation (
     Dialog(tab = "Assumptions", group = "Dynamics"));
-  final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation(
+  final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation (
     Dialog(tab = "Assumptions", group = "Dynamics"));
   // Fixed start value
-  parameter SI.AbsolutePressure p_start = 101325 "Initial absolute static pressure" annotation(
+  parameter SI.AbsolutePressure p_start = 101325 "Initial absolute static pressure" annotation (
     Dialog(tab = "Initialization"));
-  parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation(
+  parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation (
     Dialog(tab = "Initialization"));
-  parameter Real RH_start(min = 0, max = 1) = 0.6 "Initial relative humidity (pmoisture/psat) <= 1" annotation(
+  parameter Real RH_start(min = 0, max = 1) = 0.6 "Initial relative humidity (pmoisture/psat) <= 1" annotation (
     Dialog(enable = Medium.mediumName == "Moist air", tab = "Initialization"));
   //
-  parameter Integer nPorts = 1 "Number of fluidport" annotation(
+  parameter Integer nPorts = 0 "Number of fluidport" annotation (
     Dialog(connectorSizing = true));
   parameter SI.Volume V = 1 "Geometric Volume of the gas node";
   // Internal variables
@@ -170,11 +169,12 @@ model GasNode_two_phases
   SI.EnthalpyFlowRate Hb_flow "Enthalpy flow across boundaries or energy source/sink";
   SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPort_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_a fluidPort[nPorts](redeclare each
+      package                                                                    Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation(
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort annotation (
     Placement(visible = true, transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation(
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   FogModel fogModel(state = medium.state, A = V ^ 2 / 3);
 protected
@@ -266,13 +266,13 @@ equation
   flowPort.T = medium.T;
 // heatPort
   heatPort.T = medium.T;
-  annotation(
+  annotation (
     Documentation(info = "
 <html>
   <head>
     <title>GasNode</title>
   </head>
-	
+        
   <body lang=\"en-UK\">
     <p>
       This components allows to model an ideally mixed gas volume of constant size. 
@@ -285,11 +285,11 @@ equation
       First, the Total properties derives from the medium class herited from the BasesProperties model of the Medium package.
     </p>    
 
-    <img	
+    <img        
       src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_GasNode1.PNG\"
     />
 
-    <p>	
+    <p>        
       <b>Where</b>:
       <ul>
         <li> <code>m</code> is the mass contains in the gas node </li>
@@ -301,7 +301,7 @@ equation
         <li> <code>medium.Xi</code> is the vector of independent mass fraction of each species of the medium in the gas node </li>
         <li> <code>mC</code> is the vector of independent mass of each traces species in the gas node </li>
         <li> <code>c</code> is the vector of independent mass concentration of each traces species of the medium in the gas node </li>
-      </ul>				
+      </ul>                                
     </p>
 
     <p>    
@@ -309,25 +309,31 @@ equation
       The balance is performed from boundaries (ports):
     </p>
 
-    <img	
+    <img        
       src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_GasNode2.PNG\"
     />
 
-    <img	
+    <img        
       src=\"modelica://TAeZoSysPro/Information/FluidDynamics/BasesClasses/EQ_GasNode3.PNG\"
       width = \"500\"
     />
 
-    <p>	
+    <p>        
       <b>Where</b>:
       <ul>
         <li> <code>m_flow</code> is the net mass flow rate coming of leaving the gas node from the mass flow rate balance between all the ports</li>
         <li> <code>mXi_flow</code> is the vector of net independent mass flow rate coming of leaving the gas node from the mass flow rate balance between all the ports</li>        
         <li> <code>Q_flow</code> is the net heat flow rate through the frontiers of the gas node from the heat flow rate balance of the heatPort</li>
         <li> <code>H_flow</code> is the net enthalpy flow rate from the balance between the entering and leaving enthalpy transported by the mass flow rate at boundaries </li>        
-      </ul>				
-    </p>    			
+      </ul>                                
+    </p>                            
   </body>
 </html>"),
-    Icon(graphics = {Rectangle(origin = {-7, -6}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.Sphere, lineThickness = 0.5, extent = {{-73, 66}, {47, -54}}), Polygon(origin = {0, 80}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.Sphere, lineThickness = 0.5, points = {{40, -20}, {-80, -20}, {-40, 20}, {80, 20}, {40, -20}}), Polygon(origin = {60, 21}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231}, fillPattern = FillPattern.HorizontalCylinder, lineThickness = 0.5, points = {{-20, -81}, {-20, 39}, {20, 79}, {20, -41}, {-20, -81}}), Text(origin = {0, -81}, extent = {{-100, 11}, {100, -11}}, textString = "V = %V")}, coordinateSystem(initialScale = 0.1)));
+    Icon(graphics={  Rectangle(origin = {-7, -6}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
+            fillPattern =                                                                                             FillPattern.Sphere,
+            lineThickness =                                                                                                                               0.5, extent = {{-73, 66}, {47, -54}}), Polygon(origin = {0, 80}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
+            fillPattern =                                                                                                                                                                                                        FillPattern.Sphere,
+            lineThickness =                                                                                                                                                                                                        0.5, points = {{40, -20}, {-80, -20}, {-40, 20}, {80, 20}, {40, -20}}), Polygon(origin = {60, 21}, lineColor = {0, 0, 127}, fillColor = {154, 231, 231},
+            fillPattern =                                                                                                                                                                                                        FillPattern.HorizontalCylinder,
+            lineThickness =                                                                                                                                                                                                        0.5, points = {{-20, -81}, {-20, 39}, {20, 79}, {20, -41}, {-20, -81}}), Text(origin = {0, -81}, extent = {{-100, 11}, {100, -11}}, textString = "V = %V")}, coordinateSystem(initialScale = 0.1)));
 end GasNode_two_phases;
