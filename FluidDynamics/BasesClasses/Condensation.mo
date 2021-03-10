@@ -13,15 +13,15 @@ model Condensation
   // Internal variables
   Modelica.SIunits.MassFlowRate m_flow "Mass flow rate >0 if condensation";
   Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cp "Specific Heat Capacity";
-  Modelica.SIunits.Density d_sat "Saturation density of the condensable species" ;
-  Real betaV(unit = "kg/m2/s") "mass transfer coefficient";
-  
+  Modelica.SIunits.Density d_sat "Saturation density of the condensable species";
+  Real betaV(unit = "m/s") "mass transfer coefficient";
+
   // Imported Modules
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b heatPort annotation(
     Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealOutput m_flow_cond(unit = "kg/s") annotation(
     Placement(visible = true, transformation(origin = {0, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 90), iconTransformation(origin = {-30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(replaceable package Medium = Medium) annotation(
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {-100, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-92, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput h_cv(unit = "W/(m2.K)") "Convective heat exchange coefficient" annotation(
     Placement(visible = true, transformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
