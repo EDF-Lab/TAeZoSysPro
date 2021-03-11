@@ -51,7 +51,8 @@ model HalfWall
   // Components inside wall are defined
   TAeZoSysPro.HeatTransfer.BasesClasses.PartialWall partialWall(A = A, N = N, T_start = T_start, Th = Th, cp = cp, d = d, energyDynamics = energyDynamics, h = h, k = k, mesh = mesh, q = q, symmetricalMesh = false) annotation(
     Placement(visible = true, transformation(origin = {46.5, 0.5}, extent = {{-29.5, -29.5}, {29.5, 29.5}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(replaceable package Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation(
+  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(redeclare
+      package                                                                          Medium = Medium, A = A, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation (
     Placement(visible = true, transformation(origin = {-10, 89}, extent = {{-11, -11}, {11, 11}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A, add_on = add_on_rad, eps = eps) annotation(
     Placement(visible = true, transformation(origin = {-16.5, -70.5}, extent = {{-22.5, -22.5}, {22.5, 22.5}}, rotation = 180)));
@@ -65,9 +66,10 @@ model HalfWall
     Placement(visible = true, transformation(origin = {99, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.Interfaces.HeatPort_a port_surface annotation(
     Placement(visible = true, transformation(origin = {-50, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-40, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {-90, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(A = A) annotation(
+  TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(redeclare
+      package                                                                        Medium = Medium, A = A) annotation (
     Placement(visible = true, transformation(origin = {-50, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   condensation.h_cv = convection.h_cv;

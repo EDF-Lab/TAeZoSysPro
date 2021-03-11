@@ -41,7 +41,8 @@ model InertMass
     Dialog(group = "Radiative properties"));
 
 // imported module
-  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(replaceable package Medium = Medium, A = A_conv, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation(
+  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(redeclare
+      package                                                                        Medium = Medium, A = A_conv, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation (
     Placement(visible = true, transformation(origin = {-41, 80}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
   TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A_rad, add_on = add_on_rad, eps = eps)  annotation(
     Placement(visible = true, transformation(origin = {-59.5, -79.5}, extent = {{-19.5, -19.5}, {19.5, 19.5}}, rotation = 180)));
@@ -55,9 +56,10 @@ model InertMass
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
  TAeZoSysPro.HeatTransfer.BasesClasses.HeatCapacitor heatCapacitor(T_start = T_start, cp = cp, energyDynamics = energyDynamics, m = m)  annotation(
     Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(replaceable package Medium = Medium, A = A_conv, add_on = add_on_cond, h_cv = convection.h_cv)  annotation(
+ TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(redeclare
+      package                                                                         Medium = Medium, A = A_conv, add_on = add_on_cond, h_cv = convection.h_cv)  annotation (
     Placement(visible = true, transformation(origin = {-35, 39}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
- TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(replaceable package Medium = Medium) annotation(
+ TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(F_view, carrollRadiation.Fview) annotation(
