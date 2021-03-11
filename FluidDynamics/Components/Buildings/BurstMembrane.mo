@@ -24,8 +24,8 @@ equation
 
    dp = port_a.p - port_b.p ;
 
-   if bursted then
-     dp = 0.0 ;
+   if pre(bursted) then
+     dp = 0.0;
    else
      m_flow = 0.0 ;
    end if ;
