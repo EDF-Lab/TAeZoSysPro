@@ -6,8 +6,6 @@ model HalfWall
   import TAeZoSysPro.HeatTransfer.Types.Dynamics;
   import TAeZoSysPro.HeatTransfer.Types.MeshGrid;
   import MeshFunction = TAeZoSysPro.HeatTransfer.Functions.MeshGrid;
-  /*outer */
-  TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection;
   //Media
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   // User defined parameters
@@ -44,10 +42,6 @@ model HalfWall
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection = false "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Integer RadiativeIndex = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
   parameter Real add_on_rad = 1 "Custom add-on" annotation(
@@ -88,10 +82,6 @@ equation
   connect(carrollRadiation.port_a, partialWall.port_a) annotation(
     Line(points = {{6, -70.5}, {18, -70.5}, {18, 0.5}}, color = {191, 0, 0}));
   Bi = convection.h_cv * (partialWall.x[2] - partialWall.x[1]) / k;
-  if UseImplicitConnection then
-    F_view = fviewCalculator.F_view[RadiativeIndex];
-    fviewCalculator.A_wall[RadiativeIndex] = A;
-  end if;
   A_wall = A;
 //output y is set to Awall and it can be connected to FviewCalculator
   connect(partialWall.port_b, port_b) annotation(

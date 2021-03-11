@@ -5,7 +5,6 @@ model InertMass
   import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
   import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
   
-  /*outer */TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator if UseImplicitConnection ;
 
 //Media
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
@@ -36,10 +35,6 @@ model InertMass
   parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
     Dialog(group = "Convection properties"));
   //
-  parameter Boolean UseImplicitConnection = false "Implicit connection with the FviewCalculator" annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Integer RadiativeIndex = 1 "Index number in the FviewCalculator module" annotation(
-    Dialog(group = "Radiative properties"));
   parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
     Dialog(group = "Radiative properties"));
   parameter Real add_on_rad = 1 "Custom add-on" annotation(
@@ -69,10 +64,6 @@ equation
     Line(points = {{-90, -50}, {-44, -50}, {-44, -64}}, color = {0, 0, 127}));
   connect(port_a_rad, carrollRadiation.port_b) annotation(
     Line(points = {{-101, -78}, {-88, -78}, {-88, -79.5}, {-79, -79.5}}, color = {191, 0, 0}));
-  if UseImplicitConnection then
-    F_view = fviewCalculator.F_view[RadiativeIndex];
-    fviewCalculator.A_wall[RadiativeIndex] = A_rad;
-  end if;
   A_wall = A_rad;
   connect(convection.port_a, heatCapacitor.port) annotation(
     Line(points = {{-23, 80}, {-20, 80}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
