@@ -26,7 +26,7 @@ model GasNode
     parameter Real RH_start(min = 0, max = 1) = 0.6 "Initial relative humidity (pmoisture/psat) <= 1" annotation(
     Dialog(enable = Medium.mediumName == "Moist air", tab = "Initialization")) ;
     //
-    parameter Integer nPorts = 1 "Number of fluidport" annotation(
+    parameter Integer nPorts = 0 "Number of fluidport" annotation (
     Dialog(connectorSizing = true));
     parameter SI.Volume V = 1 "Geometric Volume of the gas node" ;
   // Internal variables
