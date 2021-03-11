@@ -42,8 +42,9 @@ algorithm
 annotation(
   Inline = true,
   inverse(head = polynomialFlow(V_flow_nominal=V_flow_nominal,
-                                      head_nominal = head_nominal,
-                                      V_flow = V_flow) ),
+                                head_nominal = head_nominal,
+                                V_flow = V_flow,
+                                OrderPolyFitting = OrderPolyFitting)),
   Documentation(info = "
 <html>
   <head>

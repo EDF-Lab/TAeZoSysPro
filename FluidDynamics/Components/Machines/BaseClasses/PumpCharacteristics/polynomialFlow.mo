@@ -98,7 +98,8 @@ coeff := Modelica.Math.Matrices.leastSquares(A = A, b = head_nominal);
 annotation(
   inverse(V_flow = polynomialFlow_inv(V_flow_nominal=V_flow_nominal,
                                       head_nominal = head_nominal,
-                                      head = head) ),
+                                      head = head,
+                                      OrderPolyFitting = OrderPolyFitting)),
   Documentation(info = "
 <html>
   <head>
