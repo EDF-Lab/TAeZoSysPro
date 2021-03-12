@@ -51,12 +51,14 @@ model DiscreteExchanger
   TAeZoSysPro.PDE.Transport.UpwindFirstOrder transport_A(
     N = N, 
     x = linspace(0, L_A, N+1),
-    CoeffTimeDer = MediumA.density(stateA_in) * CrossSectionA * cp_A) annotation(
+    CoeffTimeDer = MediumA.density(stateA_in) * CrossSectionA * cp_A,
+    CoeffSpaceDer = m_flowA * cp_A) annotation (
     Placement(visible = true, transformation(origin = {4, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.PDE.Transport.UpwindFirstOrder transport_B(
     N = N, 
     x = linspace(0, L_B, N+1),
-    CoeffTimeDer = MediumB.density(stateB_in) * CrossSectionB * cp_B) annotation(
+    CoeffTimeDer = MediumB.density(stateB_in) * CrossSectionB * cp_B,
+    CoeffSpaceDer = m_flowB * cp_B) annotation (
     Placement(visible = true, transformation(origin = {-12, -32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 initial  equation
