@@ -33,13 +33,13 @@ model AnalyticExchanger
   SI.PressureDifference dp_B "fluid B pressure drop";
   
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPort_a port_A_in(replaceable package Medium = MediumA) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_a port_A_in(redeclare package Medium = MediumA) annotation (
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_b port_A_out(replaceable package Medium = MediumA) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_b port_A_out(redeclare package Medium = MediumA) annotation (
     Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_a port_B_in(replaceable package Medium = MediumB) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_a port_B_in(redeclare package Medium = MediumB) annotation (
     Placement(visible = true, transformation(origin = {-68, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, -84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_b port_B_out(replaceable package Medium = MediumB) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_b port_B_out(redeclare package Medium = MediumB) annotation (
     Placement(visible = true, transformation(origin = {66, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     
 equation 

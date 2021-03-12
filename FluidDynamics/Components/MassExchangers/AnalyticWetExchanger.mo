@@ -69,13 +69,13 @@ model AnalyticWetExchanger
   SI.Power P_latent "Latent exchanged power";
   
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPort_a port_in_A(replaceable package Medium = MediumA) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_a port_in_A(redeclare package Medium = MediumA) annotation (
     Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {80, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_b port_out_A(replaceable package Medium = MediumA) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_b port_out_A(redeclare package Medium = MediumA) annotation (
     Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-80, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_a port_in_B(replaceable package Medium = MediumB) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_a port_in_B(redeclare package Medium = MediumB) annotation (
     Placement(visible = true, transformation(origin = {-68, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_b port_out_B(replaceable package Medium = MediumB) annotation(
+  Modelica.Fluid.Interfaces.FluidPort_b port_out_B(redeclare package Medium = MediumB) annotation (
     Placement(visible = true, transformation(origin = {66, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 //initial algorithm
 //TA_mid_2.start := TA_in ;
