@@ -5,7 +5,7 @@ model Filter
   replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
-  parameter Real K(unit = "m3/s/Pa") = V_flow_nominal / dp_nominal "linear pressure loss coefficient" annotation(
+  parameter Real K(unit = "m3/(s.Pa)") = V_flow_nominal / dp_nominal "linear pressure loss coefficient" annotation (
     Dialog(group = "Flow"));
   parameter Modelica.SIunits.Pressure dp_nominal "Nominal pressure drop" annotation(
   Dialog(group="Nominal operating point"));
