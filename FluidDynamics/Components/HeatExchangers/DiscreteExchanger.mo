@@ -103,16 +103,11 @@ equation
     dp_B = port_B_in.p - port_B_out.p;
     
 // transport 
-  transport_A.CoeffSpaceDer = m_flowA * cp_A ;
-  transport_B.CoeffSpaceDer = m_flowB * cp_B ;
-  //
-// boundary equations
-// left
-  transport_A.u_ghost_left[1] = T_A_in;
-  transport_B.u_ghost_left[1] = T_B_in;
-// left
-  transport_A.u_ghost_right[1] = T_A_in;
-  transport_B.u_ghost_right[1] = T_B_in;
+  // boundary equations
+  transport_A.u_ghost_left[1] = T_A_in "left BC";
+  transport_B.u_ghost_left[1] = T_B_in "left BC";
+  transport_A.u_ghost_right[1] = T_A_in "right BC";
+  transport_B.u_ghost_right[1] = T_B_in "right BC";
 
   
   if flowConfiguration == FlowConfiguration.CounterCurrent then
