@@ -6,7 +6,7 @@ model GasNode_two_phases
     Modelica.SIunits.Pressure p_sat "Saturation pressure of the condensable species";
     Modelica.SIunits.Diameter d_drop "Diameter of equivalent droplet";
     Modelica.SIunits.Velocity Vel "Velocity of droplet";
-    input Modelica.SIunits.Area A "Surface area through which fog drains";
+    parameter Modelica.SIunits.Area A "Surface area through which fog drains";
     Modelica.SIunits.MassFlowRate m_flow_fog "Mass flow rate of droplet leaving the control volume";
     Modelica.SIunits.ReynoldsNumber Re "Reynolds number";
     input Medium.ThermodynamicState state;
@@ -153,6 +153,7 @@ model GasNode_two_phases
   parameter Integer nPorts = 0 "Number of fluidport" annotation (
     Dialog(connectorSizing = true));
   parameter SI.Volume V = 1 "Geometric Volume of the gas node";
+  parameter Modelica.SIunits.Area A = V ^ (2 / 3)  "Surface area through which fog drains";
   // Internal variables
   // Potential variables
   SI.Mass m "Mass of mixture";
@@ -176,7 +177,7 @@ model GasNode_two_phases
     Placement(visible = true, transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation (
     Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-18, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  FogModel fogModel(state = medium.state, A = V ^ 2 / 3);
+  FogModel fogModel(state = medium.state, A = A);
 protected
   Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
   parameter Medium.ExtraProperty C_start[Medium.nC](quantity = Medium.extraPropertiesNames) = Medium.C_default;
