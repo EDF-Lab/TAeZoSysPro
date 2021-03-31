@@ -10,7 +10,7 @@ modelica library to model fluid dynamic of HVAC systems
 
 - Management of transport and diffusion equations via Partial Derivative Equations rather than connection between multiple components
 
-# Changes in version master
+# Changes in version 3.1
 1-Minor corrections:
 	- polynomialFlow: correction required to work with the version 1.16 of openModelica
 	- gasConstant_X of the air Air_H2 media: correction in its declaration
