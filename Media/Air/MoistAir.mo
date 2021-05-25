@@ -92,13 +92,22 @@ required from medium model \"" + mediumName + "\".");
   redeclare function extends setState_pTX
     protected
       SI.MassFraction X_sat "Absolute humidity per unit mass of moist air at saturation";
-      SI.MassFraction X_steam "Mass fraction of gaseous water (kg gas water / kg moist air)";
+      MassFraction X_liquid "Mass fraction of liquid or solid water";
+      MassFraction X_air;
+      SI.Pressure p_sat "water saturation pressure";
+      SI.SpecificHeatCapacity R "Mixture gas constant";
+ 
 
     algorithm
       assert(if size(X, 1) == nX then X[Air] > 1e-4 else 1 - X[Water] > 1e-4, "Too little dry air in the mixture to compute the density", AssertionLevel.error);
-      X_sat := k_mair / (p / min(saturationPressure(T), 0.999 * p) - 1 + k_mair);
-      X_steam := min(X_sat, X[Water]);
-      state := if size(X, 1) == nX then ThermodynamicState(d = p * (1 - X_steam / (X_steam + k_mair * X[Air])) / (dryair.R * T * X[Air]), T = T, X = X) else ThermodynamicState(d = p * (1 - X_steam / (X_steam + k_mair * (1 - X[Water]))) / (dryair.R * T * (1 - X[Water])), T = T, X = cat(1, X, {1 - sum(X)}));
+      X_air:=1.0-X[Water];
+      p_sat := saturationPressure(T);
+      X_sat := k_mair*p_sat / p;
+
+      /* X_sat +X_air/(1-X_l)=1 : balance for gas part */
+      X_liquid := max(-X_air/(1-X_sat)+1.0, 0.0);
+      R := dryair.R * (1 - X[Water]) / (1 - X_liquid) + steam.R * (X[Water] - X_liquid) / (1 - X_liquid);
+      state := if size(X, 1) == nX then ThermodynamicState(d = p / ((1 - X_liquid) * R * T), T = T, X = X) else ThermodynamicState(d = p / ((1 - X_liquid) * R * T), T = T, X = cat(1, X, {1 - sum(X)}));
     annotation(
       smoothOrder = 2,
       Documentation(info = "<html>
