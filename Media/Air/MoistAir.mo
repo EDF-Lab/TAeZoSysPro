@@ -102,7 +102,7 @@ required from medium model \"" + mediumName + "\".");
       assert(if size(X, 1) == nX then X[Air] > 1e-4 else 1 - X[Water] > 1e-4, "Too little dry air in the mixture to compute the density", AssertionLevel.error);
       X_air:=1.0-X[Water];
       p_sat := saturationPressure(T);
-      X_sat := k_mair*p_sat / p;
+      X_sat := min(k_mair*p_sat / p,0.99); /*Manage the case with high gas temperature where psat > p */
 
       /* X_sat +X_air/(1-X_l)=1 : balance for gas part */
       X_liquid := max(-X_air/(1-X_sat)+1.0, 0.0);
