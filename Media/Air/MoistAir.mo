@@ -96,13 +96,20 @@ required from medium model \"" + mediumName + "\".");
       MassFraction X_air;
       SI.Pressure p_sat "water saturation pressure";
       SI.SpecificHeatCapacity R "Mixture gas constant";
+      SI.Density d_sat;
+      SI.Density d_air_sat;
+      SI.Pressure p_air_sat;
  
 
     algorithm
       assert(if size(X, 1) == nX then X[Air] > 1e-4 else 1 - X[Water] > 1e-4, "Too little dry air in the mixture to compute the density", AssertionLevel.error);
       X_air:=1.0-X[Water];
       p_sat := saturationPressure(T);
-      X_sat := min(k_mair*p_sat / p,0.99); /*Manage the case with high gas temperature where psat > p */
+      d_sat := p_sat / (steam.R * T);
+      p_air_sat := max(p - p_sat,0);  /*Manage the case with high gas temperature where psat > p */
+      d_air_sat := p_air_sat/(dryair.R*T);
+      
+      X_sat := min(d_sat/(d_sat+d_air_sat),0.99); /*Manage the case with high gas temperature where psat > p */
 
       /* X_sat +X_air/(1-X_l)=1 : balance for gas part */
       X_liquid := max(-X_air/(1-X_sat)+1.0, 0.0);
