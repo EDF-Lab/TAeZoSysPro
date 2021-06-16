@@ -17,6 +17,7 @@ model PartialWall
     Dialog(group = "Mesh properties"));  
     parameter Boolean symmetricalMesh = true "Axial symmetry mesh where the axis is the middle of the domain" annotation(
     Dialog(group = "Mesh properties"));  
+    parameter Boolean Use_surface_Temp_in_port_b = false "If true, the temperature of the port_b is the surface temperature of the surface with has not inertial equation";
     final parameter Modelica.SIunits.Position x[:] = 
       if mesh == MeshGrid.uniform then
         MeshFunction.uniformGrid(L=Th, N=N)
@@ -91,13 +92,16 @@ equation
     
     port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1]) / ((x[end]-x[end-1])/2) * k * A = 0.0 "flux conservation" ;
 
-    
-//  port_a.T = centralSecondOrder.u[1] ;
-//  port_b.T = centralSecondOrder.u[end] ;
-  // for increasing stability, the following boundary condition can be used
-  port_a.T = centralSecondOrder.u[2];
-  port_b.T = centralSecondOrder.u[end-1] ;
+  if Use_surface_Temp_in_port_b then
+    port_a.T = centralSecondOrder.u[2] ;
+    port_b.T = centralSecondOrder.u[end] ;
    
+  else
+    // for increasing stability, the following boundary condition can be used
+    port_a.T = centralSecondOrder.u[2];
+    port_b.T = centralSecondOrder.u[end-1] ;
+    
+  end if;   
   
   annotation(
     Documentation(info = "
