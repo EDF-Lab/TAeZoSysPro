@@ -4,7 +4,7 @@ function h_rad
 
   input Modelica.SIunits.Temperature T_A ;
   input Modelica.SIunits.Temperature T_B ;
-  input Modelica.SIunits.ThermalResistance R_th "Thermal resistance between solid A and B (emissivity and view factor)" ;
+  input Real R_th "Thermal resistance between solid A and B (emissivity and view factor)" ;
   output Modelica.SIunits.CoefficientOfHeatTransfer h_rad ;
   
 algorithm
