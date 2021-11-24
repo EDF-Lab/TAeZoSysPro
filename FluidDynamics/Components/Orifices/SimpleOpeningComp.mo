@@ -88,8 +88,8 @@ equation
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = dp, 
     x_small = dp_small, 
-    y1 = state_a.X, 
-    y2 = state_b.X);
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_a.d/sum(port_a.d));
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * h_a else m_flow * h_b);
   port_a.H_flow + port_b.H_flow = 0;

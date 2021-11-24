@@ -70,7 +70,7 @@ equation
   end if;
   m_flow = Vel * A * Cd * d;
 
-// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
+// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an incompressible flow valid
   state = Medium.setSmoothState(
     x = Vel, 
     x_small = Vel_small, 
@@ -85,8 +85,8 @@ equation
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel, 
     x_small = 1e-10, 
-    y1 = state_a.X, 
-    y2 = state_b.X);
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_b.d/sum(port_b.d));
   port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
 //  port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));
   port_a.H_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(

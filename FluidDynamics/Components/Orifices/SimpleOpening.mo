@@ -78,7 +78,7 @@ else
 end if;    
   m_flow = Vel * A * Cd * d;
   
-// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
+// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an incrompressible flow valid
   state = Medium.setSmoothState(
     x = Vel, 
     x_small = Vel_small, 
@@ -87,14 +87,14 @@ end if;
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
-  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of incrompressible flow is not valid", AssertionLevel.warning) ;
   
 // Port handover
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel, 
     x_small = Vel_small, 
-    y1 = state_a.X, 
-    y2 = state_b.X);
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_b.d/sum(port_b.d));
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
   
 //  port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));

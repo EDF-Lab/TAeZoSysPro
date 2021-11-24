@@ -76,8 +76,8 @@ equation
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel[i], 
     x_small = 1e-14, 
-    y1 = state_a.X, 
-    y2 = state_b.X ) for i in 1:N} ;
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_b.d/sum(port_b.d) ) for i in 1:N} ;
 
   m_flow = sum(m_flow_i) ;
 
