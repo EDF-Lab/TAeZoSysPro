@@ -1,12 +1,39 @@
 within TAeZoSysPro.HeatTransfer.BasesClasses;
 
 model CarrollNode
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
 
+  // User defined parameters
+  parameter Dynamics energyDynamics = Dynamics.SteadyState "Formulation of energy balance";
+  parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
+  parameter Modelica.SIunits.HeatCapacity C = 0.0 "Virtual capacity to avoid non linear iteration variable on temperature";
+    
+  //Internal variables
+  Modelica.SIunits.Energy E "Energy storage";
+
+  //
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
     Placement(visible = true, transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+initial equation
+  E = 0.0 ;
+// Initialisation
+  if energyDynamics == Dynamics.SteadyStateInitial then
+    der(port_a.T) = 0 "Zero time derivative at initilisation" ;
+    
+  elseif energyDynamics == Dynamics.FixedInitial then
+    port_a.T = T_start "Initial temperature" ;
+    
+  end if;
 equation
 
-  port_a.Q_flow = 0;
+// Energy balance
+  if energyDynamics == Dynamics.SteadyState then
+    port_a.Q_flow = 0;
+  else
+    C * der(port_a.T) = port_a.Q_flow;
+  end if;
+  der(E) = port_a.Q_flow;
   
   annotation(
     Diagram(coordinateSystem(grid = {2, 2})),
