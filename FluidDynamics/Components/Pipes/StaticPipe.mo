@@ -24,7 +24,7 @@ model StaticPipe
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
   //
-  final parameter Modelica.SIunits.PressureDifference dp_small = 0.01;
+  parameter Modelica.SIunits.PressureDifference dp_small = 0.01;
 
 equation
 
