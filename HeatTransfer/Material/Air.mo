@@ -32,7 +32,7 @@ equation
 // Mass balance
   m = medium.d * V;
 // Energy balance
-  m * der(medium.h) = port_a.Q_flow;
+  der(m*medium.h) = port_a.Q_flow;
   der(E) = port_a.Q_flow;
 // Heat flow through port_a is calcualted
 // Port handover
