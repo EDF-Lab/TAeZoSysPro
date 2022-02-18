@@ -18,7 +18,7 @@ function hrad_Linearize
   
 algorithm
 
-  hrad := abs(4 * ((Tporta + Tportb) / 2) ^ 3 * sigma * ((1 - emissivity) / emissivity + Fview ^ (-1)));
+  hrad := abs(4 * ((Tporta + Tportb) / 2) ^ 3 * sigma / ((1 - emissivity) / emissivity + Fview ^ (-1)));
 
 
 end hrad_Linearize;
