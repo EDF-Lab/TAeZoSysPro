@@ -39,12 +39,14 @@ equation
   end if;
   Tin = port_a.T;
   port_a.Q_flow = 0;
-  if m_flow <> 0.0 then
+  if abs(m_flow) > 1e-6 then
     P_aero = m_flow * cp * (Tsupply - Tin);
+    port_b.Q_flow = m_flow * cp * (port_b.T - Tsupply) ;    
   else
     Tsupply = port_b.T;
+    port_b.Q_flow = 0.0;    
   end if;
-  port_b.Q_flow = m_flow * cp * (port_b.T - Tsupply) ;
+
   annotation(
     Diagram(coordinateSystem(grid = {1, 2}, initialScale = 0.1)),
     Icon(graphics = {Ellipse(lineThickness = 1, extent = {{-100, -100}, {100, 100}}, endAngle = 360), Ellipse(lineColor = {182, 182, 182}, lineThickness = 2, extent = {{-98, -98}, {98, 98}}, endAngle = 360), Polygon(origin = {44.28, 19.95}, fillColor = {182, 182, 182}, fillPattern = FillPattern.Solid, points = {{-44.2764, -19.9472}, {43.7236, -19.9472}, {43.7236, -19.9472}, {45.7236, -7.9472}, {45.7236, -7.94721}, {45.7236, 0.0527902}, {43.7236, 8.05279}, {39.7236, 14.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {-44.2764, -19.9472}}), Polygon(origin = {-43.72, -20.05}, rotation = 180, fillColor = {182, 182, 182}, fillPattern = FillPattern.Solid, points = {{-44.2764, -19.9472}, {43.7236, -19.9472}, {43.7236, -19.9472}, {45.7236, -7.9472}, {45.7236, -7.94721}, {45.7236, 0.0527902}, {43.7236, 8.05279}, {39.7236, 14.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {-44.2764, -19.9472}}), Polygon(origin = {-19.72, 43.95}, rotation = 90, fillColor = {182, 182, 182}, fillPattern = FillPattern.Solid, points = {{-44.2764, -19.9472}, {43.7236, -19.9472}, {43.7236, -19.9472}, {45.7236, -7.9472}, {45.7236, -7.94721}, {45.7236, 0.0527902}, {43.7236, 8.05279}, {39.7236, 14.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {-44.2764, -19.9472}}), Polygon(origin = {20.28, -44.05}, rotation = -90, fillColor = {182, 182, 182}, fillPattern = FillPattern.Solid, points = {{-44.2764, -19.9472}, {43.7236, -19.9472}, {43.7236, -19.9472}, {45.7236, -7.9472}, {45.7236, -7.94721}, {45.7236, 0.0527902}, {43.7236, 8.05279}, {39.7236, 14.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {35.7236, 20.0528}, {-44.2764, -19.9472}}), Ellipse(fillColor = {182, 182, 182}, fillPattern = FillPattern.Sphere, lineThickness = 1, extent = {{-10, -10}, {10, 10}}, endAngle = 360), Text(origin = {-76, 89}, extent = {{-10, 5}, {16, -11}}, textString = "[kg / s]",  fontSize = 0 ), Text(origin = {-76, -81}, extent = {{-10, 5}, {16, -11}}, textString = "[m3 / s]",  fontSize = 0 ), Text(origin = {63, -98}, lineThickness = 0.5, extent = {{27, 10}, {-15, -6}}, textString = "KURY - EDVANCE",  fontSize = 0 )}, coordinateSystem(initialScale = 0.1)));
