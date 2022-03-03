@@ -31,7 +31,7 @@ algorithm
     </p>    
     
     <img
-      src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/ExchangerEffectiveness/EQ_counterCurrent.png\"
+      src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/ExchangerEffectiveness/EQ_counterCurrent.PNG\"
       width = \"500\"
     />
                 

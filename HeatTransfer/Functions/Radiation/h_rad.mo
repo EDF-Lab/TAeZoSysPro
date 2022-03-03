@@ -37,7 +37,7 @@ algorithm
       </p>
       
       <img
-        src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/Radiation/EQ_h_rad.png\"
+        src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/Radiation/EQ_h_rad.PNG\"
       />		
 
       <p>
@@ -45,7 +45,7 @@ algorithm
       </p>
 
       <img
-        src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/Radiation/EQ_h_rad2.png\"
+        src = \"modelica://TAeZoSysPro/Information/HeatTransfer/Functions/Radiation/EQ_h_rad2.PNG\"
       />
 
 	  <p>
