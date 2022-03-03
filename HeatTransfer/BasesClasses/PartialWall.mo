@@ -47,7 +47,7 @@ model PartialWall
 
   // Internal variables
     Modelica.SIunits.Energy E "Energy stored in the wall";
-    final parameter Modelica.SIunits.Position[N+2] x_node = cat(1, {0},{(x[i+1]+x[i])/2 for i in 1:N}, {Th}) ;
+    /*final parameter */Modelica.SIunits.Position[N+2] x_node = cat(1, {0},{(x[i+1]+x[i])/2 for i in 1:N}, {Th}) ;
 
   // Imported components
     Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
@@ -64,7 +64,7 @@ model PartialWall
     Placement(visible = true, transformation(origin = {-2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 
-final parameter Modelica.SIunits.ThermalDiffusionCoefficient D_th = k / (d * cp) "Thermal diffusivity";
+final parameter Modelica.SIunits.ThermalDiffusionCoefficient D_th = k*add_on / (d * cp) "Thermal diffusivity";
 
 initial equation
   // Energy at time 0 second is equal to 0J
@@ -87,16 +87,16 @@ equation
 
   //PDE
     // determination of ghost node value
-    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / ((x[2] - x[1])/2) * k * A = 0.0 "flux conservation";
+    port_a.Q_flow + (centralSecondOrder.u[2] - centralSecondOrder.u[1]) / ((x[2] - x[1])/2) * k*add_on * A = 0.0 "flux conservation";
     
-    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1]) / ((x[end]-x[end-1])/2) * k * A = 0.0 "flux conservation" ;
+    port_b.Q_flow - (centralSecondOrder.u[end] - centralSecondOrder.u[end-1]) / ((x[end]-x[end-1])/2) * k*add_on * A = 0.0 "flux conservation" ;
 
     
-//  port_a.T = centralSecondOrder.u[1] ;
-//  port_b.T = centralSecondOrder.u[end] ;
+  port_a.T = centralSecondOrder.u[1] ;
+  port_b.T = centralSecondOrder.u[end] ;
   // for increasing stability, the following boundary condition can be used
-  port_a.T = centralSecondOrder.u[2];
-  port_b.T = centralSecondOrder.u[end-1] ;
+//  port_a.T = centralSecondOrder.u[2];
+//  port_b.T = centralSecondOrder.u[end-1] ;
    
   
   annotation(
