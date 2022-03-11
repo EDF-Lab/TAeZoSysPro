@@ -87,6 +87,10 @@ model CabinetPower
     Placement(visible = true, transformation(origin = {26, 64}, extent = {{-10, 10}, {10, -10}}, rotation = 90)));
   TAeZoSysPro.HeatTransfer.BasesClasses.Convection Convection_Casing_Outer(replaceable package Medium = Medium, A = A2, FreeConvection = FreeConvection_external, Vel = Vel_external, add_on = add_on, carac_length = L2, correlation_forced = correlation_forced_external, correlation_free = correlation_free_external) annotation(
     Placement(visible = true, transformation(origin = {57, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
+initial equation
+  Energy = 0.0;
+
 equation
   connect(bodyRadiation2.port_a, C_Heat_Source.port) annotation(
     Line(points = {{-12, 0}, {-50, 0}, {-50, -20}, {-51, -20}}, color = {191, 0, 0}, thickness = 1));

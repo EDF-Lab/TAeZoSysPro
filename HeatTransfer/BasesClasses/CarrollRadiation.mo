@@ -17,6 +17,10 @@ model CarrollRadiation "<html> KURY_SOFINEL_2016<p>
   // Input are declared
   Modelica.Blocks.Interfaces.RealInput Fview annotation(
     Placement(visible = true, transformation(origin = {-93, 88}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-80, -80}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+
+initial equation
+  E = 0.0;
+
 equation
 //  hrad = if port_a.T <> port_b.T then ((port_a.T)^4- (port_b.T)^4)/((port_a.T)- (port_b.T))*sigma*((1- emissivity ) / (emissivity)  + (Fview)^(-1)) else 0;
 //  hrad = 4*(273.15+20)^3*sigma*((1- emissivity ) / (emissivity)  + (Fview)^(-1)) ;

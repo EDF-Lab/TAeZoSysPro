@@ -25,6 +25,10 @@ initial equation
     medium.T = Tstart;
 // if user has not choosen steady state then temperature is set to initial temperature
   end if;
+  
+initial equation
+  E = 0.0;
+  
 equation
 //
   T = medium.T;
