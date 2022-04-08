@@ -3,9 +3,9 @@ within TAeZoSysPro.HeatTransfer.Components;
 model LCU
   //Medias
   /*replaceable */
-  package MediumGas = TAeZoSysPro.HeatTransfer.Media.MyMedia;
+  replaceable package MediumGas = TAeZoSysPro.HeatTransfer.Media.MyMedia;
   /*replaceable */
-  package MediumLiquid = Modelica.Media.Water.WaterIF97_pT(Region = 1);
+  replaceable package MediumLiquid = Modelica.Media.Water.WaterIF97_pT(Region = 1);
   // parameters
   parameter Boolean K_fixed = true "Fixed global heat exchange coefficient";
   parameter TAeZoSysPro.HeatTransfer.Types.ExchangerType ExchangeMode = TAeZoSysPro.HeatTransfer.Types.ExchangerType.CounterFlow "Heat exchanger type";
