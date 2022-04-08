@@ -24,7 +24,7 @@ model LCU
     Dialog(group = "manufacturer's data"));
   parameter Modelica.SIunits.Temperature MeanTref = 273.15 "mean inlet/outlet temperature at sizing point" annotation(
     Dialog(group = "manufacturer's data"));
-  parameter Modelica.SIunits.CoefficientOfHeatTransfer h = Kref "heat transfer coefficient";
+//  parameter Modelica.SIunits.CoefficientOfHeatTransfer h = Kref "heat transfer coefficient";
   //
   parameter Modelica.SIunits.Power FanAeraulicPower = 0 "power (electrical or aeraulic) from fan given to gas";
   // Internal variables
@@ -91,7 +91,7 @@ The mass flow rate has to be calculated with the density at the fan inlet */
 // Heat exchange coefficient
   href = TAeZoSysPro.HeatTransfer.Functions.ForcedConvection.ASHRAE_Ext_Cyl(caraclength = Dp, Velocity = QvAir_ref / Ainlet, kinViscosity = muAir_ref / (MediumGas.reference_p / (287 * MeanTref)), kair = kAir_ref, pr = muAir_ref * CpGas / kAir_ref);
   hcv_int = TAeZoSysPro.HeatTransfer.Functions.ForcedConvection.ASHRAE_Ext_Cyl(caraclength = Dp, Velocity = Qair / Ainlet, kinViscosity = muAir / dAir, kair = kAir, pr = muAir * CpGas / kAir);
-  1 / K = if K_fixed == true then 1 / h else 1 / Kref - 1 / href + 1 / hcv_int;
+  1 / K = if K_fixed == true then 1 / Kref else 1 / Kref - 1 / href + 1 / hcv_int;
 //
   Cr = min(QcGas, QcLiquid) / max(QcGas, QcLiquid);
   Q_flow_max = min(QcGas, QcLiquid) * (Tair_in - Twater_in);
