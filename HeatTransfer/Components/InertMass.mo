@@ -38,6 +38,10 @@ model InertMass
     Placement(visible = true, transformation(origin = {-4, 0}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
   TAeZoSysPro.HeatTransfer.BasesClasses.HeatCapacitor C_Inert_Mass(Cp = Cp, Mass = Mass, SteadyState = SteadyState, Tstart = Tstart) annotation(
     Placement(visible = true, transformation(origin = {-70, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+
+initial equation
+  Energy = 0.0;
+  
 equation
   connect(carrollRadiation1.port_a, C_Inert_Mass.port) annotation(
     Line(points = {{-20, 0}, {-38, 0}, {-38, 28}, {-60, 28}, {-60, 28}}, color = {191, 0, 0}));
