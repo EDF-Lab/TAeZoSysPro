@@ -107,7 +107,7 @@ equation
 /*---------- Calculation of the sensible part for condensation configuration ----------*/
 // Compute the saturation temperature of the moist air
   p_water / port_in_A.p = stateA_in.X[MediumA.Water] * Modelica.Constants.R / MediumA.MMX[MediumA.Water] / MediumA.gasConstant(stateA_in);
-  Tdew = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = p_water - 625, x_small = 5.0, y1 = Modelica.Media.Water.WaterIF97_base.saturationTemperature(max(620, p_water)), y2 = 273.15 + 0.1);
+  Tdew = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = p_water - 625, x_small = 5.0, y1 = Modelica.Media.Water.StandardWater.saturationTemperature(max(620, p_water)), y2 = 273.15 + 0.1);
 // Determination of the temperature of the gas which corresponds to the dew temperature of the external surface knowing the thermal resistance
   hcv_A * (TA_mid_buffer - Tdew) = K_global * (TA_mid_buffer - TB_mid_2);
 //TA_mid_2 = min(TA_mid_buffer, TA_in) ;
