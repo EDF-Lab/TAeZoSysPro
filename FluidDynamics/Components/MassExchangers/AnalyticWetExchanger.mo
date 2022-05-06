@@ -130,7 +130,7 @@ equation
   hA_mid_2 = cpA * (TA_mid_2 - 273.15) + wA_in * Ll;
 /* hgas_out is computed from the wet part of the exchanger. TA_out is computed from the hypothesis that the moisture content at the outlet is equal
     to the moisture content of the saturated gas at the contact of the condensation film of the outlet */
-  hA_out_2 = cpA * (TA_out - 273.15) + wA_out_2 * Ll;
+  hA_out_2 = cpA * (TA_out_2 - 273.15) + wA_out_2 * Ll;
 // Calculation of an heat capacity that would have the fictive fluid encompassing the latent exchange
   hA_sat_in = cpA * (Tdew - 273.15) + wA_in * Ll;
   cp_eq = (hA_sat_in - hsat_eq_in) / (Tdew - TB_in);
