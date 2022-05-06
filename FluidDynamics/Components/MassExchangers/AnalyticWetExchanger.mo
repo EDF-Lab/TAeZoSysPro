@@ -66,7 +66,7 @@ model AnalyticWetExchanger
   SI.MassFlowRate m_flow_eq "Mass flow rate of the fictive fluid";
   SI.Power Q_flow_wet, Q_flow_dry, Q_flow_wet_2, Q_flow_dry_2;
   SI.Power P_sensible "Sensible exchanged power";
-  SI.Power P_latent "Latent exchanged power";
+  SI.Power P_latent, P_latent_bis "Latent exchanged power";
   
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPort_a port_in_A(redeclare package Medium = MediumA) annotation (
@@ -162,6 +162,7 @@ equation
   Q_flow_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_wet_2, y2 = 0.0);
   P_sensible = m_flowA * cpA * (TA_out - TA_in) ;
   P_latent = m_flowA  * stateA_in.X[MediumA.Air] * (wA_out_2-wA_in) * Ll ; 
+  P_latent_bis = m_flowA * (hA_sat_in - hA_out_2);
   Pex = Q_flow_dry + Q_flow_wet;
   QcB * (TB_out - TB_in) + Pex = 0.0;
 // ports handover
