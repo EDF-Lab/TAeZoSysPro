@@ -60,7 +60,7 @@ model AnalyticWetExchanger
   SI.Efficiency Eff_2, Eff_wet "Exchanger effectiveness";
   SI.Area S_sensible "Sensible surface to achieved saturation on moist air";
   SI.Area S_wet "Sensible surface to achieved saturation on moist air";
-  SI.MassFraction wsat_eq_in, wA_in, wsat_out, wA_out_2, wA_out "Moisture content peer kg of dry air";
+  SI.MassFraction wsat_eq_in, wA_in, wsat_out, wA_out_2, XA_out_2, wA_out "Moisture content peer kg of dry air";
   SI.SpecificEnthalpy hsat_eq_in, hA_mid_2, hA_out_2, hcond_out, hA_sat_in "Enthalpies peer kg of dry air";
   SI.SpecificHeatCapacity cp_eq "Specific heat capacity of the fictive fluid";
   SI.MassFlowRate m_flow_eq "Mass flow rate of the fictive fluid";
@@ -153,7 +153,8 @@ equation
   hcond_out = cpA * (Tsat_out - 273.15) + wsat_out * Ll;
   wsat_out = MediumA.xsaturation_pT(p = port_out_A.p, T = Tsat_out);
 //hcv_A * (TA_out_2 - Tsat_out) + hcv_A / cpA * (wA_out_2 - wsat_eq_in) * Ll = hcv_B * (Tsat_out - TB_in) ;
-  wA_out_2 = wsat_out/0.8 "80% of the saturation moisture content at outlet";
+  XA_out_2 = MediumA.massFraction_pTphi(p = port_out_A.p, T = Tsat_out, phi = 0.8);
+  wA_out_2 = XA_out_2 / (1-XA_out_2) "80% of the saturation moisture content at outlet";
 //retained configuration
   TA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = TA_out_2, y2 = TA_out_1);
   wA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = wA_out_2, y2 = wA_in);
