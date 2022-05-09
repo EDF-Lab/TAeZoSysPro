@@ -171,7 +171,7 @@ equation
   port_in_A.Xi_outflow = inStream(port_in_A.Xi_outflow);
   port_out_A.m_flow + port_in_A.m_flow = 0.0;
   m_flowA * (inStream(port_in_A.h_outflow) - port_out_A.h_outflow) = Pex;
-  port_out_A.Xi_outflow = inStream(port_out_A.Xi_outflow);
+  port_out_A.Xi_outflow = if S_wet > 1e-2 then {XA_out_2} else inStream(port_out_A.Xi_outflow);
 //
   port_in_B.m_flow = m_flowB;
   port_in_B.h_outflow = inStream(port_in_B.h_outflow);
