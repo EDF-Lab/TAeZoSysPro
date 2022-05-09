@@ -31,6 +31,7 @@ model AnalyticWetExchanger
     Dialog(group = "Exchange parameters"));
   parameter SI.CoefficientOfHeatTransfer hcv_A "Heat transfer coeffcient Wall<->Fluid A" annotation(
     Dialog(group = "Exchange parameters"));
+  parameter Real phi_out = 0.8;
   // define constants
   constant SI.SpecificEnergy Ll = 2501e3 "Latent heat of liquifaction at 0°C";
   final parameter SI.CoefficientOfHeatTransfer hcv_B = (1 / K_global - 1 / hcv_A) ^ (-1);
@@ -153,7 +154,7 @@ equation
   hcond_out = cpA * (Tsat_out - 273.15) + wsat_out * Ll;
   wsat_out = MediumA.xsaturation_pT(p = port_out_A.p, T = Tsat_out);
 //hcv_A * (TA_out_2 - Tsat_out) + hcv_A / cpA * (wA_out_2 - wsat_eq_in) * Ll = hcv_B * (Tsat_out - TB_in) ;
-  XA_out_2 = MediumA.massFraction_pTphi(p = port_out_A.p, T = Tsat_out, phi = 0.8);
+  XA_out_2 = MediumA.massFraction_pTphi(p = port_out_A.p, T = TA_out_2, phi = phi_out);
   wA_out_2 = XA_out_2 / (1-XA_out_2) "80% of the saturation moisture content at outlet";
 //retained configuration
   TA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = TA_out_2, y2 = TA_out_1);
