@@ -116,8 +116,8 @@ equation
 // Determination of the dry surface necessary for  the surface temperature to achieve the dew temperature
   NTU_2 = K_global * S_sensible / max(min(QcA, QcB), 1e3 * Modelica.Constants.small);
   Eff_2 = (1 - exp(-NTU_2 * (1.0 - Cr_1))) / (1.0 - Cr_1 * exp(-NTU_2 * (1.0 - Cr_1)));
-  Eff_2 = QcA * (TA_in - TA_mid_2) / (max(min(QcA, QcB), 1e3 * Modelica.Constants.small) * (TA_in - TB_in));
-  Q_flow_dry_2 = QcA * (TA_mid_2 - TA_in);
+  Eff_2 = QcA * (TA_in - TA_mid_2) / (max(min(QcA, QcB), 1e3 * Modelica.Constants.small) * (TA_in - TB_mid_2));
+  Q_flow_dry_2 = QcA * (TA_in - TA_mid_2);
 /*---------- Calculation of the latent part for condensation configuration ----------*/
 /* As enthalpy is used rather than temperatures to compute the exchange, the air is considered to exchange with a fictive air at the same temperature than the water but gaving a moisture content always saturated. Therefore, the mass flow rate and the heat capacity of this fictive fluid are computed to well fit the real behavior that is having the water.*/
 // Calculation of the saturated moisture content at the boundaries of the wet part of the exchanger
