@@ -144,8 +144,8 @@ equation
   Eff_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = 0.98 - Cr_wet, x_small = 1.0e-2, y1 = (1.0 - exp(-NTU_wet * (1.0 - Cr_wet))) / (1.0 - Cr_wet * exp(-NTU_wet * (1.0 - Cr_wet))), y2 = NTU_wet / (NTU_wet + 1.0));
   Eff_wet = m_flowA / min(m_flowA, m_flow_eq) * (hA_mid_2 - hA_out_2) / (hA_mid_2 - hsat_eq_in);
 //
-  Q_flow_wet_2 = m_flowA * stateA_in.X[MediumA.Air] * (hA_out_2 - hA_mid_2);
-  QcB * (TB_mid_2 - TB_in) + Q_flow_wet = 0.0;
+  Q_flow_wet_2 + m_flowA * stateA_in.X[MediumA.Air] * (hA_out_2 - hA_mid_2) = 0.0;
+  QcB * (TB_in - TB_mid_2) + Q_flow_wet = 0.0;
 //
   ExchangeSurface = S_sensible + S_wet;
 // Determination of the outlet air temperature and humidity
@@ -160,10 +160,10 @@ equation
   wA_out = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = wA_out_2, y2 = wA_in);
   Q_flow_dry = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_dry_2, y2 = Pex_1);
   Q_flow_wet = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = S_wet - 1e-2, x_small = 1e-2, y1 = Q_flow_wet_2, y2 = 0.0);
-  P_sensible = m_flowA * cpA * (TA_out - TA_in) ;
-  P_latent = m_flowA  * stateA_in.X[MediumA.Air] * (wA_out_2-wA_in) * Ll ; 
+  P_sensible = m_flowA * cpA * (TA_in-TA_out) ;
+  P_latent = m_flowA  * stateA_in.X[MediumA.Air] * (wA_in-wA_out_2) * Ll ; 
   Pex = Q_flow_dry + Q_flow_wet;
-  QcB * (TB_out - TB_in) + Pex = 0.0;
+  QcB * (TB_out - TB_in) - Pex = 0.0;
 // ports handover
   port_in_A.m_flow = m_flowA;
   port_in_A.h_outflow = inStream(port_in_A.h_outflow);
