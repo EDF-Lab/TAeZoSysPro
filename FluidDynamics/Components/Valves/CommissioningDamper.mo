@@ -51,15 +51,15 @@ equation
   xs = max(-Fxt, min(dp/max(port_a.p, port_b.p), Fxt));
   Y = 1 - abs(xs)/(3*Fxt);
   
-  //
+  // multiply volumetric flow by rho and integrate it in ssqrt to avoid two call to Medium.Density
   m_flow = homotopy(Kv/3600.0 * sqrt(rho_ref) * Y * sqrt(1.0/dp_ref) * Modelica.Fluid.Utilities.regRoot2(
     x = dp,
     x_small = dp_small,
-    k1 = 1.0/Medium.density_phX(
+    k1 = Medium.density_phX(
           p = port_a.p, 
           h = inStream(port_a.h_outflow), 
           X = cat(1, inStream(port_a.Xi_outflow), {1 - sum(inStream(port_a.Xi_outflow))})) ,
-    k2 = 1.0/Medium.density_phX(
+    k2 = Medium.density_phX(
           p = port_b.p, 
           h = inStream(port_b.h_outflow), 
           X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))}))),
@@ -91,7 +91,7 @@ annotation(
     
     <p>
       The flow coefficient Kv derives from the ISA-75.01.01-2007 standard for a compressible valve sizing (see <a href=\"modelica://TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.PartialDamper\">PartialDamper</a>). 
-    </p><p>dp_ref is used to compute Kv. To be consistent with standard, it should be kept to 1e5 Pa but could be modified by user to have more meaningfull Kv for HVAC application (order of magnitude of pressure drop across damper is 100 Pa)&nbsp;</p><p>Reference temperature is used to compute reference density (for water 1000 kg/m3 reference density is used)</p>   
+    </p><p>dp_ref is used to compute Kv. To be consistent with standard, it should be kept to 1e5 Pa but could be modified by user to have more meaningfull Kv for HVAC application (order of magnitude of pressure drop across damper is 100 Pa)&nbsp;</p><p>Reference temperature is used to compute reference density (for water 1000 kg/m3 reference density is used). atmospheric pressure is used to compute reference density (medium default pressure)</p>   
     
     <p>Pressure drop across the damper is generally computed at initialization and derived from boundary condition;&nbsp;</p>
     
