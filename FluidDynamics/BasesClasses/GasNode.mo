@@ -8,6 +8,8 @@ model GasNode
 // Medium declaration
     replaceable package Medium = TAeZoSysPro.Media.MyMedia;
     Medium.BaseProperties medium(preferredMediumStates = (if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true));
+    /*Get TAeZoSysPro reference moist air Media*/
+    package Medium_MoistAirTAezo=TAeZoSysPro.Media.Air.MoistAir;
     // User defined parameters
   // Assumptions
     parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation(
@@ -55,12 +57,14 @@ model GasNode
 protected
     Real[Medium.nC] mC_scaled(min=fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
     parameter Medium.ExtraProperty C_start[Medium.nC](quantity=Medium.extraPropertiesNames) = Medium.C_default;
+    
+    parameter Medium_MoistAirTAezo.MassFraction X_start_moist[Medium_MoistAirTAezo.nX]= cat(1, {Medium_MoistAirTAezo.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1-Medium_MoistAirTAezo.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)});
        
+
     parameter Medium.MassFraction X_start[Medium.nX] = if Medium.mediumName == "Moist air" then 
-                                                        cat(1, {Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)}, {1-Medium.massFraction_pTphi(p = p_start, T = T_start, phi = RH_start)})
-                                                       else 
+                                                        X_start_moist 
+                                                        else
                                                         Medium.X_default ;
-//    parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default ;
 protected 
 
 initial equation
