@@ -13,8 +13,8 @@ model Opening
   parameter Dynamics massDynamics = Dynamics.SteadyStateInitial "Formulation of mass balance";
   parameter Modelica.SIunits.Velocity Vel_start = 0.0 "Start value for velocity, if not steady state";
   
-  parameter Modelica.SIunits.Length Alt_a = 1.0 "Altitude of point a";
-  parameter Modelica.SIunits.Length Alt_b = 1.0 "Altitude of point b";
+  parameter Modelica.SIunits.Length Alt_a = 1.0 "Altitude of port_a";
+  parameter Modelica.SIunits.Length Alt_b = 1.0 "Altitude of port_b";
   parameter Modelica.SIunits.Length Alt_opening = 1.0 "Altitude at the opening center";
     
   // Internal variables
@@ -33,9 +33,9 @@ model Opening
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
   parameter Modelica.SIunits.Height H_fluidStream = H * Cd ^0.5 "Minimal height between top and bottom flow path";
@@ -59,8 +59,8 @@ equation
   state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d));
 
 // pressure reconstruction
-  p_a = Medium.pressure(state_a)+sum(port_a.d) * Modelica.Constants.g_n * (Alt_a-Alt_opening);
-  p_b = Medium.pressure(state_b)+ sum(port_b.d) * Modelica.Constants.g_n * (Alt_b-Alt_opening);
+  p_a = Medium.pressure(state_a) + sum(port_a.d) * Modelica.Constants.g_n * (Alt_a-Alt_opening);
+  p_b = Medium.pressure(state_b) + sum(port_b.d) * Modelica.Constants.g_n * (Alt_b-Alt_opening);
   dp = p_a - p_b;
   
 // specific enthalpy reconstruction
@@ -85,8 +85,8 @@ equation
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel[i], 
     x_small = 1e-14, 
-    y1 = X_a, 
-    y2 = X_b ) for i in 1:N} ;
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_b.d/sum(port_b.d) ) for i in 1:N} ;
 
   m_flow = sum(m_flow_i) ;
 
@@ -99,7 +99,7 @@ equation
   gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
   // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
-  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+  assert(M<=0.3,"Mach number > 0.3, the flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
   
 // Port handover
   port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;
@@ -113,7 +113,7 @@ equation
     y2 = h_b);
   port_a.H_flow + port_b.H_flow = 0;
   
-  annotation(defaultComponentName="Opening",
+  annotation(defaultComponentName="opening",
 Documentation(info = "<html>
   <head>
     <title>VerticalOpening</title>
