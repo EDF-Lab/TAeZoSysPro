@@ -2,110 +2,130 @@ within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model HorizontalOpening
   import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
-  package Medium = TAeZoSysPro.Media.MyMedia ;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
   
   // User defined parameters
   parameter Real Cd = 0.61 "discharge coefficient";
   parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
-  parameter Modelica.SIunits.Length L_down = 1 "Distance from bottom node";
-  parameter Modelica.SIunits.Length L_up = 1 "Distance from top node";
+  parameter Modelica.SIunits.Diameter Dh = 1 "Hydraulic diameter";
+  parameter Integer N = 5 "Number discrete layer along the height of the opening";  
   parameter Modelica.SIunits.Length NotionalLength = 1e-4 "Opening's thickness";
   parameter Dynamics massDynamics = Dynamics.SteadyStateInitial "Formulation of mass balance";
   parameter Modelica.SIunits.Velocity Vel_start = 0.0 "Start value for velocity, if not steady state";
   
+  parameter Modelica.SIunits.Length Alt_a = 1.0 "Altitude of port_a";
+  parameter Modelica.SIunits.Length Alt_b = 1.0 "Altitude of port_b";
+  parameter Modelica.SIunits.Length Alt_opening = 1.0 "Altitude at the opening center";
+    
   // Internal variables
   Modelica.SIunits.Pressure p_a "Pressure at port_a";
   Modelica.SIunits.Pressure p_b "Pressure at port_b";
-  Modelica.SIunits.PressureDifference dp; 
-  Modelica.SIunits.Pressure p_down;
-  Modelica.SIunits.Pressure p_up;
-  Modelica.SIunits.Velocity Vel;
-  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening"; 
-  Modelica.SIunits.Density d;
+  Modelica.SIunits.PressureDifference dp_i[N];
+  Modelica.SIunits.PressureDifference dp;
+  Modelica.SIunits.MassFlowRate m_flow_i[N] ; 
+  Modelica.SIunits.Velocity Vel[N] ;   
+  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
+  Modelica.SIunits.Density d[N];
   Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
   Modelica.SIunits.MachNumber M "Mach number at the opening";
-  Medium.ThermodynamicState state, state_a, state_b;  
+  Medium.ThermodynamicState state, state_a, state_b;
+  Integer buoyancy "if density port_a < port_b, buoyancy is taken account and equal to 1 and 0 otherwise";
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
+  parameter Modelica.SIunits.Height H_fluidStream = Dh * Cd ^0.5 "Minimal height between top and bottom flow path";
+  Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
   Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
-  parameter Modelica.SIunits.Velocity Vel_small = 0.001 ; 
+  parameter Modelica.SIunits.Velocity Vel_small = 0.001 ;  
 
 initial equation
   if massDynamics == Dynamics.SteadyStateInitial then
-    der(Vel) = 0;
+    der(Vel) = fill(0.0, N);
     
   elseif massDynamics == Dynamics.FixedInitial then
-    Vel = Vel_start ;
+    Vel = fill(Vel_start, N) ;
 
   end if;
   
 equation
 //
-  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
-  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d));
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d));
 
 // pressure reconstruction
-  p_a = Medium.pressure(state_a);
-  p_b = Medium.pressure(state_b);
-  p_up = p_a + sum(port_a.d) * Modelica.Constants.g_n * L_up;
-  p_down = p_b - sum(port_b.d) * Modelica.Constants.g_n * L_down;
-  dp = p_up - p_down; 
+  p_a = Medium.pressure(state_a) + sum(port_a.d) * Modelica.Constants.g_n * (Alt_a-Alt_opening);
+  p_b = Medium.pressure(state_b) + sum(port_b.d) * Modelica.Constants.g_n * (Alt_b-Alt_opening);
+  dp = p_a - p_b;
   
 // specific enthalpy reconstruction
   h_a = Medium.specificEnthalpy(state_a);
-  h_b = Medium.specificEnthalpy(state_b);  
-    
-  d = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel, x_small = 1e-14, y1 = sum(port_a.d), y2 = sum(port_b.d));
-  if massDynamics == Dynamics.SteadyState then 
-    dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = 0.0;
-  else 
-    dp - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel, x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d * der(Vel);
-  end if;
-  m_flow = Vel * A * Cd * d;
+  h_b = Medium.specificEnthalpy(state_b);
+  
+/* 
+If the density at the lower altitude is below the density at a higher, in case of low static pressure difference, a crossing flow can occur.
+In such a case, the HorizontalOpening is assumed behaves like a VerticalOpening where the its heigh is the hydraulic diameter 
+*/
+  buoyancy = if sum(port_a.d) < sum(port_b.d) then 1 else 0;
+//
+  for i in 1:N loop
+    dp_i[i] = dp + buoyancy * Modelica.Constants.g_n * (H_fluidStream / 2 - H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
+    d[i] = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel[i], x_small = 1e-10, y1 = sum(port_a.d), y2 = sum(port_b.d));
+    if massDynamics == Dynamics.SteadyState then
+      dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = 0.0;
+    else
+/* inertial opening */
+      dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = NotionalLength * d[i] * der(Vel[i]);
+    end if;
+    m_flow_i[i] = Vel[i] * Cd * A / N * d[i];
+  end for;
+      
+  mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
+    x = Vel[i], 
+    x_small = 1e-14, 
+    y1 = port_a.d/sum(port_a.d), 
+    y2 = port_b.d/sum(port_b.d) ) for i in 1:N} ;
 
-// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an incompressible flow valid
+  m_flow = sum(m_flow_i) ;
+
+// assertion, Mach number has to remain bellow 0.3 to keep the assumption of an uncrompressible flow valid
   state = Medium.setSmoothState(
-    x = Vel, 
+    x = sum(Vel)/N, 
     x_small = Vel_small, 
     state_a = state_a, 
     state_b = state_b);
-  gamma = Medium.isentropicExponent(state) /* gamma is supposed contant along the flow */;
-  // Mach number calculation: The pressure at the orifice is the downstream node pressure
-  M = min(1, (2 / (gamma - 1) * ((min(p_up, p_down) / max(p_up, p_down)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
-  assert(M<=0.3,"Mach number > 0.3, le flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
+  gamma = Medium.isentropicExponent(state);
+/* gamma is supposed contant along the flow */
+// Mach number calculation: The pressure at the orifice is the downstream node pressure
+  M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
+  assert(M<=0.3,"Mach number > 0.3, the flow becomes compressible. The assumption of uncrompressible flow is not valid", AssertionLevel.warning) ;
   
-// Ports handover
-  port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
+// Port handover
+  port_a.m_flow = {sum(mX_flow_i[:, i]) for i in 1:Medium.nX} ;
+  port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
+  
+//  port_a.H_flow = sum( smooth(0, if dp_i[i] >= 0.0 then m_flow_i[i] * h_a else m_flow_i[i] * h_b) for i in 1:N);
+  port_a.H_flow = m_flow_i * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel, 
-    x_small = 1e-10, 
-    y1 = port_a.d/sum(port_a.d), 
-    y2 = port_b.d/sum(port_b.d));
-  port_b.m_flow + port_a.m_flow  = fill(0.0, Medium.nX) ;
-//  port_a.H_flow = smooth(0, if dp >= 0.0 then m_flow * Medium.specificEnthalpy(state_a) else m_flow * Medium.specificEnthalpy(state_b));
-  port_a.H_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = Vel, 
-    x_small = 1e-4, 
+    x_small = 1e-3, 
     y1 = h_a, 
     y2 = h_b);
-  port_b.H_flow + port_a.H_flow = 0.0 ;
+  port_a.H_flow + port_b.H_flow = 0;
   
-  annotation(defaultComponentName="horizontalOpening",
-Documentation(info ="
-<html>
+  annotation(defaultComponentName="opening",
+Documentation(info = "<html>
   <head>
-    <title>HorizontalOpening</title>
+    <title>VerticalOpening</title>
   </head>
 	
   <body lang=\"en-UK\">
     <p>
-      This components allows to model the mass flow rate through from either static boundary pressure difference or buoyancy effect through a horizontal orifice in a wall spliting two ambiances.
+      This components allows to model the mass flow rate through from either static boundary pressure difference or buoyancy effect through a vertical orifice in a wall spliting two ambiances.
     </p>
     
     <p>
@@ -117,48 +137,69 @@ Documentation(info ="
     </p>
     
     <p>
-      The static pressure of the boundary nodes to which the ports are connected is corrected from pressure induced by the fluid column above the opening for the port_a and bellow for the port_b. The static pressure difference at the boundaries of orifice derives:
+      The orifice is split in <b>N</b> number of layers along the vertical axis over an height of the fluid stream. Because of the narrowing of the passage section, the height considered for the fluid stream is not the geometric height but the distance between the lowest and highest current line. For a rectangular opening, the relation derives:
     </p> 
        
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening1.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening1.PNG\"
+    />
+    
+    <p>
+      The pressure difference for the layer <b>i</b> derives (index 1 refers to the top of the opening):
+    </p>     
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening2.PNG\"
     />
        
     <p>
-      In the flow, all the boundary pressure difference is converted in kinetic energy at steady state.
+      In the flow, all the boundary pressure difference (from static pressure or buoyancy) is converted in kinetic energy.
     </p> 
           
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening2.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening3.PNG\"
     />
     
     <p>
       It is equivalent to have a pressure loss factor equation to one.
-      Therefore, the relation to compute mass flow rate through the orifice derives:
     </p>    
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_HorizontalOpening7.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening4.PNG\"
     />
+
+    <p>
+      The Fundamental principle of the dynamics derives:
+    </p>
     
+    <p>
+      Therefore, the relation to compute mass flow rate through the orifice derives:
+    </p>
+    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening5.PNG\"
+    />
+ 		
     <p>	
       <b>Where</b>:
       <ul>
-        <li> <code>dp</code> is the pressure difference between port_a.p and port_b.p </li>
+        <li> <code>H_fluidStream</code> is height between the bottom and the top current lines </li>
+        <li> <code>H</code> is the geometrical height of the orifice </li>   
+        <li> <code>dp</code> is the static pressure difference between port_a.p and port_b.p </li>
         <li> <code>d</code> is the upstream density </li>
         <li> <code>Vel</code> is fluid velocity </li>              
-        <li> <code>m_flow</code> is the mass flow rate through the orifice </li>
+        <li> <code>m_flow_i</code> is the mass flow rate through the layer index <b>i</b></li>
         <li> <code>A</code> is cross section of the orifice </li>
         <li> <code>Cd</code> is the discharge coefficient </li>
       </ul>				
     </p>
 
     <p>
-      To avoid infinite derivative at Vel=0, The square is replaced by the function <b>regSquare2</b> of the MSL that replace the square by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square is defined by the parameter <b> Vel_small </b>
-    </p>    			
+      To avoid infinite derivative at Vel_i=0, The square is replaced by the function <b>regSquare2</b> of the MSL that replace the square by a polynomial expression to insure a finite derivative. The threshold to switch between the polynom and the square is defined by the parameter <b> Vel_small </b>
+    </p>			
   </body>
 </html>"),
-    Icon(graphics = {Line(origin = {-20, 30}, points = {{-60, -30}, {0, -30}}, thickness = 2), Line(origin = {20, -30}, points = {{0, 30}, {60, 30}}, thickness = 2), Text(origin = {-54, 17}, extent = {{-46, 33}, {94, 13}}, textString = "L_up=%L_up"), Line(origin = {49.9541, 34.6789}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}), Text(origin = {6, -33}, extent = {{-46, 33}, {34, 13}}, textString = "A=%A"), Text(origin = {6, -63}, extent = {{-46, 33}, {94, 13}}, textString = "L_down=%L_down"), Line(origin = {-49.9541, -27.3945}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
-    experiment(StartTime = 0, StopTime = 0.01, Tolerance = 1e-06, Interval = 2.00803e-05));
+    Icon(coordinateSystem(initialScale = 0.1), graphics = {Line(origin = {-20, 30}, points = {{-60, -30}, {0, -30}}, thickness = 2), Text(origin = {6, -37}, extent = {{-46, 33}, {34, 13}}, textString = "A=%A"), Line(origin = {-49.9541, -27.3945}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}), Line(origin = {20, -30}, points = {{0, 30}, {60, 30}}, thickness = 2), Line(origin = {49.9541, 34.6789}, points = {{0, 25}, {0, -31}}, thickness = 0.75, arrow = {Arrow.Filled, Arrow.Filled}), Text(origin = {46, -113}, extent = {{-26, 33}, {54, 13}}, textString = "Alt_a=%Alt_a"), Text(origin = {-74, 67}, extent = {{-26, 33}, {54, 13}}, textString = "Alt_b=%Alt_b"), Text(origin = {-54, -113}, lineColor = {242, 21, 21}, extent = {{-46, 33}, {34, 13}}, textString = "Down"), Text(origin = {66, 67}, lineColor = {242, 21, 21}, extent = {{-46, 33}, {34, 13}}, textString = "Up"), Text(origin = {-42, -7}, extent = {{-38, 33}, {82, 13}}, textString = "Alt_opening=%Alt_opening")}));
+
 
 end HorizontalOpening;
