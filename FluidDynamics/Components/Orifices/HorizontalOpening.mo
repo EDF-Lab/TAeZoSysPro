@@ -38,7 +38,6 @@ model HorizontalOpening
     Placement(visible = true, transformation(origin = {38, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
-  parameter Modelica.SIunits.Height H_fluidStream = Dh * Cd ^0.5 "Minimal height between top and bottom flow path";
   Modelica.SIunits.MassFlowRate mX_flow_i[N, Medium.nX] ;
   Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
   Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
@@ -74,7 +73,7 @@ In such a case, the HorizontalOpening is assumed behaves like a VerticalOpening 
   buoyancy = if sum(port_a.d) < sum(port_b.d) then 1 else 0;
 //
   for i in 1:N loop
-    dp_i[i] = dp + buoyancy * Modelica.Constants.g_n * (H_fluidStream / 2 - H_fluidStream * (i - 1 / 2) / N) * (sum(port_a.d) - sum(port_b.d));
+    dp_i[i] = dp + Modelica.Constants.g_n * (Dh / 2 - Dh * (i - 1 / 2) / N) * min(sum(port_a.d) - sum(port_b.d), 0.0);
     d[i] = TAeZoSysPro.FluidDynamics.Utilities.regStep(x = Vel[i], x_small = 1e-10, y1 = sum(port_a.d), y2 = sum(port_b.d));
     if massDynamics == Dynamics.SteadyState then
       dp_i[i] - 1 / 2 * Modelica.Fluid.Utilities.regSquare2(x = Vel[i], x_small = Vel_small, k1 = sum(port_a.d), k2 = sum(port_b.d)) = 0.0;
