@@ -115,7 +115,7 @@ equation
   annotation(defaultComponentName="opening",
 Documentation(info = "<html>
   <head>
-    <title>VerticalOpening</title>
+    <title>Opening</title>
   </head>
 	
   <body lang=\"en-UK\">
@@ -125,54 +125,70 @@ Documentation(info = "<html>
     
     <p>
       To be considered as an orifice, the depth of the hole in the wall has to remain bellow the hydrodynamic entrance region (Distance between the entrance of the hole and the position where the dynamic boundary layers meet).
-      In that case and due to visquous and inertial forces, the current line is not at right angles to the opening but curved. 
-      The flow is constricted in the orifice. Consequently, the cross-section of the fluid is not equal to the geometric section of the orifice. 
-      the ratio between the fluid passage section and the geometric section is called the discharge coefficient.
-      It is assumed to be constant and therefore independent of the flow regime.
     </p>
     
-    <p>
-      The orifice is split in <b>N</b> number of layers along the vertical axis over an height of the fluid stream. Because of the narrowing of the passage section, the height considered for the fluid stream is not the geometric height but the distance between the lowest and highest current line. For a rectangular opening, the relation derives:
-    </p> 
-       
-    <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening1.PNG\"
-    />
+    <p>      
+      To compute the mass flow rate throught the opening, the Newton's laws of motion is applied between the inlet and the outlet of the opening. It is assumed full conversion of potential energy (static pressure) to kinetic energy (dynamique pressure) at steady state.
+    </p>
     
-    <p>
-      The pressure difference for the layer <b>i</b> derives (index 1 refers to the top of the opening):
-    </p>     
+    <p>           
+      The static pressure from nodes are corrected from the altitude difference between the boundary node and the opening.
+    </p>
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening2.PNG\"
-    />
-       
-    <p>
-      In the flow, all the boundary pressure difference (from static pressure or buoyancy) is converted in kinetic energy.
-    </p> 
-          
-    <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening3.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening1.PNG\"
     />
     
     <p>
-      It is equivalent to have a pressure loss factor equation to one.
+    To take account of buoyancy, the orifice is split in <b>N</b> number of layers along the vertical axis over an height. The static pressure is corrected from the hydrostatic pressure:
     </p>    
 
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening4.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening2.PNG\"
     />
 
     <p>
-      The Fundamental principle of the dynamics derives:
+    As a reminder, the pressure drop is equal to the dynamic pressure. It is equivalent to have a pressure loss factor equation to one.
     </p>
-    
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening3.PNG\"
+    />
+
+    <p>
+    The second Newton's law of motion derives:
+    </p>
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening4.PNG\"
+    />
+
+    <p>
+    If <b> massDynamics = Dynamics.SteadyState </b> the inertial term is removed thus set to 0
+    </p>
+
+    <p>       
+      To take account of the visquous and inertial forces that participates to curve the current lines from the inlet to the outlet, a discharge coefficient Cd is used. It is assumed to be constant and therefore independent of the flow regime. 
+    </p> 
+
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening5_Cc.PNG\"
+    />
+    <br>
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening6_Cv.PNG\"
+    /> 
+    <br>    
+    <img	
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening7_Cd.PNG\"
+    />        
+
     <p>
       Therefore, the relation to compute mass flow rate through the orifice derives:
     </p>
     
     <img	
-      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_VerticalOpening5.PNG\"
+      src=\"modelica://TAeZoSysPro/Information/FluidDynamics/Components/Orifices/EQ_Opening8.PNG\"
     />
  		
     <p>	
