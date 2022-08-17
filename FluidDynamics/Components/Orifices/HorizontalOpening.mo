@@ -112,8 +112,8 @@ In such a case, the HorizontalOpening is assumed behaves like a VerticalOpening 
   port_a.H_flow = m_flow_i * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel, 
     x_small = 1e-3, 
-    y1 = h_a, 
-    y2 = h_b);
+    y1 = h_a + Modelica.Constants.g_n * (Alt_a - Alt_b), 
+    y2 = h_b - Modelica.Constants.g_n * (Alt_a - Alt_b));
   port_a.H_flow + port_b.H_flow = 0;
   
   annotation(defaultComponentName="opening",
