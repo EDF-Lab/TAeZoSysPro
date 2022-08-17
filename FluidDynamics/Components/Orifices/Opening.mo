@@ -29,7 +29,6 @@ model Opening
   Modelica.SIunits.IsentropicExponent gamma "Isentropic exponent";
   Modelica.SIunits.MachNumber M "Mach number at the opening";
   Medium.ThermodynamicState state, state_a, state_b;
-  Modelica.SIunits.MassFraction[Medium.nX] X_a,X_b;
   
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
@@ -76,10 +75,6 @@ equation
     end if;
     m_flow_i[i] = Vel[i] * Cd * A / N * d[i];       
   end for ;
-      
-  /*Ensure compatibility with mono substance medium*/
-  X_a=port_a.d/sum(port_a.d);
-  X_b=port_b.d/sum(port_b.d);
   
   mX_flow_i = {m_flow_i[i] * TAeZoSysPro.FluidDynamics.Utilities.regStep(
     x = Vel[i], 
