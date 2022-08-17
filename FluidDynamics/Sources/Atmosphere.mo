@@ -17,6 +17,7 @@ model Atmosphere
   parameter Modelica.SIunits.Temperature T = 293.15 "Atmosphere temperature" ;
   parameter Modelica.SIunits.Pressure p = 101325 "Atmosphere Pressure" ;
   parameter Real RH = 0.6 "Atmosphere relative humidity - Only accounted if medium == Moist air" ;
+  parameter Medium.MassFraction X[Medium.nX] = Medium.X_default "usefull except for Moist Air";
 
   parameter Integer nPorts = 0 "Number of fluidport" annotation(Dialog(connectorSizing=true));
   // Internal variables
@@ -29,14 +30,25 @@ model Atmosphere
     Placement(visible = true, transformation(origin = {-26, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b Heatport annotation(
     Placement(visible = true, transformation(origin = {-44, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput p_in annotation(
+  Modelica.Blocks.Interfaces.RealInput p_in if use_p_in annotation(
     Placement(visible = true, transformation(origin = {-72, 56}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-95, 59}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput T_in annotation(
+  Modelica.Blocks.Interfaces.RealInput T_in if use_T_in annotation(
     Placement(visible = true, transformation(origin = {-74, 14}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-95, -1}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput RH_in annotation(
+  Modelica.Blocks.Interfaces.RealInput RH_in if use_RH_in annotation(
     Placement(visible = true, transformation(origin = {-70, -30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-95, -61}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
 
-protected                                                                
+protected
+  /*Using TAeZoSysPro medium function ensure no fail with new OM frontend (function exist whatever medium used*/
+  parameter TAeZoSysPro.Media.Air.MoistAir.MassFraction X_moist[TAeZoSysPro.Media.Air.MoistAir.nX] = cat(1, 
+    {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)}, 
+    {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)});
+  
+  /*depending on chosen medium, parameter X vector to be adjusted*/
+  parameter Medium.MassFraction X_final[Medium.nX] = if Medium.mediumName=="Moist air" then 
+                                                                X_moist 
+                                                               else
+                                                                X;
+                                                              
   Modelica.Blocks.Interfaces.RealInput T_internal
     "Temperature at ports. Needed to connect to conditional connector";
   Modelica.Blocks.Interfaces.RealInput p_internal
