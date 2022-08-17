@@ -22,7 +22,6 @@ model Atmosphere
   parameter Integer nPorts = 0 "Number of fluidport" annotation(Dialog(connectorSizing=true));
   // Internal variables
   Medium.ThermodynamicState state ;
-  Medium.MassFraction X[Medium.nX] "mass fraction of species";
 
   
 // Imported module
@@ -73,31 +72,21 @@ equation
     RH_internal = RH;
   end if;
 
-  /* detection of the media between a gas with condensable species and a dry gas */
-  if Medium.mediumName == "Moist air" then
-    state = Medium.setState_pTX(p = p_internal, 
-                                T = T_internal, 
-                                X = {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p_internal, T = T_internal, phi = RH_internal)}) ;
-    X = cat(1, {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)}, {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)});
-  
-  else
-    state = Medium.setState_pTX(p = p_internal, 
-                                T = T_internal) ;
-    X = Medium.reference_X;                              
-    
-  end if ;
+  state = Medium.setState_pTX(p = p_internal, 
+                                T = T_internal,
+                                X=X_final) ; 
+
 // Ports handover
 // Flowport
   Flowport.T = T_internal;
-  Flowport.d = Medium.density(state) * X ;
->>>>>>> Modification to avoid issues when having a medium where the massFraction_pTphi function does not exist
+  Flowport.d = Medium.density(state) * X_final ;
 // Heatport
   Heatport.T = T_internal;
 // Fluidport
   for i in 1:nPorts loop
     Fluidport[i].p = p_internal;
     Fluidport[i].h_outflow = Medium.specificEnthalpy(state);
-    Fluidport[i].Xi_outflow = X[1:Medium.nXi];
+    Fluidport[i].Xi_outflow = X_final[1:Medium.nXi];
   end for;
   annotation(
     Icon(coordinateSystem(initialScale = 0.1), graphics = {Ellipse(origin = {-8, 23}, extent = {{-52, 37}, {68, -83}}, endAngle = 360), Text(origin = {-65, 87}, extent = {{-35, 13}, {165, -7}}, textString = "P=%p"), Text(origin = {-37, 33}, extent = {{-63, 47}, {137, 27}}, textString = "T=%T"), Text(origin = {-17, -97}, extent = {{-83, 17}, {117, -3}}, textString = "RH=%RH")}),
