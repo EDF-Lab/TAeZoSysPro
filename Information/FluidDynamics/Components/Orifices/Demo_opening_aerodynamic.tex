@@ -1,0 +1,132 @@
+\documentclass[a4paper, french]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% package pour gérer la langue du document
+\usepackage{babel}
+
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+% Titre du document
+\title{Vertical Opening Thermo Aeraulic}
+
+\begin{document}
+    \maketitle         
+            
+    \section{$0 \leq z \leq H $}
+    
+        \subsection{Mass flow rate}
+            
+            To quantity the mass flow rates of transfer, first express the diffential of pressure over the height.
+
+            \begin{equation}
+                \label{eq1}
+                \mathrm{d}p = -\rho \times g \times \mathrm{d} z
+            \end{equation}
+            
+            Now establish the pressure difference of the gas colomn from the two ambiances A and B.
+            
+            \begin{equation}
+                \label{eq2}
+                \mathrm{d}p_{AB} = \Delta {p_{AB}}_{static} -(\rho_A - \rho_B) \times g \times \mathrm{d} z
+            \end{equation}       
+            
+            
+            The altitude of the opening range from $ 0 \leq z \leq H $. The altitude where flow changes in direction is defined as $HN$. The integration of \eqref{eq2} is performed from $ z = HN $ to the bottom at $ z = 0 $
+
+            
+            \begin{equation}
+                \label{eq3}
+                \Delta p_{AB}(z) = \Delta {p_{AB}}_{static} + \int_{HN}^{z} -(\rho_A - \rho_B) \times g \times dx = -(\rho_A - \rho_B) \times g \times (z - HN)
+            \end{equation} 
+            
+            Considering that all the pressure difference is converted to dynamic pressure.
+            
+            \begin{equation}
+                \label{eq4}
+                \Delta p_{AB}(z) = \frac{1}{2} \times \rho \times Vel(z)^2
+            \end{equation}
+            
+            Now a problem arises with the choice of the density to use. The upstream density is used but can differs between the top and bottom part of the opening if the static pressure is lower than the hydrostatique pressure. Thefore the opening is cut in two and the altitude to which the flow changes in direction is called $ HN $.
+            
+            The relation between the flow velocity and the altitude derives:
+            
+            \begin{equation}
+                \label{eq5}
+                Vel(z)^2 = \left | \frac{2 \times \Delta {p_{AB}}_{static} - 2 \times (\rho_A - \rho_B) \times g \times (z-HN)}{\rho_{upstream} } \right |
+            \end{equation}
+            
+            The elementary mass flow rate derives from the velocity and the upstream density. The width of the opening is defined as $ w = \frac{A}{H} $:
+            
+            \begin{equation}
+                \label{eq6}
+                \mathrm{d} m\_flow = \rho_{upstream} \times Vel(z) \times Cd \times \frac{A}{H} \times \mathrm{d} z
+            \end{equation}
+            
+            Combining \eqref{eq5} and \eqref{eq6} to obtain:
+            
+            
+            \begin{equation}
+                \label{eq7}
+                \mathrm{d} m\_flow = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{upstream} } \times \sqrt{\Delta {p_{AB}}_{static} - ( \rho_A - \rho_B ) \times g \times (z - HN)} \times \mathrm{d} z
+            \end{equation}
+            
+            Intregration of \eqref{eq7} over the height
+            
+            \begin{equation}
+                \label{eq8}
+                m\_flow = \int_{HN}^{z} \mathrm{d} m\_flow
+            \end{equation}
+            
+            From the height $ HN $ to  $ 0 $  (bottom part of the opening)
+            
+            \begin{equation} 
+            \label{eq9}
+                m\_flow_{down} = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down}} \times \left( \sqrt{ \Delta {p_{AB}} } \times (- HN) - \sqrt{ ( \rho_A - \rho_B ) \times g } \times \frac{2}{3} \times {(-HN)}^\frac{3}{2} \right)
+            \end{equation} 
+            
+            From the height $ HN $ to $ H $  (top part of the opening)
+            
+            \begin{equation} 
+            \label{eq10}
+                m\_flow_{up} = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up}} \times \left( \sqrt{ \Delta {p_{AB}} } \times (H-HN) - \sqrt{ ( \rho_A - \rho_B ) \times g } \times \frac{2}{3} \times {( H - HN)}^\frac{3}{2} \right)
+            \end{equation}     
+        
+            A modified version of the square root is used to deal with a negative value for the argument.
+            
+
+        \subsection{Zero pressure difference altitude calculation}
+    
+            Demonstration of the calculation of the altitude $ HN $ that leads to $ \Delta p_{AB}(HN) = 0 $ for a vertical opening. $ HN $ is limited to $ 0 \leq HN \leq H $.
+            The formula bellow reminds the mass flow rate at the upper part of the opening.
+            
+            \begin{equation*} 
+                m\_flow_{up} = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up}} \times \left( \sqrt{ \Delta {p_{AB}} } \times (H-HN) - \sqrt{ ( \rho_A - \rho_B ) \times g } \times \frac{2}{3} \times {( H - HN)}^\frac{3}{2} \right)
+            \end{equation*} 
+
+            The formula bellow reminds the mass flow rate at the lower part of the opening.
+
+            \begin{equation*} 
+                m\_flow_{down} = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down}} \times \left( \sqrt{ \Delta {p_{AB}} } \times (- HN) - \sqrt{ ( \rho_A - \rho_B ) \times g } \times \frac{2}{3} \times {(-HN)}^\frac{3}{2} \right)
+            \end{equation*} 
+            
+            Calculation of the height $ HN $ for the pressure difference between the opening to be zero from \eqref{eq3}. If there is no pressure difference, the altitude $ HN $ is $ \frac{H}{2} $. Therefore the lower bound of the integral is $ \frac{H}{2} $.
+            
+            \begin{equation*}
+                \Delta {p_{AB}}_{static} = \int_{\frac{H}{2}}^{HN} -(\rho_A - \rho_B) \times g \times dx = -(\rho_A - \rho_B) \times g \times (HN - \frac{H}{2})
+            \end{equation*}
+
+            \begin{equation}
+                HN = \frac{ \Delta {p_{AB}}_{static} }{ (\rho_A - \rho_B) \times g } + \frac{H}{2}
+            \end{equation}
+            
+            $HN$ is bounded to $ 0 \leq HN \leq H$, therefore:
+            
+            \begin{equation}
+                HN = min \left( max \left( \frac{ \Delta {p_{AB}}_{static} }{ (\rho_A - \rho_B) \times g } + \frac{H}{2}, 0\right), H \right)
+            \end{equation}            
+            
+        
+    
+\end{document}
