@@ -1,0 +1,278 @@
+\documentclass[a4paper, english]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% package pour gérer la langue du document
+\usepackage{babel}
+
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+% Titre du document
+\title{Vertical Opening Thermal Mode}
+
+\begin{document}
+    \maketitle
+    
+    \section{$\frac{-H}{2} \leq z \leq \frac{-H}{2} $}
+    
+        \subsection{Mass flow rate from buoyancy calculation}
+        
+            The thermal mode induces the assumption that the static pressure remains constant. However, the temperature difference between two ambiant at different temperature induces a density difference which leads to buoyancy forces and creates a hydrostatic pressure difference. Therefore mass will circulates between ambiances carring their internal energy. The will result in heat flow exchanged between the ambiances.
+            
+            To quantity the mass flow rates of transfer, first express the diffential of pressure over the height.
+
+            \begin{equation}
+                \label{eq1}
+                \mathrm{d}p = -\rho \times g \times \mathrm{d} z
+            \end{equation}
+            
+            Now establish the pressure difference of the gas colomn from the two ambiances A and B.
+            
+            \begin{equation}
+                \label{eq2}
+                \mathrm{d}p_{AB} = -(\rho_A - \rho_B) \times g \times \mathrm{d} z
+            \end{equation}       
+            
+            
+            The static pressure is defined as equal at the center of the opening.However when mass flow is conserved between the top and bottom part of the opening, the pressure difference is null at $ HN $. The altitude where flow changes in direction. The integration of \eqref{eq2} is performed from $ z = HN $ to the bottom at $ z = -\frac{H}{2} $
+
+            
+            \begin{equation}
+                \label{eq3}
+                \Delta p_{AB}(z) = \int_{HN}^{z} -(\rho_A - \rho_B) \times g \times dx = -(\rho_A - \rho_B) \times g \times (z - HN)
+            \end{equation} 
+            
+            Considering that all the pressure difference is converted to dynamic pressure.
+            
+            \begin{equation}
+                \label{eq4}
+                \Delta p_{AB}(z) = \frac{1}{2} \times \rho \times Vel(z)^2
+            \end{equation}
+            
+            Now a problem arises with the choice of the density to use. The upstream density is used but differs between the top and bottom part of the opening. Thefore the opening is cut in two and the altitude to which the flow changes in direction is called $ HN $.
+            
+            The relation between the flow velocity and the altitude derives:
+            
+            \begin{equation}
+                \label{eq5}
+                Vel(z)^2 = \left| \frac{2 \times (\rho_A - \rho_B) \times g \times (z-HN)}{\rho_{upstream} } \right |
+            \end{equation}
+            
+            The linear mass flow rate derives from the linear velocity and the upstream density. The width of the opening is defined as $ w = \frac{A}{H} $:
+            
+            \begin{equation}
+                \label{eq6}
+                \mathrm{d} m\_flow = \rho_{upstream} \times Vel(z) \times Cd \times \frac{A}{H} \times \mathrm{d} z
+            \end{equation}
+            
+            Combining \eqref{eq5} and \eqref{eq6} to obtain:
+            
+            
+            \begin{equation}
+                \label{eq7}
+                \mathrm{d} m\_flow = Cd \times A \times \sqrt{ 2 \times \rho_{upstream} \times ( \rho_B - \rho_A ) \times g } \times \sqrt{(z - HN)} \times \mathrm{d} z
+            \end{equation}
+            
+            A modified version of the square root is used to deal with a negative value for the argument.
+            
+            Intregration of \eqref{eq7} over the height
+            
+            \begin{equation}
+                \label{eq8}
+                m\_flow = \int_{HN}^{z} \mathrm{d} m\_flow
+            \end{equation}
+            
+            From the height $ HN $ to  $ - \frac{H}{2} $  (bottom part of the opening)
+            
+            \begin{equation} 
+            \label{eq9}
+                m\_flow\_down = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {\left( \frac{-H}{2} - HN \right)}^\frac{3}{2}
+            \end{equation} 
+            
+            From the height $ HN $ to $ \frac{H}{2} $  (top part of the opening)
+            
+            \begin{equation} 
+            \label{eq10}
+                m\_flow\_up = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {\left( \frac{H}{2} - HN \right)}^\frac{3}{2}
+            \end{equation} 
+        
+    
+        \subsection{Zero flow altitude calculation}
+    
+			Demonstration of the calculation of the altitude $ HN $ where the flow changes in direction (zero flow altitude) in a vertical opening in thermal model.
+            
+            The formula bellow reminds the mass flow rate at the upper part of the opening.
+            
+            \begin{equation*}
+                m\_flow\_up = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {\left( \frac{H}{2} - HN \right)}^\frac{3}{2}
+            \end{equation*}
+
+            The formula bellow reminds the mass flow rate at the lower part of the opening.
+
+            \begin{equation*}
+                \label{eq12}
+                m\_flow\_down = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {\left( \frac{-H}{2} - HN \right)}^\frac{3}{2}
+            \end{equation*}
+            
+            Calculation of the height of the zero flow current $ HN $ for the $ m\_flow\_up $ to be equal to $ m\_flow\_down $ .
+            
+            By balancing the \eqref{eq9} and \eqref{eq10} and by simplifying the terms present in both sides we get:
+            
+            \begin{equation*}
+                    \sqrt{ \rho_{up} } \times {\left( \frac{H}{2} - HN \right)}^\frac{3}{2} = - \sqrt{ \rho_{down} } \times {\left( \frac{-H}{2} - HN \right)}^\frac{3}{2}
+            \end{equation*} 
+            
+            \begin{equation*}
+                \left({ \frac{ \frac{H}{2} - HN }{ \frac{-H}{2} - HN } }\right)^\frac{2}{3} = -\sqrt{\frac{\rho_{down}}{\rho_{up}}}
+            \end{equation*}            
+            
+            \begin{equation*}
+                \frac{ \frac{H}{2} - HN }{ \frac{-H}{2} - HN } = -\left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3}
+            \end{equation*} 
+
+            \begin{equation*}
+                \frac{H}{2} - HN = - \left( \frac{-H}{2} - HN \right) \times \left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3}
+            \end{equation*} 
+            
+            \begin{equation*}
+                \frac{H}{2} \times \left( 1 - \left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3} \right) = HN \times \left( 1 + \left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3} \right)
+            \end{equation*}
+
+            \begin{equation}
+                \label{eq11}
+                HN = \frac{H}{2} \times \frac{ \left( 1 - \left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3} \right) }{ \left( 1 + \left( {\frac{\rho_{down}}{\rho_{up}}} \right)^\frac{1}{3} \right) }
+            \end{equation}
+           
+
+    \section{$0 \leq z \leq H $}
+    
+        \subsection{Mass flow rate from buoyancy calculation}
+        
+        
+            The thermal mode induces the assumption that the static pressure remains constant. However, the temperature difference between two ambiant at different temperature induces a density difference which leads to buoyancy forces and creates a hydrostatic pressure difference. Therefore mass will circulates between ambiances carring their internal energy. The will result in heat flow exchanged between the ambiances.
+            
+            To quantity the mass flow rates of transfer, first express the diffential of pressure over the height.
+
+            \begin{equation}
+                \label{eq12}
+                \mathrm{d}p = -\rho \times g \times \mathrm{d} z
+            \end{equation}
+            
+            Now establish the pressure difference of the gas colomn from the two ambiances A and B.
+            
+            \begin{equation}
+                \label{eq13}
+                \mathrm{d}p_{AB} = -(\rho_A - \rho_B) \times g \times \mathrm{d} z
+            \end{equation}       
+            
+            
+            The static pressure is defined as equal at the center of the opening.However when mass flow is conserved between the top and bottom part of the opening, the pressure difference is null at $ HN $. The altitude where flow changes in direction. The integration of \eqref{eq13} is performed from $ z = HN $ to the bottom at $ z = 0 $
+
+            
+            \begin{equation}
+                \label{eq14}
+                \Delta p_{AB}(z) = \int_{HN}^{z} -(\rho_A - \rho_B) \times g \times dx = -(\rho_A - \rho_B) \times g \times (z - HN)
+            \end{equation} 
+            
+            Considering that all the pressure difference is converted to dynamic pressure.
+            
+            \begin{equation}
+                \label{eq15}
+                \Delta p_{AB}(z) = \frac{1}{2} \times \rho \times Vel(z)^2
+            \end{equation}
+            
+            Now a problem arises with the choice of the density to use. The upstream density is used but differs between the top and bottom part of the opening. Thefore the opening is cut in two and the altitude to which the flow changes in direction is called $ HN $.
+            
+            The relation between the flow velocity and the altitude derives:
+            
+            \begin{equation}
+                \label{eq16}
+                Vel(z)^2 = \left | \frac{2 \times (\rho_A - \rho_B) \times g \times (z-HN)}{\rho_{upstream} } \right |
+            \end{equation}
+            
+            The linear mass flow rate derives from the linear velocity and the upstream density. The width of the opening is defined as $ w = \frac{A}{H} $:
+            
+            \begin{equation}
+                \label{eq17}
+                \mathrm{d} m\_flow = \rho_{upstream} \times Vel(z) \times Cd \times \frac{A}{H} \times \mathrm{d} z
+            \end{equation}
+            
+            Combining \eqref{eq16} and \eqref{eq17} to obtain:
+            
+            
+            \begin{equation}
+                \label{eq18}
+                \mathrm{d} m\_flow = Cd \times A \times \sqrt{ 2 \times \rho_{upstream} \times ( \rho_B - \rho_A ) \times g } \times \sqrt{(z - HN)} \times \mathrm{d} z
+            \end{equation}
+            
+            Intregration of \eqref{eq20} over the height
+            
+            \begin{equation}
+                \label{eq19}
+                m\_flow = \int_{HN}^{z} \mathrm{d} m\_flow
+            \end{equation}
+            
+            From the height $ HN $ to  $ 0 $  (bottom part of the opening)
+            
+            \begin{equation} 
+            \label{eq20}
+                m\_flow\_down = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {(-HN)}^\frac{3}{2}
+            \end{equation} 
+            
+            From the height $ HN $ to $ H $  (top part of the opening)
+            
+            \begin{equation} 
+            \label{eq21}
+                m\_flow\_up = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {( H - HN)}^\frac{3}{2}
+            \end{equation}     
+        
+
+        \subsection{Zero flow altitude calculation}
+    
+            Demonstration of the calculation of the altitude $ HN $ where the flow changes in direction (zero flow altitude) in a vertical opening in thermal model.
+            
+            The formula bellow reminds the mass flow rate at the upper part of the opening.
+            
+            \begin{equation*} 
+                m\_flow\_up = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{up} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {( H - HN)}^\frac{3}{2}
+            \end{equation*} 
+
+            The formula bellow reminds the mass flow rate at the lower part of the opening.
+
+            \begin{equation*} 
+                m\_flow\_down = Cd \times \frac{A}{H} \times \sqrt{ 2 \times \rho_{down} \times ( \rho_B - \rho_A ) \times g } \times \frac{2}{3} \times {(-HN)}^\frac{3}{2}
+            \end{equation*} 
+
+            Calculation of the height of the zero flow current $ HN $ for the $ m\_flow\_up $ to be equal to $ m\_flow\_down $ .
+            
+            By balancing the \eqref{eq20} and \eqref{eq21}. and by simplifying the terms present in both sides we get:
+            
+            \begin{equation*}
+                \sqrt{ \rho _{up} } \times (H - HN)^{\frac{3}{2}} = \sqrt{ \rho _{down} }  \times HN^{\frac{3}{2}}
+            \end{equation*} 
+            
+            Dividing $ HN^{\frac{3}{2}} $ and  $ \rho _{up} $
+            
+            \begin{equation*}
+                \frac{(H - HN)^{\frac{3}{2}} }{ {HN^{\frac{3}{2}} } }  = \sqrt{ \frac{ \rho _{down} } { \rho _{up} } }
+            \end{equation*}   
+
+            \begin{equation*}
+                { \left( \frac{ H - HN }{ HN } \right) } ^{\frac{3}{2}}  = \sqrt{ \frac{ \rho _{down} } { \rho _{up} } }
+            \end{equation*}
+            
+            \begin{equation*}
+                { \left( \frac{ H }{ HN } - 1 \right) } ^{\frac{3}{2}}  = \sqrt{ \frac{ \rho _{down} } { \rho _{up} } }
+            \end{equation*} 
+            
+            \begin{equation*}
+                \frac{ H }{ HN } - 1  = {\left( \frac{ \rho _{down} } { \rho _{up} } \right)}^\frac{ 1 }{ 3 }
+            \end{equation*} 
+            
+            \begin{equation}
+                \label{eq22}
+                HN  = \frac{H}{ {\left( \frac{ \rho _{down} } { \rho _{up} } \right)}^\frac{ 1 }{ 3 } + 1 }
+            \end{equation} 
+    
+\end{document}
