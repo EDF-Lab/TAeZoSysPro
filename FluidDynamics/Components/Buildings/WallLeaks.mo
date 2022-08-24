@@ -1,7 +1,7 @@
 within TAeZoSysPro.FluidDynamics.Components.Buildings;
 
 model WallLeaks
-  package Medium = TAeZoSysPro.Media.MyMedia;
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   //
   parameter Modelica.SIunits.Area A "Wall surface area" annotation(
     Dialog(group = "Geometry"));
