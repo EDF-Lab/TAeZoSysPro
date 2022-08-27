@@ -50,7 +50,7 @@ equation
   V_flow = m_flow / d ;
   d = Medium.density(state) ;
   head = -dp/(d*Modelica.Constants.g_n) ; 
-  P = -dp*V_flow/eta ;
+  P = -dp*V_flow/eta;
 
 // Ports handover
   // port_a
@@ -60,7 +60,7 @@ equation
   port_a.C_outflow = if checkValve then inStream(port_a.C_outflow) else inStream(port_b.C_outflow) ;
   // port_b
   port_a.m_flow + port_b.m_flow = 0.0 ;
-  P = m_flow * (port_b.h_outflow - inStream(port_a.h_outflow)) ;
+  port_b.h_outflow = noEvent(if abs(m_flow)>10*Modelica.Constants.eps then P/m_flow+inStream(port_a.h_outflow) else inStream(port_a.h_outflow));
   port_b.Xi_outflow = inStream(port_a.Xi_outflow) ;
   port_b.C_outflow = inStream(port_a.C_outflow) ;  
      
