@@ -24,6 +24,11 @@ package MoistAir
   record water
     constant SI.SpecificHeatCapacityAtConstantPressure cp = 4181 "Specific heat capacity of liquid water at 293.15K (20°C)";
   end water;
+  
+  record ice
+    constant SI.SpecificHeatCapacityAtConstantPressure cp = 2060 "Specific heat capacity of solid water at 273.15K (0°C)";
+    constant SI.SpecificEnergy h_sl = 333e3 "Enthalpy of fusion of water at 273.15K (0°C)";
+  end ice;
 
   constant SI.MolarMass[2] MMX = {steam.MM, dryair.MM} "Molar masses of components";
   constant FluidConstants[nS] fluidConstants = {Modelica.Media.IdealGases.Common.FluidData.H2O, Modelica.Media.IdealGases.Common.FluidData.N2} "Constant data for the fluid";
@@ -614,8 +619,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     extends Modelica.Icons.Function;
     input SIunits.Temperature T "Temperature";
     output SIunits.SpecificEnthalpy h "Specific enthalpy of water";
-  protected
-    constant SI.SpecificHeatCapacity cp_ice = 2050 "Specific heat capacity of ice";
+  
   algorithm
 /*simple model assuming constant properties:
     heat capacity of solid water: 2050 J/kg
@@ -639,8 +643,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     input SIunits.Temperature T "Temperature";
     input Real dT(unit = "K/s") "Time derivative of temperature";
     output Real dh(unit = "J/(kg.s)") "Time derivative of specific enthalpy";
-  protected
-    constant SI.SpecificHeatCapacity cp_ice = 2050 "Specific heat capacity of ice";
+  
   algorithm
 /*simple model assuming constant properties:
     heat capacity of solid water: 2050 J/kg
