@@ -624,7 +624,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
 /*simple model assuming constant properties:
     heat capacity of solid water: 2050 J/kg
     enthalpy of fusion (liquid=>solid): 333000 J/kg*/
-    h := Utilities.spliceFunction(water.cp * (T - 273.15), cp_ice * (T - 273.15) - 333000, T - 273.16, 0.1);
+    h := Utilities.spliceFunction(water.cp * (T - reference_T), ice.cp * (T - reference_T) - ice.h_sl, T - 273.16, 0.1);
     annotation(
       derivative = enthalpyOfWater_der,
       Documentation(info = "<html>
@@ -649,7 +649,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     heat capacity of solid water: 2050 J/kg
     enthalpy of fusion (liquid=>solid): 333000 J/kg*/
 //h:=Utilities.spliceFunction(water.cp*(T-273.15),2050*(T-273.15)-333000,T-273.16,0.1);
-    dh := Utilities.spliceFunction_der(water.cp * (T - 273.15), cp_ice * (T - 273.15) - 333000, T - 273.16, 0.1, water.cp * dT, cp_ice * dT, dT, 0);
+    dh := Utilities.spliceFunction_der(water.cp * (T - reference_T), ice.cp * (T - reference_T) - ice.h_sl, T - 273.16, 0.1, water.cp * dT, ice.cp * dT, dT, 0);
     annotation(
       Documentation(info = "<html>
   Derivative function for <a href=\"modelica://Modelica.Media.Air.MoistAir.enthalpyOfWater\">enthalpyOfWater</a>.
@@ -688,30 +688,31 @@ Saturation pressure of water in the liquid and the solid region is computed usin
   end temperature;
 
   function T_phX "Return temperature as a function of pressure p, specific enthalpy h and composition X"
-    extends Modelica.Icons.UnderConstruction;
     input AbsolutePressure p "Pressure";
     input SpecificEnthalpy h "Specific enthalpy";
     input MassFraction[:] X "Mass fractions of composition";
     output Temperature T "Temperature";
+    
   protected
     SI.MoleFraction Y[2] "Mole fraction of species in the medium";
     SI.MassFraction X_liq "Mass fraction of liquid";
     SI.Temperature T_sat "Steam saturation temperature at given steam pressure";
-    SI.MassFraction X_steam "Mass fraction of steam in medium";
+    SI.MassFraction X_steam "Mass fraction of steam in medium";  
     Integer i;
+    
   algorithm
     i := 0;
-//h = X_air*dryair.cp*(T_sat-T_ref)+X_steam*(steam.cp*(T_sat-T_ref)+h_lv)+(1-X_air-X_steam)*water.cp*(T_sat-T_ref)
+  /* specific enthalpy formula is assumed to be
+  h = X_air*dryair.cp*(T_sat-T_ref)+X_steam*(steam.cp*(T_sat-T_ref)+h_lv)+(1-X_air-X_steam)*water.cp*(T_sat-T_ref) */
     T := (h - X[Water] * steam.h_lv) / (X[Air] * dryair.cp + X[Water] * steam.cp) + reference_T;
     Y := massToMoleFractions(X = X, MMX = MMX);
     T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p * Y[Water]);
-//Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", i="+String(i)) ;
     if T < T_sat then
       while abs((T - T_sat) / T_sat) > 1e-5 loop
         T := T_sat;
-        X_steam := (h - (X[Air] * (dryair.cp - water.cp) + water.cp) * (T - reference_T)) / ((steam.cp - water.cp) * (T - reference_T) + steam.h_lv);
+        X_steam := ( h - (T - reference_T) * (X[Water] * water.cp + X[Air] * dryair.cp) ) / ( steam.h_lv + (steam.cp - water.cp) * (T - reference_T) );
         X_liq := X[Water] - X_steam;
-        Y := massToMoleFractions(X = {X_steam / (1 - X_liq), (1 - X_steam) / (1 - X_liq)}, MMX = MMX);
+        Y := massToMoleFractions(X = {X_steam/(1 - X_liq), 1-X_steam/(1 - X_liq) }, MMX = MMX);
         T_sat := Modelica.Media.Water.IF97_Utilities.BaseIF97.Basic.tsat(p * Y[Water]);
         i := i + 1;
       end while;
@@ -720,10 +721,10 @@ Saturation pressure of water in the liquid and the solid region is computed usin
       X_steam := X[Water];
       X_liq := 0.0;
     end if;
-/* liquid water*/
-//Modelica.Utilities.Streams.print("T_sat = "+String(T_sat)+", X_steam = "+String(X_steam)+", X_liq = "+String(X_liq)) ;
-//Modelica.Utilities.Streams.print("sum_X = "+String((X_steam + X[Air])/(1-X_liq))) ;
-//Modelica.Utilities.Streams.print("i = "+String(i)) ;
+  
+    //The region of solid water is not allowed
+    assert(T > 273.16, "The solid region for water in the T_phX function is not allowed", level = AssertionLevel.error) ;
+  //Modelica.Utilities.Streams.print("i = "+String(i)) ;
     annotation(
       Documentation(info = "<html>
       <p>
