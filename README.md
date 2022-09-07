@@ -23,6 +23,7 @@ modelica library to model fluid dynamic of HVAC systems
 3-Enhancements
 	- FanVentilation: works with multi-species media
 	- The saturation pressure fonctions have been changed to work with a MoistAir bellow the triple point condition. It does not mean that the media can model a condensable moist air bellow the triple point conditions
-	- The orifices (except the compressible opening) can be initialised to a given velocity with a steady state condition. The flow regime can now be steady state or inertial.
+	- "SimpleOpening" and "VerticalOpening" are replaced by a signle "Opening" component. The bouyancy effect is no longer handled by dicretising the opening other the height but by analytical integration of hydrostatitque pressure other the height of the opening. 
+The opening (being an intrinsic vertical opening)
 	- The horizontal opening can handle buoyancy effect when density at the bottom is lower than than at the top
 	- All the openings can handle the altitude variation between opening and boundary nodes
