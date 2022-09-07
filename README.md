@@ -19,6 +19,7 @@ modelica library to model fluid dynamic of HVAC systems
 	- Correction in the called fonction to computed the derivative function of the saturation density of the MoistAir media (f4dc88331a0807266a3e40273d170f6f54fed3bb)
 	- Correction in the calcualtion of the derivative function of the saturation density of the MoistAir media
 	- Correction in the "UpwindFirstOrder" model when the flow was in reverse direction
+	- Correction of the reference temeprature in the enthalpyOfWater function in the MoistAir media (8cdf7328ea2d6ba467bbcb486fd267e153487573) 
 	
 3-Enhancements
 	- FanVentilation: works with multi-species media
