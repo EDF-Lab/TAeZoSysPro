@@ -76,7 +76,7 @@ equation
       </p>        
 
       <img 
-        src=\"modelica://TAeZoSysPro/Information/PDE/ThermalDiffusion/Eq_spaceDerivative.png\" 
+        src=\"modelica://TAeZoSysPro/Information/PDE/ThermalDiffusion/EQ_spaceDerivative.png\" 
       />
 			
       <p>
@@ -86,7 +86,7 @@ equation
       </p>
       
       <img 
-        src=\"modelica://TAeZoSysPro/Information/PDE/ThermalDiffusion/Eq_central.png\" 
+        src=\"modelica://TAeZoSysPro/Information/PDE/ThermalDiffusion/EQ_central.png\" 
       />
       
       <p>
