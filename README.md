@@ -14,6 +14,7 @@ modelica library to model fluid dynamic of HVAC systems
 1-Minor corrections:
 	- polynomialFlow: correction required to work with the version 1.16 of openModelica
 	- gasConstant_X of the air Air_H2 media: correction in its declaration
+	- h_dTX_der: correction in max function
 
 2-Major corrections:
 	- Correction in the called fonction to computed the derivative function of the saturation density of the MoistAir media (f4dc88331a0807266a3e40273d170f6f54fed3bb)
@@ -28,3 +29,5 @@ modelica library to model fluid dynamic of HVAC systems
 The opening (being an intrinsic vertical opening)
 	- The horizontal opening can handle buoyancy effect when density at the bottom is lower than than at the top
 	- All the openings can handle the altitude variation between opening and boundary nodes
+	- The CarrollNode can be inertial to increase the numerical resolution and stability
+	- The Walls and Halfs now handle the case where there is only one layer in the mesh.
