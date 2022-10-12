@@ -14,8 +14,8 @@ protected
 algorithm
 
   for i in 1:size(Awall,1) loop
-    if Awall[i] > sum(Awall)*0.48 then
-      assert(false,"The surface with the index "+String(i)+" is greater than 48 percent of total surface, Fview factor not calculated\n", AssertionLevel.error);
+    if Awall[i] > sum(Awall)*0.499 then
+      assert(false,"The surface with the index "+String(i)+" is greater than 49.9 percent of total surface, Fview factor not calculated\n", AssertionLevel.error);
     end if;
   end for;
 
