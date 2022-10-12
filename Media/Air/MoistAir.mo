@@ -817,6 +817,7 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     input Real dT(unit = "K/s") "Temperature derivative";
     input Real dX[:](each unit = "1/s") "Composition derivative";
     output Real h_der(unit = "J/(kg.s)") "Time derivative of specific enthalpy";
+  
   protected
     SI.MassFraction X_liquid "Mass fraction of liquid or solid water";
     SI.MassFraction X_steam "Mass fraction of steam water";
@@ -826,14 +827,17 @@ Saturation pressure of water in the liquid and the solid region is computed usin
     Real dX_air(unit = "1/s") "Time derivative of dry air mass fraction";
     Real dX_liq(unit = "1/s") "Time derivative of liquid/solid water mass fraction";
     Real dd_sat(unit = "kg/(m3.s)") "Time derivative of saturation density";
+  
   algorithm
     d_sat := saturationDensity(T);
-    X_liquid := Utilities.smoothMax(max(d * X[Water] - d_sat, 0) / d, 0.0, 1e-5);
+    X_liquid := Utilities.smoothMax(X[Water] - d_sat/d, 0.0, 1e-6);
+    //X_liquid := max(X[Water] - d_sat/d, 0);
     X_steam := X[Water] - X_liquid;
     X_air := 1 - X[Water];
     dX_air := -dX[Water];
     dd_sat := saturationDensity_der(T, dT);
-    dX_liq := Utilities.smoothMax_der(max(d * X[Water] - d_sat, 0) / d, 0.0, 1e-5, (d * dX[Water] + dd * X[Water] - dd_sat) / d - (d * X[Water] - d_sat) / (d * d) * dd, 0, 0);
+    dX_liq := Utilities.smoothMax_der(X[Water] - d_sat/d, 0.0, 1e-5, (d * dX[Water] + dd * X[Water] - dd_sat) / d - (d * X[Water] - d_sat) / (d * d) * dd, 0, 0);
+    //dX_liq := if X_liquid > 0.0 then dX[Water] - dd_sat / d + dd*d_sat / (d*d) else 0.0;
     dX_steam := dX[Water] - dX_liq;
     h_der := X_air * dryair.cp * dT + dX_air * dryair.cp * (T - reference_T) + X_steam * steam.cp * dT + dX_steam * (steam.h_lv + steam.cp * (T - reference_T)) + X_liquid * water.cp * dT + dX_liq * water.cp * (T - reference_T);
     annotation(
