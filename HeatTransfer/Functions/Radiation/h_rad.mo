@@ -15,7 +15,7 @@ algorithm
   // the expression bellow is non recursive
   //h_rad := 1 / R_th * Modelica.Constants.sigma * (T_A^3 + T_A * T_B^2 + T_B * T_A^2 + T_B^3) ;
   
-  h_rad := Modelica.Constants.sigma * (T_A + T_B) * (T_A^2 + T_B^2) / R_th ;
+  h_rad := abs(Modelica.Constants.sigma * (T_A + T_B) * (T_A^2 + T_B^2) / R_th) ;
   
   annotation(Documentation( info = "
 <html>
