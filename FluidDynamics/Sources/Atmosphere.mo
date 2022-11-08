@@ -39,15 +39,10 @@ model Atmosphere
 
 protected
   /*Using TAeZoSysPro medium function ensure no fail with new OM frontend (function exist whatever medium used*/
-  parameter TAeZoSysPro.Media.Air.MoistAir.MassFraction X_moist[TAeZoSysPro.Media.Air.MoistAir.nX] = cat(1, 
-    {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)}, 
-    {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH)});
+  TAeZoSysPro.Media.Air.MoistAir.MassFraction X_moist[TAeZoSysPro.Media.Air.MoistAir.nX] ;
   
   /*depending on chosen medium, parameter X vector to be adjusted*/
-  parameter Medium.MassFraction X_final[Medium.nX] = if Medium.mediumName=="Moist air" then 
-                                                                X_moist 
-                                                               else
-                                                                X;
+  Medium.MassFraction X_final[Medium.nX] ;
                                                               
   Modelica.Blocks.Interfaces.RealInput T_internal
     "Temperature at ports. Needed to connect to conditional connector";
@@ -73,6 +68,8 @@ equation
     RH_internal = RH;
   end if;
 
+  X_moist= cat(1, {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH_internal)}, {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH_internal)});
+  X_final= if Medium.mediumName =="Moist air" then X_moist else X;
   state = Medium.setState_pTX(p = p_internal, 
                                 T = T_internal,
                                 X=X_final) ; 
