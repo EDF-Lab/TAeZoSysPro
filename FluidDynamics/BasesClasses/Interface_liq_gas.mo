@@ -100,8 +100,8 @@ equation
   Q_flow_conv = h_cv * A * dT;
   
 // Evapocondensation heat flow rate calculation
-  //d_sat = Medium.saturationPressure(heatPort_a.T) / (heatPort_a.T * Modelica.Constants.R / Medium.MMX[Medium.Water]);
-  d_sat = MediumLiquid.dewDensity(sat) ;
+  d_sat = Medium.saturationPressure(heatPort_a.T) / (heatPort_a.T * Modelica.Constants.R / Medium.MMX[Medium.Water]);
+  //d_sat = MediumLiquid.dewDensity(sat) ;
   betaV = h_cv / (sum(flowPort_b.d) * cp);
   m_flow_evap = betaV * (d_sat - flowPort_b.d[Medium.Water]) * A;
   Q_flow_evap = m_flow_evap * Medium.enthalpyOfVaporization(heatPort_a.T);
