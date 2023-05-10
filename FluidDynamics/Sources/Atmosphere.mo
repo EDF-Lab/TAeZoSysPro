@@ -68,7 +68,7 @@ equation
     RH_internal = RH;
   end if;
 
-  X_moist= cat(1, {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH_internal)}, {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p, T = T, phi = RH_internal)});
+  X_moist= cat(1, {TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p_internal, T = T_internal, phi = RH_internal)}, {1-TAeZoSysPro.Media.Air.MoistAir.massFraction_pTphi(p = p_internal, T = T_internal, phi = RH_internal)});
   X_final= if Medium.mediumName =="Moist air" then X_moist else X;
   state = Medium.setState_pTX(p = p_internal, 
                                 T = T_internal,
