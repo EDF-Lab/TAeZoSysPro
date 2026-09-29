@@ -1,0 +1,23 @@
+{
+    "software": "OpenModelica",
+    "dymola": {
+        "advanced_flags":["Advanced.LogNonLinearIterationVariables=true","Advanced.GenerateBlockTimers=true"]
+    },
+    "openmodelica": {
+        "modelica_version": "3.2.3",
+        "compiler_flags":{
+            "--matchingAlgorithm":"PFPlusExt",
+            "-d":"initialization,iterationVars,stateselection,backenddaeinfo,stateselection,aliasConflicts,bltdump"
+        },
+        "simflags":{
+            "-jacobian":"coloredNumerical"
+        }
+    },
+    "libs": {
+        "TAeZoSysPro": {
+            "path": "../../ref/TAeZoSysPro/package.mo",
+            "models_filter": "\\.(Examples|Tests)\\.",
+            "vars_filter": ".*"
+        }
+    }
+}

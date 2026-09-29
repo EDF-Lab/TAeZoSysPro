@@ -17,7 +17,7 @@
         "TAeZoSysPro": {
             "path": "../../TAeZoSysPro/package.mo",
             "models_filter": "\\.(Examples|Tests)\\.",
-            "vars_filter": ".*\\.(T|p|m_flow.*|Q_flow)"
+            "vars_filter": ".*"
         }
     }
 }

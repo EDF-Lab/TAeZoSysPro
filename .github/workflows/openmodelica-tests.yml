@@ -1,5 +1,14 @@
 # Test TAeZoSysPro Examples and Tests models with OpenModelica, using
-# ModelicaTests (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests).
+# ModelicaTests (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests),
+# and compare them with a reference version of the library:
+#   - pull request: the target branch (master),
+#   - push to master: the previous master commit,
+#   - manual run: the default branch.
+# .test/config_new_openmodelica.json tests the checked out version,
+# .test/config_ref_openmodelica.json the reference checked out in
+# ref/TAeZoSysPro. The run summary lists, for each model, its status on both
+# versions and the changes (fixed, regression, results changed), computed by
+# .test/compare_results.py.
 #
 # Required repository settings (Settings > Secrets and variables > Actions):
 #   - secret MODELICATESTS_TOKEN: GitLab token with read_repository access to
@@ -43,12 +52,21 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends git ca-certificates python3-venv
 
-      # ModelicaTests names the library after the directory containing
-      # package.mo, so the checkout directory must be named TAeZoSysPro.
+      # OpenModelica requires the directory containing package.mo to be named
+      # after the package, so both checkouts end with TAeZoSysPro. The
+      # ModelicaTests git "url" feature cannot be used for the reference: it
+      # clones into REPO_<lib>_<n>, which only works when package.mo is in a
+      # subdirectory of the repository.
       - name: Checkout TAeZoSysPro
         uses: actions/checkout@v4
         with:
           path: TAeZoSysPro
+
+      - name: Checkout reference TAeZoSysPro
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.event.before || github.base_ref || github.event.repository.default_branch }}
+          path: ref/TAeZoSysPro
 
       - name: Clone ModelicaTests
         env:
@@ -79,7 +97,14 @@ jobs:
           useradd --create-home --shell /bin/bash ciuser
           chown -R ciuser:ciuser "$GITHUB_WORKSPACE"
           su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests' && python3 -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install ."
-          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 run_cli.py config_openmodelica.json --ncpus 4 --timeout 120"
+          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 run_cli.py config_ref_openmodelica.json config_new_openmodelica.json --ncpus 4 --timeout 120"
+
+      # Written to a file first: ciuser cannot write to $GITHUB_STEP_SUMMARY.
+      - name: Compare with reference
+        if: always()
+        run: |
+          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 '$GITHUB_WORKSPACE/TAeZoSysPro/.test/compare_results.py' config_ref_openmodelica.csv config_new_openmodelica.csv > comparison.md"
+          cat modelicatests/tests/comparison.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload reports
         if: always()
@@ -92,10 +117,12 @@ jobs:
             modelicatests/tests/*.csv
             modelicatests/tests/*.html
             modelicatests/tests/*-junit.xml
+            modelicatests/tests/comparison.md
             modelicatests/tests/TMP_*/*/*.log
             modelicatests/tests/TMP_*/*/*.txt
           if-no-files-found: warn
 
+      # Only the tested version is reported, not the reference.
       # annotate_only: no separate check run, which GitHub would attach to an
       # arbitrary workflow of the commit and mark as failed. Failing models are
       # annotated on this job and listed in the run summary.
@@ -103,7 +130,7 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
-          report_paths: modelicatests/tests/*-junit.xml
+          report_paths: modelicatests/tests/config_new_openmodelica-junit.xml
           annotate_only: true
           fail_on_failure: false
           include_passed: true
