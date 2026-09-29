@@ -2,26 +2,32 @@ within TAeZoSysPro_testsuite.HeatTransfer.Functions.MeshGrid;
 
 model test_geometricalGrowthGrid
 
-  parameter Modelica.SIunits.Length L = 1 "Length of the domain to mesh" ;
-  parameter Integer N_odd = 5 "Odd number of segments" ;
-  parameter Integer N_even = 6 "Even number of segments" ;
-  parameter Modelica.SIunits.Position x[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(L = L, 
-                                                                  N = N_odd, 
-                                                                  q = 1.2,
-                                                                  symmetricalMesh = false);
-  parameter Modelica.SIunits.Position x_sym_odd[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(L = L, 
-                                                                  N = N_odd, 
-                                                                  q = 1.2,
-                                                                  symmetricalMesh = true);
+  parameter Modelica.SIunits.Length L = 1
+    "Length of the domain to mesh";
+  parameter Integer N_odd = 5
+    "Odd number of segments";
+  parameter Integer N_even = 6
+    "Even number of segments";
+  parameter Modelica.SIunits.Position x[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(
+    L = L,
+    N = N_odd,
+    q = 1.2,
+    symmetricalMesh = false);
+  parameter Modelica.SIunits.Position x_sym_odd[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(
+    L = L,
+    N = N_odd,
+    q = 1.2,
+    symmetricalMesh = true);
 
-  parameter Modelica.SIunits.Position x_sym_even[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(L = L, 
-                                                                  N = N_even, 
-                                                                  q = 1.2,
-                                                                  symmetricalMesh = true);
-                                                                  
+  parameter Modelica.SIunits.Position x_sym_even[:] = TAeZoSysPro.HeatTransfer.Functions.MeshGrid.geometricalGrowthGrid(
+    L = L,
+    N = N_even,
+    q = 1.2,
+    symmetricalMesh = true);
+
 equation
 
-
-annotation(
+  annotation (
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-6, Interval = 0.002));
-end test_geometricalGrowthGrid ;
+
+end test_geometricalGrowthGrid;
