@@ -15,7 +15,7 @@
     },
     "libs": {
         "TAeZoSysPro": {
-            "path": "../../TAeZoSysPro/package.mo",
+            "path": "../../TAeZoSysPro/src/TAeZoSysPro/package.mo",
             "models_filter": "\\.(Examples|Tests)\\.",
             "vars_filter": ".*"
         }

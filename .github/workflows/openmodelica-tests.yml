@@ -1,14 +1,13 @@
 # Test TAeZoSysPro Examples and Tests models with OpenModelica, using
 # ModelicaTests (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests),
-# and compare them with a reference version of the library:
-#   - pull request: the target branch (master),
-#   - push to master: the previous master commit,
-#   - manual run: the default branch.
-# .test/config_new_openmodelica.json tests the checked out version,
-# .test/config_ref_openmodelica.json the reference checked out in
-# ref/TAeZoSysPro. The run summary, written by .test/report.py, shows the
-# results table of the ModelicaTests HTML report for the tested version, and
-# the comparison with the reference (fixed, regression, results changed).
+# and compare them with the master branch of EDF-Lab/TAeZoSysPro:
+#   - .test/config_new_openmodelica.json tests the checked out version,
+#   - .test/config_ref_openmodelica.json tests master, cloned by ModelicaTests.
+# If the reference cannot be tested (for instance while master still has the
+# library at the repository root instead of src/TAeZoSysPro), the checked out
+# version is tested alone. The run summary, written by .test/report.py, shows
+# the results table of the ModelicaTests HTML report for the tested version,
+# and the comparison with the reference (fixed, regression, results changed).
 #
 # Required repository settings (Settings > Secrets and variables > Actions):
 #   - secret MODELICATESTS_TOKEN: GitLab token with read_repository access to
@@ -52,21 +51,12 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends git ca-certificates python3-venv
 
-      # OpenModelica requires the directory containing package.mo to be named
-      # after the package, so both checkouts end with TAeZoSysPro. The
-      # ModelicaTests git "url" feature cannot be used for the reference: it
-      # clones into REPO_<lib>_<n>, which only works when package.mo is in a
-      # subdirectory of the repository.
+      # The library is in src/TAeZoSysPro: OpenModelica requires the directory
+      # containing package.mo to be named after the package.
       - name: Checkout TAeZoSysPro
         uses: actions/checkout@v4
         with:
           path: TAeZoSysPro
-
-      - name: Checkout reference TAeZoSysPro
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'push' && github.event.before || github.base_ref || github.event.repository.default_branch }}
-          path: ref/TAeZoSysPro
 
       - name: Clone ModelicaTests
         env:
@@ -92,12 +82,19 @@ jobs:
 
       # Docker jobs run as root. OpenModelica refuses to start its ZMQ server
       # as root, and omc4py needs that server, so the tests run as ciuser.
+      # If the run with the reference fails, its outputs are removed and the
+      # checked out version is tested alone (report.py then skips the comparison).
       - name: Run ModelicaTests
         run: |
           useradd --create-home --shell /bin/bash ciuser
           chown -R ciuser:ciuser "$GITHUB_WORKSPACE"
           su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests' && python3 -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install ."
-          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 run_cli.py config_ref_openmodelica.json config_new_openmodelica.json --ncpus 4 --timeout 120"
+          cd modelicatests/tests
+          su ciuser -c ". ../.venv/bin/activate && python3 run_cli.py config_ref_openmodelica.json config_new_openmodelica.json --ncpus 4 --timeout 120" || {
+            echo "::warning::ModelicaTests failed with the reference (master), see the log above: testing the checked out version alone."
+            rm -rf config_ref_openmodelica.csv config_ref_openmodelica.html config_ref_openmodelica-* TMP_*
+            su ciuser -c ". ../.venv/bin/activate && python3 run_cli.py config_new_openmodelica.json --ncpus 4 --timeout 120"
+          }
 
       # Written to a file first: ciuser cannot write to $GITHUB_STEP_SUMMARY.
       - name: Write results summary

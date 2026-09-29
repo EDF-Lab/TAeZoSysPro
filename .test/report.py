@@ -6,7 +6,8 @@
    versions and, for models simulated in both, the relative differences between
    the final values of the saved variables, computed as in the ModelicaTests
    HTML comparison (<ref>-<new>.html). The 10 largest differences are listed
-   for each model whose results changed.
+   for each model whose results changed. Skipped if the reference CSV report
+   does not exist (reference not tested).
 
 Column order and relative differences come from ModelicaTests' own
 post-processing, so this report matches its HTML files.
@@ -186,9 +187,11 @@ def main():
     args = parser.parse_args()
 
     names = [os.path.basename(f).removesuffix(".csv") for f in (args.ref_csv, args.new_csv)]
-    ref_df, new_df = read_results(args.ref_csv), read_results(args.new_csv)
-    print(results_table(new_df, names[1]))
-    print(comparison(ref_df, new_df, names, args.simu_dir, args.rtol))
+    print(results_table(read_results(args.new_csv), names[1]))
+    if os.path.exists(args.ref_csv):
+        print(comparison(read_results(args.ref_csv), read_results(args.new_csv), names, args.simu_dir, args.rtol))
+    else:
+        print(f"## Comparison with {names[0]}\n\n⚠️ Not available: the reference could not be tested (see the job log).")
 
 
 if __name__ == "__main__":

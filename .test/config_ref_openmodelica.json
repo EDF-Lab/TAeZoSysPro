@@ -15,7 +15,11 @@
     },
     "libs": {
         "TAeZoSysPro": {
-            "path": "../../ref/TAeZoSysPro/package.mo",
+            "path": {
+                "url": "https://github.com/EDF-Lab/TAeZoSysPro.git",
+                "target": "master",
+                "package_path": "src/TAeZoSysPro/package.mo"
+            },
             "models_filter": "\\.(Examples|Tests)\\.",
             "vars_filter": ".*"
         }
