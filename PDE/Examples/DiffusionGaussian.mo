@@ -50,8 +50,9 @@ equation
 
   // PDE domain
   //centralSecondOrder.SourceTerm = zeros(N);
-  u_1order = centralSecondOrder.u
-    annotation (
-      experiment(StartTime = 1e-3, StopTime = 1, Tolerance = 1e-6, Interval = 0.0001));
+  u_1order = centralSecondOrder.u;
+
+  annotation (
+    experiment(StartTime = 1e-3, StopTime = 1, Tolerance = 1e-6, Interval = 0.0001));
 
 end DiffusionGaussian;

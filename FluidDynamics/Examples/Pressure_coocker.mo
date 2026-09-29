@@ -3,19 +3,20 @@ within TAeZoSysPro.FluidDynamics.Examples;
 model Pressure_coocker
 
   extends Modelica.Icons.Example;
-  TAeZoSysPro.FluidDynamics.BasesClasses.GasNode_two_phases gasNode_two_phases(V = 0.0191)
+  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the two-phase gas node";
+  TAeZoSysPro.FluidDynamics.BasesClasses.GasNode_two_phases gasNode_two_phases(redeclare package Medium = Medium, V = 0.0191)
     annotation (
       Placement(visible = true, transformation(origin = {-30, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.BasesClasses.LiquidNode liquidNode(V_start = 0.0021, nPorts = 1)
+  TAeZoSysPro.FluidDynamics.BasesClasses.LiquidNode liquidNode(redeclare package MediumGas = Medium, V_start = 0.0021, nPorts = 1)
     annotation (
       Placement(visible = true, transformation(origin = {-10, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.BasesClasses.Interface_liq_gas interface_liq_gas(A = 3.14 * 0.3 ^ 2 / 4)
+  TAeZoSysPro.FluidDynamics.BasesClasses.Interface_liq_gas interface_liq_gas(redeclare package Medium = Medium, A = 3.14 * 0.3 ^ 2 / 4)
     annotation (
       Placement(visible = true, transformation(origin = {-10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Components.Buildings.Wall wall(A = 0.4239, Lc = 0.3, N = 2, Th = 0.003, cp = 480, d = 7800, energyDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.FixedInitial, eps_a = 0.3, eps_b = 0.3, k = 50, mesh = TAeZoSysPro.HeatTransfer.Types.MeshGrid.uniform)
+  TAeZoSysPro.FluidDynamics.Components.Buildings.Wall wall(redeclare package Medium = Medium, A = 0.4239, Lc = 0.3, N = 2, Th = 0.003, cp = 480, d = 7800, energyDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.FixedInitial, eps_a = 0.3, eps_b = 0.3, k = 50, mesh = TAeZoSysPro.HeatTransfer.Types.MeshGrid.uniform)
     annotation (
       Placement(visible = true, transformation(origin = {50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere
+  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(redeclare package Medium = Medium)
     annotation (
       Placement(visible = true, transformation(origin = {90, 70}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   inner TAeZoSysPro.HeatTransfer.Components.FviewCalculator fviewCalculator(N = 2)
@@ -27,7 +28,7 @@ model Pressure_coocker
   Modelica.Thermal.HeatTransfer.Sources.FixedHeatFlow heat_load(Q_flow = 1000)
     annotation (
       Placement(visible = true, transformation(origin = {-50, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Components.Orifices.SimpleOpening simpleOpening(A = 5e-5, massDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.SteadyState)
+  TAeZoSysPro.FluidDynamics.Components.Orifices.Opening simpleOpening(redeclare package Medium = Medium, A = 5e-5, massDynamics = TAeZoSysPro.HeatTransfer.Types.Dynamics.SteadyState)
     annotation (
       Placement(visible = true, transformation(origin = {-30, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 

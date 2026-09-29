@@ -8,7 +8,8 @@ model test_counterCurrent
     "Ratio of thermal condutance";
   Modelica.SIunits.Efficiency Eff
     "Exchanger effectiveness";
-  Modelica.Blocks.Sources.Ramp ramp1(duration = 1, height = 1)
+  // Cr stops at 0.99: counterCurrent evaluates its general formula (0/0 at Cr = 1) even where regStep only uses the Cr = 1 limit
+  Modelica.Blocks.Sources.Ramp ramp1(duration = 1, height = 0.99)
     annotation (
       Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 

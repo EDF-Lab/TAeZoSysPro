@@ -54,8 +54,9 @@ equation
 
   // PDE domain
   //centralSecondOrder.SourceTerm = zeros(N);
-  u_1order = centralSecondOrder.u
-    annotation (
-      experiment(StartTime = 0, StopTime = 300, Tolerance = 1e-06, Interval = 0.3));
+  u_1order = centralSecondOrder.u;
+
+  annotation (
+    experiment(StartTime = 0, StopTime = 300, Tolerance = 1e-06, Interval = 0.3));
 
 end BoundaryStepDiffusion;

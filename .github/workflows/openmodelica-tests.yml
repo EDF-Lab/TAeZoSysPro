@@ -6,9 +6,10 @@
 #     the ModelicaTests project.
 #   - variable OPENMODELICA_IMAGE (optional): OpenModelica Docker image.
 #
-# Failing models do not fail the workflow: they are reported in the JUnit
-# report and in the uploaded HTML/CSV reports. The workflow only fails on
-# infrastructure errors (library or MSL not loadable, ModelicaTests crash).
+# Failing models do not fail the workflow: they are reported as annotations,
+# in the run summary, and in the uploaded HTML/CSV reports and OpenModelica
+# logs. The workflow only fails on infrastructure errors (library or MSL not
+# loadable, ModelicaTests crash).
 
 name: OpenModelica tests
 
@@ -21,7 +22,6 @@ on:
 
 permissions:
   contents: read
-  checks: write   # needed by the JUnit report action
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -86,17 +86,25 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: modelicatests-report
+          # TMP_*/<model>/ holds the OpenModelica check, build and simulation
+          # logs of each model, needed to understand a failure.
           path: |
             modelicatests/tests/*.csv
             modelicatests/tests/*.html
             modelicatests/tests/*-junit.xml
+            modelicatests/tests/TMP_*/*/*.log
+            modelicatests/tests/TMP_*/*/*.txt
           if-no-files-found: warn
 
+      # annotate_only: no separate check run, which GitHub would attach to an
+      # arbitrary workflow of the commit and mark as failed. Failing models are
+      # annotated on this job and listed in the run summary.
       - name: Publish JUnit report
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
           report_paths: modelicatests/tests/*-junit.xml
+          annotate_only: true
           fail_on_failure: false
           include_passed: true
           detailed_summary: true
