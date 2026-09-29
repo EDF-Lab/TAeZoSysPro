@@ -16,7 +16,8 @@ model test_Interface_liq_gas
 
   end LiquidNode_simulated;
 
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the liquid-gas interface";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Condensable medium required by the liquid-gas interface";
   TAeZoSysPro.FluidDynamics.BasesClasses.Interface_liq_gas interFace_liq_gas(redeclare package Medium = Medium, A = 1)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 3.33067e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));

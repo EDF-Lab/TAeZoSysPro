@@ -2,7 +2,8 @@ within TAeZoSysPro_testsuite.HeatTransfer.BaseClasses;
 
 model test_ForcedConvection
 
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Medium whose thermodynamic state provides the density d used by ForcedConvection";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Medium whose thermodynamic state provides the density d used by ForcedConvection";
   Modelica.Thermal.HeatTransfer.Sources.FixedTemperature T_wall(T = 303.15)
     annotation (
       Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

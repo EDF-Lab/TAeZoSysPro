@@ -2,7 +2,8 @@ within TAeZoSysPro_testsuite.FluidDynamics.BaseClasses;
 
 model test_MolecularDiffusion
 
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the molecular diffusion model";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Condensable medium required by the molecular diffusion model";
   TAeZoSysPro.FluidDynamics.BasesClasses.MolecularDiffusion molecularDiffusion(redeclare package Medium = Medium, A = 1, Th = 0.1)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));

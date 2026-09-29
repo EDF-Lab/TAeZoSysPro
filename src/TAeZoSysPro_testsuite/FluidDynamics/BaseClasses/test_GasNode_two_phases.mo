@@ -2,7 +2,8 @@ within TAeZoSysPro_testsuite.FluidDynamics.BaseClasses;
 
 model test_GasNode_two_phases
 
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the two-phase gas node";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Condensable medium required by the two-phase gas node";
   TAeZoSysPro.FluidDynamics.BasesClasses.GasNode_two_phases gasNode_two_phases(redeclare package Medium = Medium, RH_start = 0.9, T_start = 303.15)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));

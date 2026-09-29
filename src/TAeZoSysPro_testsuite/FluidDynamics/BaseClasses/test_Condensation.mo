@@ -2,7 +2,8 @@ within TAeZoSysPro_testsuite.FluidDynamics.BaseClasses;
 
 model test_Condensation
 
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the condensation model";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Condensable medium required by the condensation model";
   TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(redeclare package Medium = Medium)
     annotation (
       Placement(visible = true, transformation(origin = {-70, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
