@@ -3,7 +3,8 @@ within TAeZoSysPro.FluidDynamics.Examples;
 model Pressure_coocker
 
   extends Modelica.Icons.Example;
-  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the two-phase gas node";
+  package Medium = TAeZoSysPro.Media.Air.MoistAir
+    "Condensable medium required by the two-phase gas node";
   TAeZoSysPro.FluidDynamics.BasesClasses.GasNode_two_phases gasNode_two_phases(redeclare package Medium = Medium, V = 0.0191)
     annotation (
       Placement(visible = true, transformation(origin = {-30, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
