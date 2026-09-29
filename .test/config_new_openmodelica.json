@@ -18,6 +18,11 @@
             "path": "../../TAeZoSysPro/src/TAeZoSysPro/package.mo",
             "models_filter": "\\.(Examples|Tests)\\.",
             "vars_filter": ".*"
+        },
+        "TAeZoSysPro_testsuite": {
+            "path": "../../TAeZoSysPro/src/TAeZoSysPro_testsuite/package.mo",
+            "models_filter": "^(?!.*\\.tests?_\\w+\\.)",
+            "vars_filter": ".*"
         }
     }
 }

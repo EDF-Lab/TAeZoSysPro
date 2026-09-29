@@ -1,6 +1,7 @@
-# Test TAeZoSysPro Examples and Tests models with OpenModelica, using
-# ModelicaTests (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests),
-# and compare them with the master branch of EDF-Lab/TAeZoSysPro:
+# Test with OpenModelica the Examples and Tests models of TAeZoSysPro and the
+# models of the TAeZoSysPro_testsuite library (src/), using ModelicaTests
+# (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests), and compare
+# them with the master branch of EDF-Lab/TAeZoSysPro:
 #   - .test/config_new_openmodelica.json tests the checked out version,
 #   - .test/config_ref_openmodelica.json tests master, cloned by ModelicaTests.
 # If the reference cannot be tested (for instance while master still has the
