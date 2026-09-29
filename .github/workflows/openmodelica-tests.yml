@@ -1,0 +1,122 @@
+# Test with OpenModelica the Examples and Tests models of TAeZoSysPro and the
+# models of the TAeZoSysPro_testsuite library (src/), using ModelicaTests
+# (https://gitlab.pam-retd.fr/thermosysproandco/modelicatests), and compare
+# them with the master branch of EDF-Lab/TAeZoSysPro:
+#   - .test/config_new_openmodelica.json tests the checked out version,
+#   - .test/config_ref_openmodelica.json tests master, cloned by ModelicaTests.
+# If the reference cannot be tested (for instance while master still has the
+# library at the repository root instead of src/TAeZoSysPro), the checked out
+# version is tested alone. The run summary, written by .test/report.py, shows
+# the results table of the ModelicaTests HTML report for the tested version,
+# and the comparison with the reference (fixed, regression, results changed).
+#
+# Required repository settings (Settings > Secrets and variables > Actions):
+#   - secret MODELICATESTS_TOKEN: GitLab token with read_repository access to
+#     the ModelicaTests project.
+#   - variable OPENMODELICA_IMAGE (optional): OpenModelica Docker image.
+#
+# Failing models do not fail the workflow: they are reported in the run
+# summary, and in the uploaded HTML/CSV reports and OpenModelica logs. The
+# workflow only fails on infrastructure errors (library or MSL not loadable,
+# ModelicaTests crash).
+
+name: OpenModelica tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-openmodelica:
+    # Pull requests from forks have no access to secrets, so the private
+    # ModelicaTests repository cannot be cloned: skip the job instead of failing.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ vars.OPENMODELICA_IMAGE || 'openmodelica/openmodelica:v1.26.7-ompython' }}
+    steps:
+      # git is needed to clone ModelicaTests; python3-venv is used to avoid
+      # installing Python packages as root.
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates python3-venv
+
+      # The library is in src/TAeZoSysPro: OpenModelica requires the directory
+      # containing package.mo to be named after the package.
+      - name: Checkout TAeZoSysPro
+        uses: actions/checkout@v4
+        with:
+          path: TAeZoSysPro
+
+      - name: Clone ModelicaTests
+        env:
+          MODELICATESTS_TOKEN: ${{ secrets.MODELICATESTS_TOKEN }}
+        run: git clone --depth 1 "https://oauth2:${MODELICATESTS_TOKEN}@gitlab.pam-retd.fr/thermosysproandco/modelicatests.git" modelicatests
+
+      # Copy TAeZoSysPro test configuration files into the ModelicaTests test
+      # directory, where the runner expects them.
+      - name: Configure ModelicaTests
+        run: |
+          cp TAeZoSysPro/.test/*.json modelicatests/tests/
+          cat > modelicatests/tests/local_config.json <<'JSON'
+          {
+            "dymola": {
+              "egg": "",
+              "exe": ""
+            },
+            "openmodelica": {
+              "exe": "/usr/bin/omc"
+            }
+          }
+          JSON
+
+      # Docker jobs run as root. OpenModelica refuses to start its ZMQ server
+      # as root, and omc4py needs that server, so the tests run as ciuser.
+      # If the run with the reference fails, its outputs are removed and the
+      # checked out version is tested alone (report.py then skips the comparison).
+      - name: Run ModelicaTests
+        run: |
+          useradd --create-home --shell /bin/bash ciuser
+          chown -R ciuser:ciuser "$GITHUB_WORKSPACE"
+          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests' && python3 -m venv .venv && . .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install ."
+          cd modelicatests/tests
+          su ciuser -c ". ../.venv/bin/activate && python3 run_cli.py config_ref_openmodelica.json config_new_openmodelica.json --ncpus 4 --timeout 120" || {
+            echo "::warning::ModelicaTests failed with the reference (master), see the log above: testing the checked out version alone."
+            rm -rf config_ref_openmodelica.csv config_ref_openmodelica.html config_ref_openmodelica-* TMP_*
+            su ciuser -c ". ../.venv/bin/activate && python3 run_cli.py config_new_openmodelica.json --ncpus 4 --timeout 120"
+          }
+
+      # Written to a file first: ciuser cannot write to $GITHUB_STEP_SUMMARY.
+      - name: Write results summary
+        if: always()
+        run: |
+          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 '$GITHUB_WORKSPACE/TAeZoSysPro/.test/report.py' config_ref_openmodelica.csv config_new_openmodelica.csv > report.md"
+          cat modelicatests/tests/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelicatests-report
+          retention-days: 7
+          # TMP_*/<model>/ holds the OpenModelica check, build and simulation
+          # logs of each model, needed to understand a failure.
+          path: |
+            modelicatests/tests/*.csv
+            modelicatests/tests/*.html
+            modelicatests/tests/*-junit.xml
+            modelicatests/tests/report.md
+            modelicatests/tests/TMP_*/*/*.log
+            modelicatests/tests/TMP_*/*/*.txt
+          if-no-files-found: warn

@@ -1,0 +1,82 @@
+# Format the Modelica code with mofmt (https://github.com/ErykMroczek/mofmt).
+#
+#   - Pull request from a branch of this repository, or manual run: mofmt is
+#     applied and a "style: format Modelica code with mofmt" commit is pushed
+#     to the branch (run "git pull" afterwards).
+#   - Pull request from a fork, or direct push to master: nothing is pushed,
+#     the job fails if some files are not formatted.
+#
+# Commits pushed with GITHUB_TOKEN do not trigger other workflows, so the
+# OpenModelica tests are not re-run on the formatting commit.
+
+name: mofmt
+
+on:
+  pull_request:
+    branches: [master]
+    paths: ['**.mo', '.github/workflows/mofmt.yml']
+  push:
+    branches: [master]
+    paths: ['**.mo', '.github/workflows/mofmt.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to push the formatting commit
+
+concurrency:
+  group: mofmt-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MOFMT_VERSION: 0.6.0
+
+jobs:
+  mofmt:
+    runs-on: ubuntu-latest
+    steps:
+      # On pull requests, check out the branch itself (not the merge commit)
+      # so the formatting commit can be pushed to it.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+
+      - name: Cache mofmt
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/mofmt
+          key: mofmt-${{ env.MOFMT_VERSION }}-${{ runner.os }}
+
+      - name: Install mofmt
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cargo install mofmt --version "$MOFMT_VERSION" --locked
+
+      # mofmt panics on files starting with a UTF-8 BOM, which some Windows
+      # editors add. Does nothing on files without BOM.
+      - name: Strip UTF-8 BOM
+        run: find . -name '*.mo' -not -path './.git/*' -exec sed -i '1s/^\xEF\xBB\xBF//' {} +
+
+      - name: Format
+        run: mofmt .
+
+      - name: Commit formatting
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        run: |
+          if git diff --quiet; then echo "Already formatted"; exit 0; fi
+          git diff --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "style: format Modelica code with mofmt"
+          git push
+
+      # Pull requests from forks have no write access, and master should only
+      # receive formatted code through pull requests: report only.
+      - name: Report unformatted files
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository)
+        run: |
+          if git diff --quiet; then echo "Already formatted"; exit 0; fi
+          git diff --stat
+          echo "::error::Some .mo files are not formatted with mofmt $MOFMT_VERSION. Run 'mofmt .' at the repository root."
+          exit 1
