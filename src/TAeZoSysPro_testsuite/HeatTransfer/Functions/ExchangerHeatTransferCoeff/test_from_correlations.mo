@@ -18,8 +18,11 @@ model test_from_correlations
     "Charactereistic length for flow A";
   parameter Modelica.SIunits.ThermalConductivity k_B = 0.03
     "Thermal conductivity for fluid A";
-  Modelica.SIunits.CoefficientOfHeatTransfer h, h_A, h_B
-    "Heat transfer Coefficient";
+  Modelica.SIunits.CoefficientOfHeatTransfer
+    h,
+    h_A,
+    h_B
+      "Heat transfer Coefficient";
 
 equation
 
