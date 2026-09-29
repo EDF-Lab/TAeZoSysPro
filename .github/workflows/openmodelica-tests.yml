@@ -6,19 +6,19 @@
 #   - manual run: the default branch.
 # .test/config_new_openmodelica.json tests the checked out version,
 # .test/config_ref_openmodelica.json the reference checked out in
-# ref/TAeZoSysPro. The run summary lists, for each model, its status on both
-# versions and the changes (fixed, regression, results changed), computed by
-# .test/compare_results.py.
+# ref/TAeZoSysPro. The run summary, written by .test/report.py, shows the
+# results table of the ModelicaTests HTML report for the tested version, and
+# the comparison with the reference (fixed, regression, results changed).
 #
 # Required repository settings (Settings > Secrets and variables > Actions):
 #   - secret MODELICATESTS_TOKEN: GitLab token with read_repository access to
 #     the ModelicaTests project.
 #   - variable OPENMODELICA_IMAGE (optional): OpenModelica Docker image.
 #
-# Failing models do not fail the workflow: they are reported as annotations,
-# in the run summary, and in the uploaded HTML/CSV reports and OpenModelica
-# logs. The workflow only fails on infrastructure errors (library or MSL not
-# loadable, ModelicaTests crash).
+# Failing models do not fail the workflow: they are reported in the run
+# summary, and in the uploaded HTML/CSV reports and OpenModelica logs. The
+# workflow only fails on infrastructure errors (library or MSL not loadable,
+# ModelicaTests crash).
 
 name: OpenModelica tests
 
@@ -100,38 +100,25 @@ jobs:
           su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 run_cli.py config_ref_openmodelica.json config_new_openmodelica.json --ncpus 4 --timeout 120"
 
       # Written to a file first: ciuser cannot write to $GITHUB_STEP_SUMMARY.
-      - name: Compare with reference
+      - name: Write results summary
         if: always()
         run: |
-          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 '$GITHUB_WORKSPACE/TAeZoSysPro/.test/compare_results.py' config_ref_openmodelica.csv config_new_openmodelica.csv > comparison.md"
-          cat modelicatests/tests/comparison.md >> "$GITHUB_STEP_SUMMARY"
+          su ciuser -c "cd '$GITHUB_WORKSPACE/modelicatests/tests' && . ../.venv/bin/activate && python3 '$GITHUB_WORKSPACE/TAeZoSysPro/.test/report.py' config_ref_openmodelica.csv config_new_openmodelica.csv > report.md"
+          cat modelicatests/tests/report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: modelicatests-report
+          retention-days: 7
           # TMP_*/<model>/ holds the OpenModelica check, build and simulation
           # logs of each model, needed to understand a failure.
           path: |
             modelicatests/tests/*.csv
             modelicatests/tests/*.html
             modelicatests/tests/*-junit.xml
-            modelicatests/tests/comparison.md
+            modelicatests/tests/report.md
             modelicatests/tests/TMP_*/*/*.log
             modelicatests/tests/TMP_*/*/*.txt
           if-no-files-found: warn
-
-      # Only the tested version is reported, not the reference.
-      # annotate_only: no separate check run, which GitHub would attach to an
-      # arbitrary workflow of the commit and mark as failed. Failing models are
-      # annotated on this job and listed in the run summary.
-      - name: Publish JUnit report
-        if: always()
-        uses: mikepenz/action-junit-report@v5
-        with:
-          report_paths: modelicatests/tests/config_new_openmodelica-junit.xml
-          annotate_only: true
-          fail_on_failure: false
-          include_passed: true
-          detailed_summary: true
