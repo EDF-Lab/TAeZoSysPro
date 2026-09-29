@@ -1,4 +1,4 @@
-﻿within TAeZoSysPro.FluidDynamics.BasesClasses;
+within TAeZoSysPro.FluidDynamics.BasesClasses;
 model GasNode_two_phases
   model FogModel
     Modelica.SIunits.Density d_condensable "Density of the condensable species";

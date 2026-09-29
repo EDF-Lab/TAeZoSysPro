@@ -1,4 +1,4 @@
-﻿within TAeZoSysPro.Media.Air;
+within TAeZoSysPro.Media.Air;
 
 package MoistAir
 

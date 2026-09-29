@@ -1,4 +1,4 @@
-﻿within TAeZoSysPro.HeatTransfer.Components;
+within TAeZoSysPro.HeatTransfer.Components;
 model FanVentilation
   replaceable package Medium = TAeZoSysPro.Media.MyMedia "Medium in the component";
 

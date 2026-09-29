@@ -1,4 +1,4 @@
-﻿within TAeZoSysPro.HeatTransfer.BasesClasses;
+within TAeZoSysPro.HeatTransfer.BasesClasses;
 model Conduction
   encapsulated type ConductionType = enumeration(
       Linear
