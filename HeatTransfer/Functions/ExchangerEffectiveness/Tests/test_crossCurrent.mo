@@ -5,8 +5,11 @@ model test_crossCurrent
     "Number of transfer unit";
   Real Cr
     "Ratio of thermal condutance";
-  Modelica.SIunits.Efficiency Eff_both_unmixed, Eff_fluidA_mixed, Eff_fluidB_mixed
-    "Exchanger effectiveness";
+  Modelica.SIunits.Efficiency
+    Eff_both_unmixed,
+    Eff_fluidA_mixed,
+    Eff_fluidB_mixed
+      "Exchanger effectiveness";
   Modelica.Blocks.Sources.Ramp ramp1(duration = 1, height = 1)
     annotation (
       Placement(visible = true, transformation(origin = {-10, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

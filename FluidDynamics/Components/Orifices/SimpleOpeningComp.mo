@@ -38,8 +38,10 @@ model SimpleOpeningComp
     "Temperature at the orifice";
   Medium.ThermodynamicState state_upstream
     "State of upstream flow";
-  Medium.ThermodynamicState state_a, state_b
-    "States at ports";
+  Medium.ThermodynamicState
+    state_a,
+    state_b
+      "States at ports";
 
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium)

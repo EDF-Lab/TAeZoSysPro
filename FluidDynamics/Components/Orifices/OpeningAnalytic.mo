@@ -25,14 +25,18 @@ model OpeningAnalytic
     "Pressure of node connected to port_b";
   Modelica.SIunits.PressureDifference dp;
   Modelica.SIunits.Density rho_A, rho_B;
-  Medium.Density[Medium.nX] rho_up, rho_down
-    "Upstream density in upper and lower part of the opening";
+  Medium.Density[Medium.nX]
+    rho_up,
+    rho_down
+      "Upstream density in upper and lower part of the opening";
   Medium.MassFraction[Medium.nX] X_up, X_down;
   Modelica.SIunits.Height HN
     "Heigh of the point where flow switches in direction (zero flow)";
   Medium.ThermodynamicState state_a, state_b;
-  Modelica.SIunits.MassFlowRate m_flow_up, m_flow_down
-    "mass flow rate in upper and lower part of the opening";
+  Modelica.SIunits.MassFlowRate
+    m_flow_up,
+    m_flow_down
+      "mass flow rate in upper and lower part of the opening";
 
   // Imported modules
   TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium)

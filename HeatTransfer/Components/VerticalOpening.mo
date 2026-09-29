@@ -22,11 +22,15 @@ model VerticalOpening
   Modelica.SIunits.TemperatureDifference dT
     "port_a.T - port_b.T";
   Modelica.SIunits.Density rho_A, rho_B;
-  Modelica.SIunits.Density rho_up, rho_down
-    "Upstream density in upper and lower part of the opening";
+  Modelica.SIunits.Density
+    rho_up,
+    rho_down
+      "Upstream density in upper and lower part of the opening";
   Medium.SpecificEnthalpy h_A, h_B;
-  Modelica.SIunits.MassFlowRate m_flow_up, m_flow_down
-    "mass flow rate in upper and lower part of the opening";
+  Modelica.SIunits.MassFlowRate
+    m_flow_up,
+    m_flow_down
+      "mass flow rate in upper and lower part of the opening";
   Modelica.SIunits.Height HN
     "Heigh of the point where flow switches in direction (zero flow)";
 

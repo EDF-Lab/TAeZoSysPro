@@ -80,19 +80,34 @@ model AnalyticWetExchanger
   // variables for the "condensation" model
   SI.Temperature TA_mid_2, TA_mid_buffer, TB_mid_2, TB_out_2, TA_out_2, Tdew, Tsat_out;
   SI.Pressure p_water;
-  Real NTU_2, NTU_wet
-    "Number of transfer unit";
+  Real
+    NTU_2,
+    NTU_wet
+      "Number of transfer unit";
   Real Cr_wet;
-  SI.Efficiency Eff_2, Eff_wet
-    "Exchanger effectiveness";
+  SI.Efficiency
+    Eff_2,
+    Eff_wet
+      "Exchanger effectiveness";
   SI.Area S_sensible
     "Sensible surface to achieved saturation on moist air";
   SI.Area S_wet
     "Sensible surface to achieved saturation on moist air";
-  SI.MassFraction wsat_eq_in, wA_in, wsat_out, wA_out_2, XA_out_2, wA_out
-    "Moisture content peer kg of dry air";
-  SI.SpecificEnthalpy hsat_eq_in, hA_mid_2, hA_out_2, hcond_out, hA_sat_in
-    "Enthalpies peer kg of dry air";
+  SI.MassFraction
+    wsat_eq_in,
+    wA_in,
+    wsat_out,
+    wA_out_2,
+    XA_out_2,
+    wA_out
+      "Moisture content peer kg of dry air";
+  SI.SpecificEnthalpy
+    hsat_eq_in,
+    hA_mid_2,
+    hA_out_2,
+    hcond_out,
+    hA_sat_in
+      "Enthalpies peer kg of dry air";
   SI.SpecificHeatCapacity cp_eq
     "Specific heat capacity of the fictive fluid";
   SI.MassFlowRate m_flow_eq
