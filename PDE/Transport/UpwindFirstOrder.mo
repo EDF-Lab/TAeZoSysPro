@@ -1,38 +1,54 @@
 within TAeZoSysPro.PDE.Transport;
 
 model UpwindFirstOrder
+
   // user defined parameters
-  parameter Integer N = 3 "Number of discrete layers";
-  parameter Integer N_quantity = 1 "Number of quantity transported";
-  
+  parameter Integer N = 3
+    "Number of discrete layers";
+  parameter Integer N_quantity = 1
+    "Number of quantity transported";
+
   // inputs
-  input Real CoeffTimeDer=1 "Coefficient for time derivative" ;
-  input Real CoeffSpaceDer "Coefficient for space derivative" ;
-  input Real SourceTerm[N] "Source term in the right hand side" ;
-  input Modelica.SIunits.Position x[N+1] "Position array" ;
-//  input Boolean SteadyState = false "Steady state mode" ;
-  
+  input Real CoeffTimeDer = 1
+    "Coefficient for time derivative";
+  input Real CoeffSpaceDer
+    "Coefficient for space derivative";
+  input Real SourceTerm[N]
+    "Source term in the right hand side";
+  input Modelica.SIunits.Position x[N + 1]
+    "Position array";
+  //  input Boolean SteadyState = false "Steady state mode" ;
+
   // internal variable
-  Real[N, N_quantity] u "transported variables" annotation(HideResult = false ) ;
-  Real[N_quantity] u_ghost_left "left boundary value" annotation(HideResult = false ) ;
-  Real[N_quantity] u_ghost_right "right boundary value" annotation(HideResult = false ) ;  
-  
+  Real[N, N_quantity] u
+    "transported variables"
+    annotation (HideResult = false);
+  Real[N_quantity] u_ghost_left
+    "left boundary value"
+    annotation (HideResult = false);
+  Real[N_quantity] u_ghost_right
+    "right boundary value"
+    annotation (HideResult = false);
+
 equation
 
-  for n_quantity in 1:N_quantity loop /* loop on transported quantity */
+  for n_quantity in 1 : N_quantity loop /* loop on transported quantity */
     //left boundary
-    CoeffTimeDer * der(u[1, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u_ghost_left[n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) - (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[2, n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) + SourceTerm[1] "PDE domain";
+    CoeffTimeDer * der(u[1, n_quantity]) = (CoeffSpaceDer + abs(CoeffSpaceDer)) / 2 * (u_ghost_left[n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) - (CoeffSpaceDer - abs(CoeffSpaceDer)) / 2 * (u[2, n_quantity] - u[1, n_quantity]) / (x[2] - x[1]) + SourceTerm[1]
+      "PDE domain";
     //right boundary
-    CoeffTimeDer * der(u[N, n_quantity]) = (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[N-1, n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) - (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u_ghost_right[n_quantity] - u[N, n_quantity]) / (x[N+1] - x[N]) + SourceTerm[N] "PDE domain";
+    CoeffTimeDer * der(u[N, n_quantity]) = (CoeffSpaceDer + abs(CoeffSpaceDer)) / 2 * (u[N - 1, n_quantity] - u[N, n_quantity]) / (x[N + 1] - x[N]) - (CoeffSpaceDer - abs(CoeffSpaceDer)) / 2 * (u_ghost_right[n_quantity] - u[N, n_quantity]) / (x[N + 1] - x[N]) + SourceTerm[N]
+      "PDE domain";
     //domain  
-    for i in 2:N-1 loop /* loop on discrete node */
-      CoeffTimeDer * der(u[i, n_quantity]) + (CoeffSpaceDer+abs(CoeffSpaceDer))/2 * (u[i, n_quantity] - u[i-1, n_quantity]) / (x[i] - x[i-1]) + (CoeffSpaceDer-abs(CoeffSpaceDer))/2 * (u[i+1, n_quantity] - u[i, n_quantity]) / (x[i+1] - x[i]) = SourceTerm[i] "PDE domain";    
-    end for ;
-  end for ;
-  
- annotation(
-    Documentation(info = 
-"<html>
+    for i in 2 : N - 1 loop /* loop on discrete node */
+      CoeffTimeDer * der(u[i, n_quantity]) + (CoeffSpaceDer + abs(CoeffSpaceDer)) / 2 * (u[i, n_quantity] - u[i - 1, n_quantity]) / (x[i] - x[i - 1]) + (CoeffSpaceDer - abs(CoeffSpaceDer)) / 2 * (u[i + 1, n_quantity] - u[i, n_quantity]) / (x[i + 1] - x[i]) = SourceTerm[i]
+        "PDE domain";
+    end for;
+  end for;
+
+  annotation (
+    Documentation(
+      info = "<html>
   <head>
     <title>upwindFirstOrder</title>
 	
@@ -125,6 +141,6 @@ equation
     </p>
   </body>
 </html>"),
-  __OpenModelica_commandLineOptions = "");
-   
+    __OpenModelica_commandLineOptions = "");
+
 end UpwindFirstOrder;

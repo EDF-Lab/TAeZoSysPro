@@ -2,66 +2,94 @@ within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model FreeConvection
 
-  import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
-  import Functions = TAeZoSysPro.HeatTransfer.Functions.FreeConvection ;
-  import SI = Modelica.SIunits ;
+  import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation;
+  import Functions = TAeZoSysPro.HeatTransfer.Functions.FreeConvection;
+  import SI = Modelica.SIunits;
   //
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   // User defined parameters
-  parameter Real add_on = 1 "Custom add-on";
-  parameter SI.Area A = 0 "Wall surface Area" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter SI.Length Lc = 1 "characteritic dimension for correlation" annotation(
-  Dialog(group="Geometrical properties"));
-  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE "Free convection Correlation" annotation(
-  Dialog(group="Flow properties"));
-  parameter SI.CoefficientOfHeatTransfer  h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
-  Dialog(group="Flow properties"));
+  parameter Real add_on = 1
+    "Custom add-on";
+  parameter SI.Area A = 0
+    "Wall surface Area"
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter SI.Length Lc = 1
+    "characteritic dimension for correlation"
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE
+    "Free convection Correlation"
+    annotation (
+      Dialog(group = "Flow properties"));
+  parameter SI.CoefficientOfHeatTransfer h_cv_const = 0
+    "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)"
+    annotation (
+      Dialog(group = "Flow properties"));
 
-// Internal variables
-  SI.TemperatureDifference dT "Wall- fluid Temperatures";
-  Medium.Temperature T_mean "Mean temperature between fluid and wall";
-  SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
-  SI.Density d "Density of fluid at T_mean";
-  SI.SpecificHeatCapacity cp "Specific heat capacity of fluid at T_mean";
-  SI.DynamicViscosity mu "Dynamic viscosity of fluid at T_mean";
-  SI.ThermalConductivity k "Thermal Conductivity of fluid at T_mean";
-  SI.PrandtlNumber Pr "Prandtl Number";
-  SI.GrashofNumber Gr "Grashof Number";
-  SI.RayleighNumber Ra "Rayleigh Number";
-  SI.NusseltNumber Nu "Nusselt Number";
-  SI.HeatFlowRate Q_flow "Heat flow rate from wall to fluid";
-  SI.Energy E "Energy passed throught the component" ;
-  HeatTransfer.Interfaces.HeatPort_a port_a annotation(
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium) annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {96, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  // Internal variables
+  SI.TemperatureDifference dT
+    "Wall- fluid Temperatures";
+  Medium.Temperature T_mean
+    "Mean temperature between fluid and wall";
+  SI.CoefficientOfHeatTransfer h_cv
+    "Heat transfert coefficient";
+  SI.Density d
+    "Density of fluid at T_mean";
+  SI.SpecificHeatCapacity cp
+    "Specific heat capacity of fluid at T_mean";
+  SI.DynamicViscosity mu
+    "Dynamic viscosity of fluid at T_mean";
+  SI.ThermalConductivity k
+    "Thermal Conductivity of fluid at T_mean";
+  SI.PrandtlNumber Pr
+    "Prandtl Number";
+  SI.GrashofNumber Gr
+    "Grashof Number";
+  SI.RayleighNumber Ra
+    "Rayleigh Number";
+  SI.NusseltNumber Nu
+    "Nusselt Number";
+  SI.HeatFlowRate Q_flow
+    "Heat flow rate from wall to fluid";
+  SI.Energy E
+    "Energy passed throught the component";
+  HeatTransfer.Interfaces.HeatPort_a port_a
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {96, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
 protected
+
   Medium.ThermodynamicState state;
-  
+
 initial equation
-  E = 0.0 ;
-  
+
+  E = 0.0;
+
 equation
 
-  T_mean = (port_a.T + port_b.T) / 2 "port_a and port_b are defined in Element1D";
+  T_mean = (port_a.T + port_b.T) / 2
+    "port_a and port_b are defined in Element1D";
   state = Medium.setState_dTX(
-    d = sum(port_b.d), 
-    T = T_mean, 
-    X=port_b.d/sum(port_b.d));
-    
-// Thermodynamic properties calculation
+    d = sum(port_b.d),
+    T = T_mean,
+    X = port_b.d / sum(port_b.d));
+
+  // Thermodynamic properties calculation
   d = Medium.density(state);
   mu = Medium.dynamicViscosity(state);
   cp = Medium.specificHeatCapacityCp(state);
   k = Medium.thermalConductivity(state);
-  
-// Calculation of characteristic numbers for convection
+
+  // Calculation of characteristic numbers for convection
   Pr = mu * cp / k;
-  Gr = 9.81 * 1/port_b.T * d^2 * abs(dT) * Lc^3 / mu^2 ;
-  Ra = Gr * Pr ;
-  
-// Selection of the correlation
+  Gr = 9.81 * 1 / port_b.T * d ^ 2 * abs(dT) * Lc ^ 3 / mu ^ 2;
+  Ra = Gr * Pr;
+
+  // Selection of the correlation
   if correlation == Correlations.vertical_plate_ASHRAE then
     Nu = Functions.vertical_plate_ASHRAE(Pr = Pr, Ra = Ra);
   elseif correlation == Correlations.vertical_plate_Recknagel then
@@ -78,24 +106,23 @@ equation
     Nu = 0;
     assert(false, "The correlation selected is not yet implemented of not applicable", AssertionLevel.error);
   end if;
-  
-// Convective heat transfer calculation
+
+  // Convective heat transfer calculation
   h_cv = Nu * k / Lc;
-  
-// Heat flux calculation
+
+  // Heat flux calculation
   dT = port_a.T - port_b.T;
   Q_flow = add_on * h_cv * A * dT;
-  der(E) = Q_flow ;
+  der(E) = Q_flow;
 
-// Port handovers
-  port_a.Q_flow = Q_flow ;
+  // Port handovers
+  port_a.Q_flow = Q_flow;
   port_b.m_flow = fill(0.0, Medium.nX);
-  port_b.H_flow + port_a.Q_flow = 0.0; 
+  port_b.H_flow + port_a.Q_flow = 0.0;
 
-  
-  annotation(
-    Documentation(info =
-    "<html>
+  annotation (
+    Documentation(
+      info = "<html>
 	<head>
 		<title>FreeConvection</title>
 	
@@ -141,8 +168,8 @@ equation
 	
 </body>
 </html>"),
-  Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(origin = {-54, 0}, fillColor = {140, 138, 145}, fillPattern = FillPattern.Cross, extent = {{-26, 100}, {14, -100}}), Line(origin = {-10, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {30, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {70, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, 40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, -40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {26, 4}, extent = {{-28, 24}, {28, -24}}, textString = "hcv"), Line(origin = {25, 0}, points = {{-27, -22}, {27, 22}}, thickness = 1.75, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-88, 23}, rotation = 180, extent = {{-4, 11}, {28, -5}}, textString = "Wall", fontSize = 8), Text(origin = {114, 23}, extent = {{-28, 5}, {0, -9}}, textString = "Fluid", fontSize = 8)}),
+    Icon(coordinateSystem(initialScale = 0.1), graphics = {Rectangle(origin = {-54, 0}, fillColor = {140, 138, 145}, fillPattern = FillPattern.Cross, extent = {{-26, 100}, {14, -100}}), Line(origin = {-10, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {30, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {70, 0}, points = {{0, 80}, {0, -80}}, color = {0, 85, 255}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, 40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {25, -40}, points = {{-55, 0}, {55, 0}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {26, 4}, extent = {{-28, 24}, {28, -24}}, textString = "hcv"), Line(origin = {25, 0}, points = {{-27, -22}, {27, 22}}, thickness = 1.75, arrow = {Arrow.None, Arrow.Filled}), Text(origin = {-88, 23}, rotation = 180, extent = {{-4, 11}, {28, -5}}, textString = "Wall", fontSize = 8), Text(origin = {114, 23}, extent = {{-28, 5}, {0, -9}}, textString = "Fluid", fontSize = 8)}),
     Diagram(graphics = {Rectangle(origin = {-56, -3}, fillColor = {172, 172, 172}, fillPattern = FillPattern.Cross, extent = {{-22, 85}, {22, -85}}), Line(origin = {-1, 42}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {-1, 0}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled}), Line(origin = {1, -44}, points = {{-23, 0}, {23, 0}}, arrow = {Arrow.None, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
-  __OpenModelica_commandLineOptions = "");
+    __OpenModelica_commandLineOptions = "");
 
 end FreeConvection;

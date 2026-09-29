@@ -1,16 +1,20 @@
 within TAeZoSysPro.FluidDynamics.Interfaces;
 
-connector FlowPort "Connector flow port"
+connector FlowPort
+  "Connector flow port"
 
-  replaceable package Medium = Modelica.Media.Interfaces.PartialMedium "Medium model" annotation(
-    choicesAllMatching = true);
+  replaceable package Medium = Modelica.Media.Interfaces.PartialMedium
+    "Medium model"
+    annotation (
+      choicesAllMatching = true);
   Medium.Temperature T;
   Medium.Density[Medium.nX] d;
   flow Medium.MassFlowRate[Medium.nX] m_flow;
   flow Modelica.SIunits.EnthalpyFlowRate H_flow;
-  
-  annotation(
-    Documentation(info = "<html>
+
+  annotation (
+    Documentation(
+      info = "<html>
 Basic definition of the connector.<br>
 <b>State variables:</b>
 <ul>

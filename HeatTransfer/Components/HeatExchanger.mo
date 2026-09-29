@@ -1,5 +1,6 @@
 within TAeZoSysPro.HeatTransfer.Components;
 model HeatExchanger
+
   extends BasesClasses.PartialHeatExchanger;
   import TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness;
   import TAeZoSysPro.HeatTransfer.Functions.ExchangerHeatTransferCoeff;
@@ -10,18 +11,24 @@ model HeatExchanger
   MediumB.ThermodynamicState stateB;
 
   // Imported Modules
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_A_in annotation (
-    Placement(visible = true, transformation(origin = {-88, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_A_out annotation (
-    Placement(visible = true, transformation(origin = {96, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_B_in annotation (
-    Placement(visible = true, transformation(origin = {82, -82}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_B_out annotation (
-    Placement(visible = true, transformation(origin = {-92, 94}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput m_flowA annotation (
-    Placement(visible = true, transformation(origin = {-78, -50}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput m_flowB annotation (
-    Placement(visible = true, transformation(origin = {34, -78}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {40, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_A_in
+    annotation (
+      Placement(visible = true, transformation(origin = {-88, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_A_out
+    annotation (
+      Placement(visible = true, transformation(origin = {96, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_B_in
+    annotation (
+      Placement(visible = true, transformation(origin = {82, -82}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_B_out
+    annotation (
+      Placement(visible = true, transformation(origin = {-92, 94}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput m_flowA
+    annotation (
+      Placement(visible = true, transformation(origin = {-78, -50}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput m_flowB
+    annotation (
+      Placement(visible = true, transformation(origin = {34, -78}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {40, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
 
   //
   replaceable function effectiveness = ExchangerEffectiveness.counterCurrent;
@@ -29,8 +36,8 @@ model HeatExchanger
 
 equation
 
-  stateA = MediumA.setState_pTX(p=MediumA.reference_p, T = T_A_in);
-  stateB = MediumB.setState_pTX(p=MediumB.reference_p, T = T_B_in);
+  stateA = MediumA.setState_pTX(p = MediumA.reference_p, T = T_A_in);
+  stateB = MediumB.setState_pTX(p = MediumB.reference_p, T = T_B_in);
 
   T_A_in = port_A_in.T;
   T_B_in = port_B_in.T;
@@ -42,14 +49,15 @@ equation
 
   Eff = effectiveness(NTU = NTU, Cr = Cr);
 
-
   // port handovers
   port_A_in.Q_flow = 0;
   port_B_in.Q_flow = 0;
   port_A_out.Q_flow = Qc_A * (port_A_out.T - T_A_out);
   port_B_out.Q_flow = Qc_B * (port_B_out.T - T_B_out);
 
-annotation(Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title>HeatExchanger</title>
@@ -79,4 +87,5 @@ annotation(Documentation(info = "
                 
   </body>
 </html>"));
+
 end HeatExchanger;

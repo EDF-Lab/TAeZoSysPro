@@ -3,8 +3,10 @@ within TAeZoSysPro;
 class ModelicaLicense2
 
   extends Modelica.Icons.Information;
-  annotation(
-    Documentation(info = "<html>
+
+  annotation (
+    Documentation(
+      info = "<html>
 <head>
       <title>The Modelica License 2</title>
 <style type=\"text/css\">

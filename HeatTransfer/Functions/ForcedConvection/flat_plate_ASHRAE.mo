@@ -1,21 +1,23 @@
 within TAeZoSysPro.HeatTransfer.Functions.ForcedConvection;
 
 function flat_plate_ASHRAE
+
   extends Modelica.Icons.Function;
 
   input Modelica.SIunits.PrandtlNumber Pr;
   input Modelica.SIunits.ReynoldsNumber Re;
-  output Modelica.SIunits.NusseltNumber Nu;                                                                                  
+  output Modelica.SIunits.NusseltNumber Nu;
 
 algorithm
 
   Nu := 0.037 * Re ^ (4 / 5) * Pr ^ (1 / 3);
 
-  assert(not(Re < 5*10^5), "The Reynolds number < 5x10^5 is out of the range of the correlation", level = AssertionLevel.warning) ;
+  assert(not (Re < 5 * 10 ^ 5), "The Reynolds number < 5x10^5 is out of the range of the correlation", level = AssertionLevel.warning);
 
-  annotation(
+  annotation (
     Diagram(coordinateSystem(grid = {1, 1})),
-    Documentation(info = "
+    Documentation(
+      info = "
 <html>
   <head>
     <title>flat_plate_ASHRAE</title>

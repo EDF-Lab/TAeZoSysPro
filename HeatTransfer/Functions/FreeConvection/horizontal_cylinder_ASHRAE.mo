@@ -5,17 +5,19 @@ function horizontal_cylinder_ASHRAE
   extends Modelica.Icons.Function;
 
   input Modelica.SIunits.PrandtlNumber Pr;
-  input Modelica.SIunits.RayleighNumber Ra; 
+  input Modelica.SIunits.RayleighNumber Ra;
   output Modelica.SIunits.NusseltNumber Nu;
 
 algorithm
 
   Nu := (0.6 + 0.387 * Ra ^ (1 / 6) / (1 + (0.559 / Pr) ^ (9 / 16)) ^ (8 / 27)) ^ 2;
-  
-  assert(not(Ra < 10^9), "the Rayleigh number <10^9 is out of the range of the correlation", level = AssertionLevel.warning) ;
-  assert(not(Ra > 10^13), "the Rayleigh number >10^13 is out of the range of the correlation", level = AssertionLevel.warning) ;
-  
-  annotation(Documentation(info = "<html>
+
+  assert(not (Ra < 10 ^ 9), "the Rayleigh number <10^9 is out of the range of the correlation", level = AssertionLevel.warning);
+  assert(not (Ra > 10 ^ 13), "the Rayleigh number >10^13 is out of the range of the correlation", level = AssertionLevel.warning);
+
+  annotation (
+    Documentation(
+      info = "<html>
 <head>
   <title>horizontal_cylinder_ASHRAE</title>
   <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">

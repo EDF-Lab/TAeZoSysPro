@@ -1,60 +1,74 @@
 within TAeZoSysPro.HeatTransfer.BasesClasses;
 
 model LumpVolume
-  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
+
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics;
 
   // Medium is declared
   //replaceable package Medium = Modelica.Media.Air.ReferenceAir.Air_pT;
-//  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
-  
-  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
-  Medium.BaseProperties medium(preferredMediumStates= true, p = p, Xi = Medium.reference_X[1:Medium.nXi]) ;     //preferredMediumStates = true for having a static state selection
-  
-  // User defined parameters
-  parameter Modelica.SIunits.Volume V = 1 "Air node volume [m3]";
-  parameter Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance";
-  parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
-  final parameter Modelica.SIunits.Pressure p = Medium.reference_p "Constant pressure";
-  
-  //Internal variables
-  Modelica.SIunits.Energy E "Energy storage";
-  Modelica.SIunits.Mass m "Mass of the volume";
-  Medium.Temperature T "temperature of the fluid";
+  //  replaceable package Medium = TAeZoSysPro.Media.Air.SimpleAir ;
 
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
+  Medium.BaseProperties medium(preferredMediumStates = true, p = p, Xi = Medium.reference_X[1 : Medium.nXi]); //preferredMediumStates = true for having a static state selection
+
+  // User defined parameters
+  parameter Modelica.SIunits.Volume V = 1
+    "Air node volume [m3]";
+  parameter Dynamics energyDynamics = Dynamics.FixedInitial
+    "Formulation of energy balance";
+  parameter Modelica.SIunits.Temperature T_start = 293.15
+    "Start value for temperature, if not steady state";
+  final parameter Modelica.SIunits.Pressure p = Medium.reference_p
+    "Constant pressure";
+
+  //Internal variables
+  Modelica.SIunits.Energy E
+    "Energy storage";
+  Modelica.SIunits.Mass m
+    "Mass of the volume";
+  Medium.Temperature T
+    "temperature of the fluid";
+
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a
+    annotation (
+      Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 initial equation
-  E = 0.0 ;
-// Initialisation
+
+  E = 0.0;
+  // Initialisation
   if energyDynamics == Dynamics.SteadyStateInitial then
-    der(medium.T) = 0 "Zero time derivative at initilisation" ;
-    
+    der(medium.T) = 0
+      "Zero time derivative at initilisation";
+
   elseif energyDynamics == Dynamics.FixedInitial then
-    T = T_start "Initial temperature" ;
-    
+    T = T_start
+      "Initial temperature";
+
   end if;
-  
+
 equation
 
   T = medium.T;
-  
-// Mass balance
+
+  // Mass balance
   m = medium.d * V;
-  
-// Energy balance
+
+  // Energy balance
   if energyDynamics == Dynamics.SteadyState then
     port_a.Q_flow = 0;
   else
     m * der(medium.h) = port_a.Q_flow;
   end if;
   der(E) = port_a.Q_flow;
-  
-// Port handover
+
+  // Port handover
   port_a.T = T;
-  annotation(
+
+  annotation (
     Icon(graphics = {Ellipse(lineColor = {85, 85, 255}, fillColor = {85, 170, 255}, fillPattern = FillPattern.Solid, extent = {{100, 100}, {-100, -100}}, endAngle = 360), Text(origin = {24, -43}, extent = {{76, -17}, {-124, -57}}, textString = "V=%V")}, coordinateSystem(initialScale = 0.1)),
-    Documentation(info="
+    Documentation(
+      info = "
     <html>
 	<head>
 		<title>LumpVolume</title>

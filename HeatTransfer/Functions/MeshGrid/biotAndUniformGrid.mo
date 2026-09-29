@@ -2,40 +2,51 @@ within TAeZoSysPro.HeatTransfer.Functions.MeshGrid;
 
 function biotAndUniformGrid
 
-  input Modelica.SIunits.Length L "Length of the domain to mesh" ;
-  input Integer N "number of segments" ;
-  input Modelica.SIunits.CoefficientOfHeatTransfer h "Decoupled value of the heat transfer coefficient" ;
-  input Modelica.SIunits.ThermalConductivity k "Decoupled value of thermal conductivity" ;
-  input Boolean symmetricalMesh = true "Axial symmetry mesh where the axis is the middle of the domain";
-  output Modelica.SIunits.Position x[N+1] "Vector of vertice position" ;
+  input Modelica.SIunits.Length L
+    "Length of the domain to mesh";
+  input Integer N
+    "number of segments";
+  input Modelica.SIunits.CoefficientOfHeatTransfer h
+    "Decoupled value of the heat transfer coefficient";
+  input Modelica.SIunits.ThermalConductivity k
+    "Decoupled value of thermal conductivity";
+  input Boolean symmetricalMesh = true
+    "Axial symmetry mesh where the axis is the middle of the domain";
+  output Modelica.SIunits.Position x[N + 1]
+    "Vector of vertice position";
 
 protected
-  constant Modelica.SIunits.BiotNumber Bi = 0.1 ; 
-  Modelica.SIunits.Distance dx "length of the first segment according to the biot number" ;
-  
-algorithm
-  if N > 2 then
-    dx := Bi * k / h ;
-    x[1] := 0 ;
-    
-    if symmetricalMesh then
-      x[2:N] := linspace(dx, L-dx, N-1);  
-      x[N+1] := L;
-      
-    else
-      x[2:end] := linspace(dx, L, N);    
-         
-    end if ;
-    
-  else
-    dx := 0.0 ;
-    x[1] := 0 ;
-    x[2] := L/2 ;
-    x[3] := L ;
-    
-  end if ;
 
-  annotation(Documentation(info = "
+  constant Modelica.SIunits.BiotNumber Bi = 0.1;
+  Modelica.SIunits.Distance dx
+    "length of the first segment according to the biot number";
+
+algorithm
+
+  if N > 2 then
+    dx := Bi * k / h;
+    x[1] := 0;
+
+    if symmetricalMesh then
+      x[2 : N] := linspace(dx, L - dx, N - 1);
+      x[N + 1] := L;
+
+    else
+      x[2 : end] := linspace(dx, L, N);
+
+    end if;
+
+  else
+    dx := 0.0;
+    x[1] := 0;
+    x[2] := L / 2;
+    x[3] := L;
+
+  end if;
+
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title> biotAndUniformGrid </title>
@@ -81,6 +92,6 @@ algorithm
     </p>    
         
   </body>  
-</html>")) ;
+</html>"));
 
 end biotAndUniformGrid;

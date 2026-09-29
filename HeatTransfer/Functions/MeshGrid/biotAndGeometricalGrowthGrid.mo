@@ -2,69 +2,83 @@ within TAeZoSysPro.HeatTransfer.Functions.MeshGrid;
 
 function biotAndGeometricalGrowthGrid
 
-  input Modelica.SIunits.Length L "Length of the domain to mesh" ;
-  input Integer N "number of segments" ;
-  input Real q "Growth rate" ;
-  input Modelica.SIunits.CoefficientOfHeatTransfer h "Decoupled value of the heat transfer coefficient" ;
-  input Modelica.SIunits.ThermalConductivity k "Decoupled value of thermal conductivity" ;
-  input Boolean symmetricalMesh = true "Axial symmetry mesh where the axis is the middle of the domain";
-  output Modelica.SIunits.Position x[N+1] "Vector of vertice position" ;
+  input Modelica.SIunits.Length L
+    "Length of the domain to mesh";
+  input Integer N
+    "number of segments";
+  input Real q
+    "Growth rate";
+  input Modelica.SIunits.CoefficientOfHeatTransfer h
+    "Decoupled value of the heat transfer coefficient";
+  input Modelica.SIunits.ThermalConductivity k
+    "Decoupled value of thermal conductivity";
+  input Boolean symmetricalMesh = true
+    "Axial symmetry mesh where the axis is the middle of the domain";
+  output Modelica.SIunits.Position x[N + 1]
+    "Vector of vertice position";
 
 protected
-  constant Modelica.SIunits.BiotNumber Bi = 0.1 ; 
-  Modelica.SIunits.Distance dx_biot "length of the first segment according to the biot number" ;
-  Modelica.SIunits.Distance dx "size of the first element" ;
-  Integer N_2 "number of segments - 2 for biot segment" ;
+
+  constant Modelica.SIunits.BiotNumber Bi = 0.1;
+  Modelica.SIunits.Distance dx_biot
+    "length of the first segment according to the biot number";
+  Modelica.SIunits.Distance dx
+    "size of the first element";
+  Integer N_2
+    "number of segments - 2 for biot segment";
 
 algorithm
-  N_2 := N - 2 ;
-  dx_biot := Bi * k / h ;
-  
-  if N > 2 then  
-    x[1] := 0.0 ;
-    x[2] := dx_biot ;  
-    
+
+  N_2 := N - 2;
+  dx_biot := Bi * k / h;
+
+  if N > 2 then
+    x[1] := 0.0;
+    x[2] := dx_biot;
+
     if symmetricalMesh then
-      if rem(N,2) == 0 then // even number of segment
-        dx := (L-2*dx_biot)/2 / ( (1-q^(N_2/2))/(1-q) ) ;
-        
-        for i in 2:integer(N/2) loop
-          x[i+1] := x[i] + dx * q^(i-2) ;
-        end for ;
-        
-        for i in integer(N/2)+2:N+1 loop
-          x[i] := L - x[N+1-i+1] ;
-        end for ;      
-              
+      if rem(N, 2) == 0 then // even number of segment
+        dx := (L - 2 * dx_biot) / 2 / ((1 - q ^ (N_2 / 2)) / (1 - q));
+
+        for i in 2 : integer(N / 2) loop
+          x[i + 1] := x[i] + dx * q ^ (i - 2);
+        end for;
+
+        for i in integer(N / 2) + 2 : N + 1 loop
+          x[i] := L - x[N + 1 - i + 1];
+        end for;
+
       else
-        dx := (L-2*dx_biot) / ( 2 * (1-q^(floor(N_2/2)))/(1-q) + q^(floor(N_2/2))) ;
-        
-        for i in 2:integer( ceil(N/2) ) loop
-          x[i+1] := x[i] + dx * q^(i-2) ;
-        end for ;     
-        
-        for i in integer(ceil(N/2))+1:N+1 loop
-          x[i] := L - x[N+1-i+1] ;
-        end for ;
-      
+        dx := (L - 2 * dx_biot) / (2 * (1 - q ^ (floor(N_2 / 2))) / (1 - q) + q ^ (floor(N_2 / 2)));
+
+        for i in 2 : integer(ceil(N / 2)) loop
+          x[i + 1] := x[i] + dx * q ^ (i - 2);
+        end for;
+
+        for i in integer(ceil(N / 2)) + 1 : N + 1 loop
+          x[i] := L - x[N + 1 - i + 1];
+        end for;
+
       end if;
-      
+
     else
-      dx := (L-dx_biot) / ( (1-q^(N-1))/(1-q) ) ;
-      
-      for i in 2:N loop
-        x[i+1] := x[i] + dx * q^(i-2) ;
-      end for ;
-      
-    end if ;
+      dx := (L - dx_biot) / ((1 - q ^ (N - 1)) / (1 - q));
+
+      for i in 2 : N loop
+        x[i + 1] := x[i] + dx * q ^ (i - 2);
+      end for;
+
+    end if;
 
   else
-    x[1] := 0.0 ;
-    x[2] := L/2 ;
-    x[3] := L ;  
+    x[1] := 0.0;
+    x[2] := L / 2;
+    x[3] := L;
   end if;
 
-  annotation(Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title> uniformGrid </title>
@@ -143,6 +157,6 @@ algorithm
     </p>    
         
   </body>  
-</html>")) ;
+</html>"));
 
 end biotAndGeometricalGrowthGrid;

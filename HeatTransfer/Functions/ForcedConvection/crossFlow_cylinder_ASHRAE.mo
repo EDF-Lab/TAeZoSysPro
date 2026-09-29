@@ -1,19 +1,21 @@
 within TAeZoSysPro.HeatTransfer.Functions.ForcedConvection;
 
 function crossFlow_cylinder_ASHRAE
+
   extends Modelica.Icons.Function;
 
   input Modelica.SIunits.PrandtlNumber Pr;
   input Modelica.SIunits.ReynoldsNumber Re;
-  output Modelica.SIunits.NusseltNumber Nu;                                                                                  
+  output Modelica.SIunits.NusseltNumber Nu;
 
 algorithm
 
   Nu := 0.3 + 0.62 * Re ^ (1 / 2) * Pr ^ (1 / 3) / (1 + (0.4 / Pr) ^ (2 / 3)) ^ (1 / 4) * (1 + (Re / 282000) ^ (5 / 8)) ^ (4 / 5);
 
-  annotation(
+  annotation (
     Diagram(coordinateSystem(grid = {1, 1})),
-    Documentation(info = "
+    Documentation(
+      info = "
     <html>
 	<head>
 	  <title>crossFlow_cylinder_ASHRAE</title>

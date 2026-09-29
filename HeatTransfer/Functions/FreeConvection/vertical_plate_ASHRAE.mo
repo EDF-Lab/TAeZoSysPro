@@ -1,26 +1,28 @@
 within TAeZoSysPro.HeatTransfer.Functions.FreeConvection;
 
 function vertical_plate_ASHRAE
+
   extends Modelica.Icons.Function;
 
   input Modelica.SIunits.PrandtlNumber Pr;
-  input Modelica.SIunits.RayleighNumber Ra; 
+  input Modelica.SIunits.RayleighNumber Ra;
   output Modelica.SIunits.NusseltNumber Nu;
 
 algorithm
 
-// the following code were used for avoiding the extrapolation of correlation
+  // the following code were used for avoiding the extrapolation of correlation
   //Nu_down := 0.68 + 0.67 * Ra^(1 / 4) / ( 1 + (0.492/Pr)^(9/16) )^(4/9) ;
   //Nu_up := (0.825 + 0.387 * Ra ^ (1 / 6) / (1 + (0.492 / Pr) ^ (9 / 16)) ^ (8 / 27)) ^ 2;
   //Nu := Modelica.Fluid.Utilities.regStep(x = Ra_1-Ra, x_small = x_small, y1 = Nu_down, y2 = Nu_up) ;
-  
-  Nu := (0.825 + 0.387 * Ra ^ (1 / 6) / (1 + (0.492 / Pr) ^ (9 / 16)) ^ (8 / 27)) ^ 2;
-  
 
-  assert(not(Ra < 10^9), "the Rayleigh number < 10^9 is out of the range of the correlation. => Correlation extrapolated ", level = AssertionLevel.warning) ;
-  assert(not(Ra > 10^13), "the Rayleigh number > 10^12 is out of the range of the correlation", level = AssertionLevel.warning) ;
-  
-  annotation(Documentation(info = "<html>
+  Nu := (0.825 + 0.387 * Ra ^ (1 / 6) / (1 + (0.492 / Pr) ^ (9 / 16)) ^ (8 / 27)) ^ 2;
+
+  assert(not (Ra < 10 ^ 9), "the Rayleigh number < 10^9 is out of the range of the correlation. => Correlation extrapolated ", level = AssertionLevel.warning);
+  assert(not (Ra > 10 ^ 13), "the Rayleigh number > 10^12 is out of the range of the correlation", level = AssertionLevel.warning);
+
+  annotation (
+    Documentation(
+      info = "<html>
 <head>
   <title>vertical_plate_ASHRAE</title>
   <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">

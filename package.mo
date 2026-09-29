@@ -1,7 +1,8 @@
 package TAeZoSysPro
 
-annotation(
-    Documentation(info = "<html><head>
+  annotation (
+    Documentation(
+      info = "<html><head>
 		<title>The TAeZoSysPro librairy</title>
 	
 		<style type=\"text/css\">

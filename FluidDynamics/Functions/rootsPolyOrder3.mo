@@ -1,76 +1,87 @@
 within TAeZoSysPro.FluidDynamics.Functions;
 
-function rootsPolyOrder3 "Find the roots of a 3 order polynome of kind ax3 + bx2 + cx + d = 0"
+function rootsPolyOrder3
+  "Find the roots of a 3 order polynome of kind ax3 + bx2 + cx + d = 0"
 
-  extends Modelica.Icons.Function ;
+  extends Modelica.Icons.Function;
 
-  input Real a "Polynom coefficients";
-  input Real b "Polynom coefficients";
-  input Real c "Polynom coefficients";
-  input Real d "Polynom coefficients";
-  output Real roots[3] ;  
+  input Real a
+    "Polynom coefficients";
+  input Real b
+    "Polynom coefficients";
+  input Real c
+    "Polynom coefficients";
+  input Real d
+    "Polynom coefficients";
+  output Real roots[3];
 
 protected
-  Real p, q ;
-  Real discriminant ;
-  Real x1 "First root of the polynom";
-  Real x2 "Second roots of the polynom";
-  Real x3 "Third roots of the polynom";
-  
-algorithm
-// default value
-  x1 := 0.0 ;
-  x2 := 0.0 ;
-  x3 := 0.0 ;
-  p := 0.0 ;
-  q := 0.0 ;
-  discriminant := 0.0 ;  
 
-// check that is high enough to consider the polynom as a third order
+  Real p, q;
+  Real discriminant;
+  Real x1
+    "First root of the polynom";
+  Real x2
+    "Second roots of the polynom";
+  Real x3
+    "Third roots of the polynom";
+
+algorithm
+
+  // default value
+  x1 := 0.0;
+  x2 := 0.0;
+  x3 := 0.0;
+  p := 0.0;
+  q := 0.0;
+  discriminant := 0.0;
+
+  // check that is high enough to consider the polynom as a third order
   if abs(a) <= 1e-10 then /* 2nd order polynom */
     if abs(b) <= 1e-10 then /* 1st order polynom */
-      x1 := -d / c ;
-      
-    else /* 2nd order polynom */
-      discriminant := c^2 - 4*b*d ;
-      if discriminant < 0.0 then
-        assert(discriminant >= 0.0, "Negative discriminant, no real roots", AssertionLevel.error) ;
-        
-      elseif discriminant == 0.0 then
-        x1 := -c / (2*b) ;
-        
-      else /*discriminant > 0.0 */
-        x1 := (- c - sqrt(discriminant) ) / (2*b) ;
-        x2 := (- c + sqrt(discriminant) ) / (2*b) ;
+      x1 := -d / c;
 
-      end if ;
-          
-    end if ;
-    
+    else /* 2nd order polynom */
+      discriminant := c ^ 2 - 4 * b * d;
+      if discriminant < 0.0 then
+        assert(discriminant >= 0.0, "Negative discriminant, no real roots", AssertionLevel.error);
+
+      elseif discriminant == 0.0 then
+        x1 := -c / (2 * b);
+
+      else /*discriminant > 0.0 */
+        x1 := (-c - sqrt(discriminant)) / (2 * b);
+        x2 := (-c + sqrt(discriminant)) / (2 * b);
+
+      end if;
+
+    end if;
+
   else /* 3rd order polynom */
-// first a change of variable is performed to derives to the following equation solvable via the Cardan method: X^3 + pX + q = 0
-    p := (3*a*c - b^2) / (3*a^2) ;
-    q := (2*b^3 - 9*a*b*c + 27*a^2*d) / (27*a^3) ;
-    discriminant := -(27*q^2 + 4*p^3) ;
+    // first a change of variable is performed to derives to the following equation solvable via the Cardan method: X^3 + pX + q = 0
+    p := (3 * a * c - b ^ 2) / (3 * a ^ 2);
+    q := (2 * b ^ 3 - 9 * a * b * c + 27 * a ^ 2 * d) / (27 * a ^ 3);
+    discriminant := -(27 * q ^ 2 + 4 * p ^ 3);
     if discriminant < 0.0 then
       // get only the real root and not the complex roots
-      x1 := ((-q + sqrt(-discriminant/27)) / 2)^(1/3) + ((-q - sqrt(-discriminant/27)) / 2)^(1/3) - b/(3*a) ;
+      x1 := ((-q + sqrt(-discriminant / 27)) / 2) ^ (1 / 3) + ((-q - sqrt(-discriminant / 27)) / 2) ^ (1 / 3) - b / (3 * a);
     elseif discriminant == 0.0 then
-      x1 := 3*q/p - b/(3*a) ;
-      x2 := -3*q/(2*p) - b/(3*a) ; 
-       
+      x1 := 3 * q / p - b / (3 * a);
+      x2 := -3 * q / (2 * p) - b / (3 * a);
+
     else /*discriminant > 0.0 */
-      x1 := 2*sqrt(-p/3)*cos(acos(3*q/(2*p)*sqrt(-3/p))/3) - b / (3*a) ;
-      x2 := 2*sqrt(-p/3)*cos( (acos(3*q/(2*p)*sqrt(-3/p)) + 2*Modelica.Constants.pi) / 3) - b / (3*a) ;
-      x3 := 2*sqrt(-p/3)*cos( (acos(3*q/(2*p)*sqrt(-3/p)) - 2*Modelica.Constants.pi) / 3) - b / (3*a) ;    
-    end if ;
-    
-  end if ;
+      x1 := 2 * sqrt(-p / 3) * cos(acos(3 * q / (2 * p) * sqrt(-3 / p)) / 3) - b / (3 * a);
+      x2 := 2 * sqrt(-p / 3) * cos((acos(3 * q / (2 * p) * sqrt(-3 / p)) + 2 * Modelica.Constants.pi) / 3) - b / (3 * a);
+      x3 := 2 * sqrt(-p / 3) * cos((acos(3 * q / (2 * p) * sqrt(-3 / p)) - 2 * Modelica.Constants.pi) / 3) - b / (3 * a);
+    end if;
 
-  roots := {x1, x2, x3} ;
+  end if;
 
-annotation(
-  Documentation(info = "
+  roots := {x1, x2, x3};
+
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title>rootsPolyOrder3</title>
@@ -157,6 +168,6 @@ annotation(
     </p>
 
   </body>
-</html>")) ;
+</html>"));
 
 end rootsPolyOrder3;

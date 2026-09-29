@@ -3,19 +3,22 @@ within TAeZoSysPro.HeatTransfer.Functions.ForcedConvection;
 function internal_pipe_ASHRAE
 
   extends Modelica.Icons.Function;
-  
+
   input Modelica.SIunits.PrandtlNumber Pr;
   input Modelica.SIunits.ReynoldsNumber Re;
-  input Modelica.SIunits.TemperatureDifference dT; 
+  input Modelica.SIunits.TemperatureDifference dT;
   output Modelica.SIunits.NusseltNumber Nu;
-  
+
 protected
-  Real n "reynolds exponent" ;
-  
+
+  Real n
+    "reynolds exponent";
+
 algorithm
-// non declarative algorithmic
-//cooling or heating mode selection
-/* 
+
+  // non declarative algorithmic
+  //cooling or heating mode selection
+  /* 
 - Twall > T mean fluid => heating mode
 - Twall < T mean fluid => cooling mode  
 */
@@ -31,11 +34,12 @@ algorithm
   end if;
 
   Nu := 0.023 * Re ^ (4 / 5) * Pr ^ n;
-  
-  assert(not(Re < 10^4), "The Reynolds number < 10^4 is out of the range of the correlation", level = AssertionLevel.warning) ;
 
-  annotation(
-    Documentation(info = "
+  assert(not (Re < 10 ^ 4), "The Reynolds number < 10^4 is out of the range of the correlation", level = AssertionLevel.warning);
+
+  annotation (
+    Documentation(
+      info = "
     <html>
 	<head>
 	  <title>internal_flow_pipe_ASHRAE</title>
@@ -72,4 +76,4 @@ algorithm
 </html>"),
     Diagram(coordinateSystem(grid = {1, 1})));
 
-end internal_pipe_ASHRAE ;
+end internal_pipe_ASHRAE;

@@ -7,58 +7,60 @@ function crossCurrent
   input Real Qc_A, Qc_B;
 
 protected
+
   Real gamma;
   constant Real Cr_small = 1e-3;
 
 algorithm
-  if Cr<=Cr_small then
-    gamma:= 0.0;
-    Eff := 1-exp(-NTU);
+
+  if Cr <= Cr_small then
+    gamma := 0.0;
+    Eff := 1 - exp(-NTU);
 
   else
 
     if arrangement == CrossFlow_arrangement.both_unmixed then
-      gamma := exp(-Cr*NTU^0.78)-1;
+      gamma := exp(-Cr * NTU ^ 0.78) - 1;
       Eff := TAeZoSysPro.FluidDynamics.Utilities.regStep(
-        x = Cr-2*Cr_small,
+        x = Cr - 2 * Cr_small,
         x_small = Cr_small,
-        y1 = 1.0 - exp(NTU^(0.22)*gamma/Cr),
-        y2 = 1-exp(-NTU));
+        y1 = 1.0 - exp(NTU ^ (0.22) * gamma / Cr),
+        y2 = 1 - exp(-NTU));
 
     elseif arrangement == CrossFlow_arrangement.fluidA_mixed_fluidB_unmixed then
       if Qc_A == max(Qc_A, Qc_B) then
-        gamma := 1-exp(-NTU);
+        gamma := 1 - exp(-NTU);
         Eff := TAeZoSysPro.FluidDynamics.Utilities.regStep(
-          x = Cr-2*Cr_small,
+          x = Cr - 2 * Cr_small,
           x_small = Cr_small,
-          y1 = (1-exp(-Cr*gamma))/Cr,
-          y2 = 1-exp(-NTU));
+          y1 = (1 - exp(-Cr * gamma)) / Cr,
+          y2 = 1 - exp(-NTU));
 
       else
-        gamma := 1-exp(-NTU*Cr);
+        gamma := 1 - exp(-NTU * Cr);
         Eff := TAeZoSysPro.FluidDynamics.Utilities.regStep(
-          x = Cr-2*Cr_small,
+          x = Cr - 2 * Cr_small,
           x_small = Cr_small,
-          y1 = (1-exp(-gamma/Cr)),
-          y2 = 1-exp(-NTU));
+          y1 = (1 - exp(-gamma / Cr)),
+          y2 = 1 - exp(-NTU));
       end if;
 
     elseif arrangement == CrossFlow_arrangement.fluidB_mixed_fluidA_unmixed then
       if Qc_A == max(Qc_A, Qc_B) then
-        gamma := 1-exp(-NTU*Cr);
+        gamma := 1 - exp(-NTU * Cr);
         Eff := TAeZoSysPro.FluidDynamics.Utilities.regStep(
-          x = Cr-2*Cr_small,
+          x = Cr - 2 * Cr_small,
           x_small = Cr_small,
-          y1 = (1-exp(-gamma/Cr)),
-          y2 = 1-exp(-NTU));
+          y1 = (1 - exp(-gamma / Cr)),
+          y2 = 1 - exp(-NTU));
 
       else
-        gamma := 1-exp(-NTU);
+        gamma := 1 - exp(-NTU);
         Eff := TAeZoSysPro.FluidDynamics.Utilities.regStep(
-          x = Cr-2*Cr_small,
+          x = Cr - 2 * Cr_small,
           x_small = Cr_small,
-          y1 = (1-exp(-Cr*gamma))/Cr,
-          y2 = 1-exp(-NTU));
+          y1 = (1 - exp(-Cr * gamma)) / Cr,
+          y2 = 1 - exp(-NTU));
 
       end if;
 
@@ -71,7 +73,8 @@ algorithm
   end if;
 
   annotation (
-    Documentation(info="
+    Documentation(
+      info = "
 <html>
   <head>
     <title>crossCurrent</title>
@@ -135,4 +138,5 @@ algorithm
                 
   </body>
 </html>"));
+
 end crossCurrent;

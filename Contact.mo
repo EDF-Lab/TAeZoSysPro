@@ -3,9 +3,11 @@ within TAeZoSysPro;
 class Contact
 
   extends Modelica.Icons.Contact;
-  annotation(
-      preferredView = "info",
-      Documentation(info = "<html><head>
+
+  annotation (
+    preferredView = "info",
+    Documentation(
+      info = "<html><head>
 	</head>
 	
 	<body>
@@ -65,7 +67,6 @@ class Contact
 	
 
 </body></html>"),
-      Diagram(coordinateSystem(grid = {1, 2})));
-  
+    Diagram(coordinateSystem(grid = {1, 2})));
 
 end Contact;

@@ -1,44 +1,55 @@
 within TAeZoSysPro.HeatTransfer.BasesClasses;
 
 model CarrollNode
-  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
+
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics;
 
   // User defined parameters
-  parameter Dynamics energyDynamics = Dynamics.SteadyState "Formulation of energy balance";
-  parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if not steady state";
-  parameter Modelica.SIunits.HeatCapacity C = 0.0 "Virtual capacity to avoid non linear iteration variable on temperature";
-    
+  parameter Dynamics energyDynamics = Dynamics.SteadyState
+    "Formulation of energy balance";
+  parameter Modelica.SIunits.Temperature T_start = 293.15
+    "Start value for temperature, if not steady state";
+  parameter Modelica.SIunits.HeatCapacity C = 0.0
+    "Virtual capacity to avoid non linear iteration variable on temperature";
+
   //Internal variables
-  Modelica.SIunits.Energy E "Energy storage";
+  Modelica.SIunits.Energy E
+    "Energy storage";
 
   //
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
-    Placement(visible = true, transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a
+    annotation (
+      Placement(visible = true, transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 initial equation
-  E = 0.0 ;
-// Initialisation
+
+  E = 0.0;
+  // Initialisation
   if energyDynamics == Dynamics.SteadyStateInitial then
-    der(port_a.T) = 0 "Zero time derivative at initilisation" ;
-    
+    der(port_a.T) = 0
+      "Zero time derivative at initilisation";
+
   elseif energyDynamics == Dynamics.FixedInitial then
-    port_a.T = T_start "Initial temperature" ;
-    
+    port_a.T = T_start
+      "Initial temperature";
+
   end if;
+
 equation
 
-// Energy balance
+  // Energy balance
   if energyDynamics == Dynamics.SteadyState then
     port_a.Q_flow = 0;
   else
     C * der(port_a.T) = port_a.Q_flow;
   end if;
   der(E) = port_a.Q_flow;
-  
-  annotation(
+
+  annotation (
     Diagram(coordinateSystem(grid = {2, 2})),
     Icon(graphics = {Ellipse(lineColor = {255, 0, 0}, extent = {{-99, -99}, {99, 99}}, endAngle = 360), Ellipse(lineColor = {255, 0, 0}, lineThickness = 1, extent = {{-80, -80}, {80, 80}}, endAngle = 360), Ellipse(lineColor = {255, 0, 0}, lineThickness = 1.75, extent = {{-51, -51}, {51, 51}}, endAngle = 360), Line(origin = {-20, 20}, rotation = 45, points = {{0, 9}, {0, -9}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled}), Line(origin = {20, 19.6794}, rotation = -45, points = {{0, 9}, {0, -9}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled}), Line(origin = {20, -20}, rotation = 225, points = {{0, 9}, {0, -9}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled}), Line(origin = {-20.3206, -20.9618}, rotation = 135, points = {{0, 9}, {0, -9}}, color = {255, 0, 0}, thickness = 1, arrow = {Arrow.Filled, Arrow.Filled})}, coordinateSystem(initialScale = 0.1)),
-    Documentation(info="
+    Documentation(
+      info = "
 <html>
   <head>
     <title>CarrollNode</title>		
@@ -61,6 +72,6 @@ equation
     />
     								
   </body>
-</html>") );
+</html>"));
 
 end CarrollNode;

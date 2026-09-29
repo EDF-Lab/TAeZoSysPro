@@ -1,15 +1,21 @@
 within TAeZoSysPro.HeatTransfer.Functions.MeshGrid;
 
 function uniformGrid
-  input Modelica.SIunits.Length L "Length of the domain to mesh" ;
-  input Integer N "number of segments" ;
-  output Modelica.SIunits.Position x[N+1] "Vector of vertice position" ;
+
+  input Modelica.SIunits.Length L
+    "Length of the domain to mesh";
+  input Integer N
+    "number of segments";
+  output Modelica.SIunits.Position x[N + 1]
+    "Vector of vertice position";
 
 algorithm
 
-  x := linspace(0, L, N+1) ;
+  x := linspace(0, L, N + 1);
 
-  annotation(Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title> uniformGrid </title>
@@ -40,6 +46,6 @@ algorithm
     </p>    
         
   </body>  
-</html>")) ;
+</html>"));
 
 end uniformGrid;

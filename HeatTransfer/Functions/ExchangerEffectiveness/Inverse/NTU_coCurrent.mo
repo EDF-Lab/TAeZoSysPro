@@ -4,17 +4,21 @@ function NTU_coCurrent
 
   extends Modelica.Icons.Function;
 
-  input Modelica.SIunits.Efficiency Eff "Exchanger effectiveness";
-  input Real Cr "Ratio of thermal condutance";
-  output Real NTU "Number of transfer unit";
+  input Modelica.SIunits.Efficiency Eff
+    "Exchanger effectiveness";
+  input Real Cr
+    "Ratio of thermal condutance";
+  output Real NTU
+    "Number of transfer unit";
 
 algorithm
 
-  NTU := -log(1.0-Eff*(1+Cr))/(1+Cr);
+  NTU := -log(1.0 - Eff * (1 + Cr)) / (1 + Cr);
 
   annotation (
     inverse(Eff = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.counterCurrent(NTU = NTU, Cr = Cr)),
-    Documentation(info = "
+    Documentation(
+      info = "
 <html>
   <head>
     <title>NTU_coCurrent</title>
@@ -31,4 +35,5 @@ algorithm
                 
   </body>
 </html>"));
+
 end NTU_coCurrent;

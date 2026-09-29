@@ -1,52 +1,67 @@
 within TAeZoSysPro.FluidDynamics.Components.Filters;
 
 model Filter
+
   //
-  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
-  
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
+
   // User defined parameters
-  parameter Real K(unit = "m3/(s.Pa)") = V_flow_nominal / dp_nominal "linear pressure loss coefficient" annotation (
-    Dialog(group = "Flow"));
-  parameter Modelica.SIunits.Pressure dp_nominal "Nominal pressure drop" annotation(
-  Dialog(group="Nominal operating point"));
-  parameter Modelica.SIunits.VolumeFlowRate V_flow_nominal "Nominal volume flowrate" annotation(
-  Dialog(group="Nominal operating point"));
-  
+  parameter Real K(unit = "m3/(s.Pa)") = V_flow_nominal / dp_nominal
+    "linear pressure loss coefficient"
+    annotation (
+      Dialog(group = "Flow"));
+  parameter Modelica.SIunits.Pressure dp_nominal
+    "Nominal pressure drop"
+    annotation (
+      Dialog(group = "Nominal operating point"));
+  parameter Modelica.SIunits.VolumeFlowRate V_flow_nominal
+    "Nominal volume flowrate"
+    annotation (
+      Dialog(group = "Nominal operating point"));
+
   // Internal variables
   Modelica.SIunits.PressureDifference dp;
-  Modelica.SIunits.MassFlowRate m_flow "Aperture flow kg/s";
+  Modelica.SIunits.MassFlowRate m_flow
+    "Aperture flow kg/s";
   Modelica.SIunits.Density d;
-  
+
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
 
 equation
+
   //
-  d = smooth(0, noEvent(
-    if dp<0 then 
-      Medium.density(Medium.setState_phX(port_a.p, port_a.h_outflow, port_a.Xi_outflow)) 
-    else 
-      Medium.density(Medium.setState_phX(port_b.p, port_b.h_outflow, port_b.Xi_outflow)) ) ) ;
+  d = smooth(
+    0,
+    noEvent(
+      if dp < 0 then
+        Medium.density(Medium.setState_phX(port_a.p, port_a.h_outflow, port_a.Xi_outflow))
+      else
+        Medium.density(Medium.setState_phX(port_b.p, port_b.h_outflow, port_b.Xi_outflow))));
 
-// momentum balance
+  // momentum balance
   dp = port_a.p - port_b.p;
-  m_flow = d * K * dp  ;
+  m_flow = d * K * dp;
 
-// port handover
+  // port handover
   port_a.m_flow = m_flow;
   port_a.m_flow + port_b.m_flow = 0.0;
   port_a.h_outflow = inStream(port_b.h_outflow);
   port_b.h_outflow = inStream(port_a.h_outflow);
   port_a.Xi_outflow = inStream(port_b.Xi_outflow);
   port_b.Xi_outflow = inStream(port_a.Xi_outflow);
-  
-  annotation(defaultComponentName="filter",
-Documentation(info ="
+
+  annotation (
+    defaultComponentName = "filter",
+    Documentation(
+      info = "
 <html>
   <head>
     <title>Filter</title>

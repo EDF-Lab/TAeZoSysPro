@@ -1,17 +1,23 @@
 within TAeZoSysPro.HeatTransfer.Functions.FreeConvection;
 
 function vertical_plate_Recknagel
+
   extends Modelica.Icons.Function;
 
-  input Modelica.SIunits.TemperatureDifference dT "Difference temperature between plate and fluid" ;
-  input Modelica.SIunits.Temperature T_mean "Mean temperature between plate and fluid" ;
-  output Modelica.SIunits.CoefficientOfHeatTransfer h_cv "Convective heat transfer coefficient";
+  input Modelica.SIunits.TemperatureDifference dT
+    "Difference temperature between plate and fluid";
+  input Modelica.SIunits.Temperature T_mean
+    "Mean temperature between plate and fluid";
+  output Modelica.SIunits.CoefficientOfHeatTransfer h_cv
+    "Convective heat transfer coefficient";
 
 algorithm
 
   h_cv := 9.7 * (abs(dT) / T_mean) ^ (1 / 3);
 
-  annotation(Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
 	<head>
 	  <title>vertical_plate_Recknagel</title>

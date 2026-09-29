@@ -3,21 +3,25 @@ function NTU_counterCurrent
 
   extends Modelica.Icons.Function;
 
-  input Modelica.SIunits.Efficiency Eff "Exchanger effectiveness";
-  input Real Cr "Ratio of thermal condutance";
-  output Real NTU "Number of transfer unit";
+  input Modelica.SIunits.Efficiency Eff
+    "Exchanger effectiveness";
+  input Real Cr
+    "Ratio of thermal condutance";
+  output Real NTU
+    "Number of transfer unit";
 
 algorithm
 
   NTU := Modelica.Fluid.Utilities.regStep(
     x = 0.98 - Cr,
     x_small = 1.0e-2,
-    y1 = 1.0 / (Cr-1.0) * log((min(Eff, 0.999)-1.0) / (min(Eff, 0.999)*Cr-1.0)),
+    y1 = 1.0 / (Cr - 1.0) * log((min(Eff, 0.999) - 1.0) / (min(Eff, 0.999) * Cr - 1.0)),
     y2 = Eff / (1.0 - min(Eff, 0.999)));
 
   annotation (
     inverse(Eff = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.counterCurrent(NTU = NTU, Cr = Cr)),
-    Documentation(info = "
+    Documentation(
+      info = "
 <html>
   <head>
     <title>NTU_counterCurrent</title>
@@ -44,4 +48,5 @@ algorithm
                 
         </body>
 </html>"));
+
 end NTU_counterCurrent;

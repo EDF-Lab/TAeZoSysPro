@@ -2,8 +2,9 @@ within TAeZoSysPro;
 
 package HeatTransfer
 
-annotation(
-    Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
 	<head>
 		<title>HeatTransfer package</title>

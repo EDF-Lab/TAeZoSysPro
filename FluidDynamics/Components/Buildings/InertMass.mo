@@ -1,88 +1,142 @@
 within TAeZoSysPro.FluidDynamics.Components.Buildings;
 
 model InertMass
-  //
-  import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation ;
-  import TAeZoSysPro.HeatTransfer.Types.Dynamics ;
-  
 
-//Media
-  replaceable package Medium = TAeZoSysPro.Media.MyMedia ;
+  //
+  import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation;
+  import TAeZoSysPro.HeatTransfer.Types.Dynamics;
+
+  //Media
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   // User defined parameters
-  parameter Modelica.SIunits.Area A_conv = 0 "Convective surface area " annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Area A_rad = A_conv "Radiative surface area " annotation(
-  Dialog(group="Geometrical properties"));
-  parameter Modelica.SIunits.Length Lc = 1 "characteritic dimension for correlation" annotation(
-  Dialog(group="Geometrical properties"));
-   
-  parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial "Formulation of energy balance" annotation(
-  Dialog(group="Dynamic properties"));
-  parameter Modelica.SIunits.Temperature T_start = 293.15 "Start value for temperature, if energyDynamics = FixedInitial" annotation(
-  Dialog(group="Dynamic properties"));
-  
-  parameter Modelica.SIunits.SpecificHeatCapacity cp = 0 "Specific heat capacity" annotation(
-  Dialog(group="Thermal properties"));
-  parameter Modelica.SIunits.Mass m= 0 "Mass of the component" annotation(
-  Dialog(group="Thermal properties"));
-  
-  parameter Real add_on_conv = 1 "Custom add-on for convection" annotation(
-    Dialog(group = "Convection properties"));
-  parameter Real add_on_cond = 1 "Custom add-on for condensation" annotation(
-    Dialog(group = "Convection properties"));
-  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE "free convection Correlation" annotation(
-    Dialog(group = "Convection properties"));
-  parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
-    Dialog(group = "Convection properties"));
+  parameter Modelica.SIunits.Area A_conv = 0
+    "Convective surface area "
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter Modelica.SIunits.Area A_rad = A_conv
+    "Radiative surface area "
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter Modelica.SIunits.Length Lc = 1
+    "characteritic dimension for correlation"
+    annotation (
+      Dialog(group = "Geometrical properties"));
+
+  parameter Dynamics energyDynamics = Dynamics.SteadyStateInitial
+    "Formulation of energy balance"
+    annotation (
+      Dialog(group = "Dynamic properties"));
+  parameter Modelica.SIunits.Temperature T_start = 293.15
+    "Start value for temperature, if energyDynamics = FixedInitial"
+    annotation (
+      Dialog(group = "Dynamic properties"));
+
+  parameter Modelica.SIunits.SpecificHeatCapacity cp = 0
+    "Specific heat capacity"
+    annotation (
+      Dialog(group = "Thermal properties"));
+  parameter Modelica.SIunits.Mass m = 0
+    "Mass of the component"
+    annotation (
+      Dialog(group = "Thermal properties"));
+
+  parameter Real add_on_conv = 1
+    "Custom add-on for convection"
+    annotation (
+      Dialog(group = "Convection properties"));
+  parameter Real add_on_cond = 1
+    "Custom add-on for condensation"
+    annotation (
+      Dialog(group = "Convection properties"));
+  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE
+    "free convection Correlation"
+    annotation (
+      Dialog(group = "Convection properties"));
+  parameter Modelica.SIunits.CoefficientOfHeatTransfer h_cv_const = 0
+    "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)"
+    annotation (
+      Dialog(group = "Convection properties"));
   //
-  parameter Modelica.SIunits.Emissivity eps = 0 "Wall emissivity " annotation(
-    Dialog(group = "Radiative properties"));
-  parameter Real add_on_rad = 1 "Custom add-on" annotation(
-    Dialog(group = "Radiative properties"));
+  parameter Modelica.SIunits.Emissivity eps = 0
+    "Wall emissivity "
+    annotation (
+      Dialog(group = "Radiative properties"));
+  parameter Real add_on_rad = 1
+    "Custom add-on"
+    annotation (
+      Dialog(group = "Radiative properties"));
 
-// imported module
-  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(redeclare
-      package                                                                        Medium = Medium, A = A_conv, Lc = Lc, add_on = add_on_conv, correlation = correlation, h_cv_const = h_cv_const) annotation (
-    Placement(visible = true, transformation(origin = {-41, 80}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A_rad, add_on = add_on_rad, eps = eps)  annotation(
-    Placement(visible = true, transformation(origin = {-59.5, -79.5}, extent = {{-19.5, -19.5}, {19.5, 19.5}}, rotation = 180)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a_rad annotation(
-    Placement(visible = true, transformation(origin = {-101, -78}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput A_wall annotation(
-    Placement(visible = true, transformation(origin = {-90, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180), iconTransformation(origin = {-93, -53}, extent = {{-7, -7}, {7, 7}}, rotation = 180)));
-  Modelica.Blocks.Interfaces.RealInput F_view annotation(
-    Placement(visible = true, transformation(origin = {-90, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-93, -27}, extent = {{-7, -7}, {7, 7}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.Interfaces.HeatPort_a port_surface annotation(
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- TAeZoSysPro.HeatTransfer.BasesClasses.HeatCapacitor heatCapacitor(T_start = T_start, cp = cp, energyDynamics = energyDynamics, m = m)  annotation(
-    Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
- TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(redeclare
-      package                                                                         Medium = Medium, A = A_conv, add_on = add_on_cond, h_cv = convection.h_cv)  annotation (
-    Placement(visible = true, transformation(origin = {-35, 39}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
- TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  // imported module
+  TAeZoSysPro.FluidDynamics.BasesClasses.FreeConvection convection(
+    redeclare package Medium = Medium,
+    A = A_conv,
+    Lc = Lc,
+    add_on = add_on_conv,
+    correlation = correlation,
+    h_cv_const = h_cv_const)
+    annotation (
+      Placement(visible = true, transformation(origin = {-41, 80}, extent = {{-18, -18}, {18, 18}}, rotation = 180)));
+  TAeZoSysPro.HeatTransfer.BasesClasses.CarrollRadiation carrollRadiation(A = A_rad, add_on = add_on_rad, eps = eps)
+    annotation (
+      Placement(visible = true, transformation(origin = {-59.5, -79.5}, extent = {{-19.5, -19.5}, {19.5, 19.5}}, rotation = 180)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a_rad
+    annotation (
+      Placement(visible = true, transformation(origin = {-101, -78}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealOutput A_wall
+    annotation (
+      Placement(visible = true, transformation(origin = {-90, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180), iconTransformation(origin = {-93, -53}, extent = {{-7, -7}, {7, 7}}, rotation = 180)));
+  Modelica.Blocks.Interfaces.RealInput F_view
+    annotation (
+      Placement(visible = true, transformation(origin = {-90, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-93, -27}, extent = {{-7, -7}, {7, 7}}, rotation = 0)));
+  TAeZoSysPro.HeatTransfer.Interfaces.HeatPort_a port_surface
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.HeatTransfer.BasesClasses.HeatCapacitor heatCapacitor(T_start = T_start, cp = cp, energyDynamics = energyDynamics, m = m)
+    annotation (
+      Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(
+    redeclare package Medium = Medium,
+    A = A_conv,
+    add_on = add_on_cond,
+    h_cv = convection.h_cv)
+    annotation (
+      Placement(visible = true, transformation(origin = {-35, 39}, extent = {{-15, -15}, {15, 15}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 48}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
 equation
-  connect(F_view, carrollRadiation.Fview) annotation(
-    Line(points = {{-90, -50}, {-44, -50}, {-44, -64}}, color = {0, 0, 127}));
-  connect(port_a_rad, carrollRadiation.port_b) annotation(
-    Line(points = {{-101, -78}, {-88, -78}, {-88, -79.5}, {-79, -79.5}}, color = {191, 0, 0}));
-  A_wall = A_rad;
-  connect(convection.port_a, heatCapacitor.port) annotation(
-    Line(points = {{-23, 80}, {-20, 80}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
-  connect(carrollRadiation.port_a, heatCapacitor.port) annotation(
-    Line(points = {{-40, -79.5}, {-20, -79.5}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
-  connect(port_surface, heatCapacitor.port) annotation(
-    Line(points = {{-100, 0}, {0, 0}}, color = {191, 0, 0}));
-  connect(condensation.heatPort, heatCapacitor.port) annotation(
-    Line(points = {{-22, 39}, {-20, 39}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
- connect(port_a, convection.port_b) annotation(
-    Line(points = {{-100, 60}, {-80, 60}, {-80, 80}, {-58, 80}, {-58, 80}}, color = {0, 85, 255}));
- connect(port_a, condensation.flowPort) annotation(
-    Line(points = {{-100, 60}, {-80, 60}, {-80, 38}, {-48, 38}, {-48, 40}}, color = {0, 85, 255}));
 
-  annotation(
-  defaultComponentName = "inertMass",
-  Documentation(info = "
+  connect(F_view, carrollRadiation.Fview)
+    annotation (
+      Line(points = {{-90, -50}, {-44, -50}, {-44, -64}}, color = {0, 0, 127}));
+  connect(port_a_rad, carrollRadiation.port_b)
+    annotation (
+      Line(points = {{-101, -78}, {-88, -78}, {-88, -79.5}, {-79, -79.5}}, color = {191, 0, 0}));
+  A_wall = A_rad;
+  connect(convection.port_a, heatCapacitor.port)
+    annotation (
+      Line(points = {{-23, 80}, {-20, 80}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
+  connect(carrollRadiation.port_a, heatCapacitor.port)
+    annotation (
+      Line(points = {{-40, -79.5}, {-20, -79.5}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
+  connect(port_surface, heatCapacitor.port)
+    annotation (
+      Line(points = {{-100, 0}, {0, 0}}, color = {191, 0, 0}));
+  connect(condensation.heatPort, heatCapacitor.port)
+    annotation (
+      Line(points = {{-22, 39}, {-20, 39}, {-20, 0}, {0, 0}}, color = {191, 0, 0}));
+  connect(port_a, convection.port_b)
+    annotation (
+      Line(points = {{-100, 60}, {-80, 60}, {-80, 80}, {-58, 80}, {-58, 80}}, color = {0, 85, 255}));
+  connect(port_a, condensation.flowPort)
+    annotation (
+      Line(points = {{-100, 60}, {-80, 60}, {-80, 38}, {-48, 38}, {-48, 40}}, color = {0, 85, 255}));
+
+  annotation (
+    defaultComponentName = "inertMass",
+    Documentation(
+      info = "
 <html>
   <head>
     <title>InertMass</title>

@@ -2,49 +2,58 @@ within TAeZoSysPro.HeatTransfer.Functions.MeshGrid;
 
 function geometricalGrowthGrid
 
-  input Modelica.SIunits.Length L "Length of the domain to mesh" ;
-  input Integer N "number of segments" ;
-  input Real q "Growth rate" ;
-  input Boolean symmetricalMesh = true "Axial symmetry mesh where the axis is the middle of the domain";
-  output Modelica.SIunits.Position x[N+1] "Vector of vertice position" ;
+  input Modelica.SIunits.Length L
+    "Length of the domain to mesh";
+  input Integer N
+    "number of segments";
+  input Real q
+    "Growth rate";
+  input Boolean symmetricalMesh = true
+    "Axial symmetry mesh where the axis is the middle of the domain";
+  output Modelica.SIunits.Position x[N + 1]
+    "Vector of vertice position";
 
 protected
-  Modelica.SIunits.Length dx "size of the first element" ;
+
+  Modelica.SIunits.Length dx
+    "size of the first element";
 
 algorithm
 
   if symmetricalMesh then
-    if rem(N,2) == 0 then // even number of segment
-      dx := (L/2) / ( (1-q^(N/2))/(1-q) ) ;
-      x[1] := 0.0 ;
-      for i in 1:integer(N/2) loop
-        x[i+1] := x[i] + dx * q^(i-1) ;
-      end for ;
-      
-      for i in integer(N/2)+1:N+1 loop
-        x[i] := L - x[N+1-i+1] ;
-      end for ;      
-            
+    if rem(N, 2) == 0 then // even number of segment
+      dx := (L / 2) / ((1 - q ^ (N / 2)) / (1 - q));
+      x[1] := 0.0;
+      for i in 1 : integer(N / 2) loop
+        x[i + 1] := x[i] + dx * q ^ (i - 1);
+      end for;
+
+      for i in integer(N / 2) + 1 : N + 1 loop
+        x[i] := L - x[N + 1 - i + 1];
+      end for;
+
     else
-      dx := L / ( 2 * (1-q^(floor(N/2)))/(1-q) + q^(floor(N/2))) ;
-      x[1] := 0.0 ;
-      for i in 1:integer( ceil(N/2) ) loop
-        x[i+1] := x[i] + dx * q^(i-1) ;
-      end for ;     
-      for i in integer(ceil(N/2))+1:N+1 loop
-        x[i] := L - x[N+1-i+1] ;
-      end for ;
-    
+      dx := L / (2 * (1 - q ^ (floor(N / 2))) / (1 - q) + q ^ (floor(N / 2)));
+      x[1] := 0.0;
+      for i in 1 : integer(ceil(N / 2)) loop
+        x[i + 1] := x[i] + dx * q ^ (i - 1);
+      end for;
+      for i in integer(ceil(N / 2)) + 1 : N + 1 loop
+        x[i] := L - x[N + 1 - i + 1];
+      end for;
+
     end if;
   else
-    dx := L / ( (1-q^(N))/(1-q) ) ;
-    x[1] := 0.0 ;
-    for i in 1:N loop
-      x[i+1] := x[i] + dx * q^(i-1) ;
-    end for ;
-  end if ;
+    dx := L / ((1 - q ^ (N)) / (1 - q));
+    x[1] := 0.0;
+    for i in 1 : N loop
+      x[i + 1] := x[i] + dx * q ^ (i - 1);
+    end for;
+  end if;
 
-  annotation(Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title> geometricalGrowthGrid </title>
@@ -101,6 +110,6 @@ algorithm
     </p>    
         
   </body>  
-</html>")) ;
+</html>"));
 
 end geometricalGrowthGrid;

@@ -1,15 +1,18 @@
 within TAeZoSysPro.HeatTransfer.Types;
 
 type Dynamics = enumeration(
-    DynamicFreeInitial
-      "DynamicFreeInitial -- Dynamic balance, Initial guess value",
-    FixedInitial "FixedInitial -- Dynamic balance, Initial value fixed",
-    SteadyStateInitial
-      "SteadyStateInitial -- Dynamic balance, Steady state initial with guess value",
-
-    SteadyState "SteadyState -- Steady state balance, Initial guess value")
+  DynamicFreeInitial
+    "DynamicFreeInitial -- Dynamic balance, Initial guess value",
+  FixedInitial
+    "FixedInitial -- Dynamic balance, Initial value fixed",
+  SteadyStateInitial
+    "SteadyStateInitial -- Dynamic balance, Steady state initial with guess value",
+  SteadyState
+    "SteadyState -- Steady state balance, Initial guess value")
   "Enumeration to define definition of balance equations"
-annotation (Documentation(info="<html>
+  annotation (
+    Documentation(
+      info = "<html>
 <p>
 Enumeration to define the formulation of balance equations
 (to be selected via choices menu):

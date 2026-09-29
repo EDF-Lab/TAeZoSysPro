@@ -1,67 +1,97 @@
 within TAeZoSysPro.HeatTransfer.BasesClasses;
 
 model FreeConvection_dT_decoupled
+
   import Correlations = TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation;
   import Functions = TAeZoSysPro.HeatTransfer.Functions.FreeConvection;
   import SI = Modelica.SIunits;
   //
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
   // User defined parameters
-  parameter Real add_on = 1 "Custom add-on";
-  parameter SI.Area A = 0 "Wall surface Area" annotation(
-    Dialog(group = "Geometrical properties"));
-  parameter SI.Length Lc = 1 "characteritic dimension for correlation" annotation(
-    Dialog(group = "Geometrical properties"));
-  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE "Free convection Correlation" annotation(
-    Dialog(group = "Flow properties"));
-  parameter SI.CoefficientOfHeatTransfer h_cv_const = 0 "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)" annotation(
-    Dialog(group = "Flow properties"));
+  parameter Real add_on = 1
+    "Custom add-on";
+  parameter SI.Area A = 0
+    "Wall surface Area"
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter SI.Length Lc = 1
+    "characteritic dimension for correlation"
+    annotation (
+      Dialog(group = "Geometrical properties"));
+  parameter TAeZoSysPro.HeatTransfer.Types.FreeConvectionCorrelation correlation = Correlations.vertical_plate_ASHRAE
+    "Free convection Correlation"
+    annotation (
+      Dialog(group = "Flow properties"));
+  parameter SI.CoefficientOfHeatTransfer h_cv_const = 0
+    "constant heat transfer coefficient (optional: if correlation 'Constant' choosen)"
+    annotation (
+      Dialog(group = "Flow properties"));
   // Internal variables
-  Medium.Temperature T_mean "Mean temperature between fluid and wall";
-  Modelica.SIunits.TemperatureDifference dT "port_a.T - T_fluid";
-  SI.CoefficientOfHeatTransfer h_cv "Heat transfert coefficient";
-  SI.Density d "Density of fluid at T_mean";
-  SI.SpecificHeatCapacity cp "Specific heat capacity of fluid at T_mean";
-  SI.DynamicViscosity mu "Dynamic viscosity of fluid at T_mean";
-  SI.ThermalConductivity k "Thermal Conductivity of fluid at T_mean";
-  SI.PrandtlNumber Pr "Prandtl Number";
-  SI.GrashofNumber Gr "Grashof Number";
-  SI.RayleighNumber Ra "Rayleigh Number";
-  SI.NusseltNumber Nu "Nusselt Number";
-  Modelica.SIunits.HeatFlowRate Q_flow "Heat flow rate from port_a -> port_b";
-  SI.Energy E "Energy passed throught the component";
+  Medium.Temperature T_mean
+    "Mean temperature between fluid and wall";
+  Modelica.SIunits.TemperatureDifference dT
+    "port_a.T - T_fluid";
+  SI.CoefficientOfHeatTransfer h_cv
+    "Heat transfert coefficient";
+  SI.Density d
+    "Density of fluid at T_mean";
+  SI.SpecificHeatCapacity cp
+    "Specific heat capacity of fluid at T_mean";
+  SI.DynamicViscosity mu
+    "Dynamic viscosity of fluid at T_mean";
+  SI.ThermalConductivity k
+    "Thermal Conductivity of fluid at T_mean";
+  SI.PrandtlNumber Pr
+    "Prandtl Number";
+  SI.GrashofNumber Gr
+    "Grashof Number";
+  SI.RayleighNumber Ra
+    "Rayleigh Number";
+  SI.NusseltNumber Nu
+    "Nusselt Number";
+  Modelica.SIunits.HeatFlowRate Q_flow
+    "Heat flow rate from port_a -> port_b";
+  SI.Energy E
+    "Energy passed throught the component";
   // Imported modules
-  Modelica.Blocks.Interfaces.RealInput T_fluid annotation(
-    Placement(visible = true, transformation(origin = {0, 80}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {20, 86}, extent = {{-14, -14}, {14, 14}}, rotation = -90)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a annotation(
-    Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_b annotation(
-    Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput T_fluid
+    annotation (
+      Placement(visible = true, transformation(origin = {0, 80}, extent = {{-20, -20}, {20, 20}}, rotation = -90), iconTransformation(origin = {20, 86}, extent = {{-14, -14}, {14, 14}}, rotation = -90)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_a
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b port_b
+    annotation (
+      Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
+
   Medium.ThermodynamicState state;
-  // Imported modules
+
+// Imported modules
 initial equation
+
   E = 0.0;
-  
+
 equation
 
   dT = port_a.T - T_fluid;
   port_a.Q_flow = Q_flow;
   port_b.Q_flow = -Q_flow;
-  
-  T_mean = (port_a.T + T_fluid) / 2 "port_a and port_b are defined in Element1D";
+
+  T_mean = (port_a.T + T_fluid) / 2
+    "port_a and port_b are defined in Element1D";
   state = Medium.setState_pTX(p = Medium.reference_p, T = T_mean);
-// Thermodynamic properties calculation
+  // Thermodynamic properties calculation
   d = Medium.density(state);
   mu = Medium.dynamicViscosity(state);
   cp = Medium.specificHeatCapacityCp(state);
   k = Medium.thermalConductivity(state);
-// Calculation of characteristic numbers for convection
+  // Calculation of characteristic numbers for convection
   Pr = mu * cp / k;
   Gr = 9.81 * 1 / port_b.T * d ^ 2 * abs(dT) * Lc ^ 3 / mu ^ 2;
   Ra = Gr * Pr;
-// Selection of the correlation
+  // Selection of the correlation
   if correlation == Correlations.vertical_plate_ASHRAE then
     Nu = Functions.vertical_plate_ASHRAE(Pr = Pr, Ra = Ra);
   elseif correlation == Correlations.vertical_plate_Recknagel then
@@ -78,14 +108,15 @@ equation
     Nu = 0;
     assert(false, "The correlation selected is not yet implemented of not applicable", AssertionLevel.error);
   end if;
-//Convective heat transfer calculation
+  //Convective heat transfer calculation
   h_cv = Nu * k / Lc;
-// Heat flux calculation
+  // Heat flux calculation
   Q_flow = add_on * h_cv * A * dT;
   der(E) = Q_flow;
-  
-  annotation(
-    Documentation(info = "
+
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title>FreeConvection_dT_decoupled</title>	

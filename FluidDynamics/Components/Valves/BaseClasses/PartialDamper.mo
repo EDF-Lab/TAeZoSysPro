@@ -1,128 +1,168 @@
 within TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses;
 
-model PartialDamper "Base model for dampers"
+model PartialDamper
+  "Base model for dampers"
+
   // Import section
   import Modelica.Fluid.Types.CvTypes;
-  import SI = Modelica.SIunits ;
+  import SI = Modelica.SIunits;
 
   // Replaceable classes
-  replaceable function valveCharacteristic = 
-    Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.linear constrainedby Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.baseFun "Inherent flow characteristic" 
-    annotation(choicesAllMatching=true);
-  replaceable package Medium =
-      TAeZoSysPro.Media.MyMedia "Medium in the component" ;
-  
+  replaceable function valveCharacteristic = Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.linear
+    constrainedby Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.baseFun
+    "Inherent flow characteristic"
+    annotation (choicesAllMatching = true);
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia
+    "Medium in the component";
+
   // User defined parameters
   // *** Asumptions ***
-  parameter Boolean allowFlowReversal = true "= true to allow flow reversal, false restricts to design direction (port_a -> port_b)" annotation(
-  Dialog(tab="Assumptions"), Evaluate=true);
-  parameter Boolean checkValve=false "Reverse flow stopped" annotation(
-  Dialog(tab="Assumptions"));  
+  parameter Boolean allowFlowReversal = true
+    "= true to allow flow reversal, false restricts to design direction (port_a -> port_b)"
+    annotation (
+      Dialog(tab = "Assumptions"),
+      Evaluate = true);
+  parameter Boolean checkValve = false
+    "Reverse flow stopped"
+    annotation (
+      Dialog(tab = "Assumptions"));
 
   // *** Advanced ***
   // Note: value of dp_start shall be refined by derived model, basing on local dp_nominal
-  parameter Medium.AbsolutePressure dp_start(min=-Modelica.Constants.inf) = dp_nominal
-      "Guess value of dp = port_a.p - port_b.p"
-    annotation(Dialog(tab = "Advanced"));
+  parameter Medium.AbsolutePressure dp_start(min = -Modelica.Constants.inf) = dp_nominal
+    "Guess value of dp = port_a.p - port_b.p"
+    annotation (Dialog(tab = "Advanced"));
   parameter Medium.MassFlowRate m_flow_start = m_flow_nominal
-      "Guess value of m_flow = port_a.m_flow"
-    annotation(Dialog(tab = "Advanced"));
-  parameter SI.Pressure dp_small=0.01*dp_nominal "Regularisation of zero flow" 
-    annotation(Dialog(tab="Advanced"));
+    "Guess value of m_flow = port_a.m_flow"
+    annotation (Dialog(tab = "Advanced"));
+  parameter SI.Pressure dp_small = 0.01 * dp_nominal
+    "Regularisation of zero flow"
+    annotation (Dialog(tab = "Advanced"));
   // Note: value of m_flow_small shall be refined by derived model, basing on local m_flow_nominal
   parameter Medium.MassFlowRate m_flow_small = 0.0
-      "Small mass flow rate for regularization of zero flow"
-    annotation(Dialog(tab = "Advanced"));
+    "Small mass flow rate for regularization of zero flow"
+    annotation (Dialog(tab = "Advanced"));
 
   // *** Diagnostics ***
   parameter Boolean show_T = true
-      "= true, if temperatures at port_a and port_b are computed"
-    annotation(Dialog(tab="Advanced",group="Diagnostics"));
+    "= true, if temperatures at port_a and port_b are computed"
+    annotation (Dialog(tab = "Advanced", group = "Diagnostics"));
   parameter Boolean show_V_flow = true
-      "= true, if volume flow rate at inflowing port is computed"
-    annotation(Dialog(tab="Advanced",group="Diagnostics"));
+    "= true, if volume flow rate at inflowing port is computed"
+    annotation (Dialog(tab = "Advanced", group = "Diagnostics"));
 
-// *** General ***
-  parameter Modelica.Fluid.Types.CvTypes CvData=Modelica.Fluid.Types.CvTypes.OpPoint "Selection of flow coefficient" annotation(
-  Dialog(group = "Flow Coefficient"));
-  parameter SI.Area A = 0 "Damper cross section surface area" annotation(
-    Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Av)));
-  parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]" annotation(
-  Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Kv)));
-  parameter Real Cv = 0 "Cv (US) flow coefficient [USG/min]"annotation(
-  Dialog(group = "Flow Coefficient", enable = (CvData==Modelica.Fluid.Types.CvTypes.Cv)));
-  parameter SI.Pressure dp_nominal "Nominal pressure drop" annotation(
-  Dialog(group="Nominal operating point"));
-  parameter Medium.MassFlowRate m_flow_nominal "Nominal mass flow rate" annotation(
-  Dialog(group="Nominal operating point"));
-  parameter Medium.Density rho_nominal=Medium.density_pTX(Medium.p_default, Medium.T_default, Medium.X_default) "Nominal inlet density" annotation(
-  Dialog(group="Nominal operating point", enable = (CvData==Modelica.Fluid.Types.CvTypes.OpPoint)));
-  parameter Real opening_nominal(min=0,max=1)=1 "Nominal opening" annotation(
-  Dialog(group="Nominal operating point", enable = (CvData==Modelica.Fluid.Types.CvTypes.OpPoint)));
+  // *** General ***
+  parameter Modelica.Fluid.Types.CvTypes CvData = Modelica.Fluid.Types.CvTypes.OpPoint
+    "Selection of flow coefficient"
+    annotation (
+      Dialog(group = "Flow Coefficient"));
+  parameter SI.Area A = 0
+    "Damper cross section surface area"
+    annotation (
+      Dialog(group = "Flow Coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Av)));
+  parameter Real Kv = 0
+    "Kv (metric) flow coefficient [m3/h]"
+    annotation (
+      Dialog(group = "Flow Coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Kv)));
+  parameter Real Cv = 0
+    "Cv (US) flow coefficient [USG/min]"
+    annotation (
+      Dialog(group = "Flow Coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Cv)));
+  parameter SI.Pressure dp_nominal
+    "Nominal pressure drop"
+    annotation (
+      Dialog(group = "Nominal operating point"));
+  parameter Medium.MassFlowRate m_flow_nominal
+    "Nominal mass flow rate"
+    annotation (
+      Dialog(group = "Nominal operating point"));
+  parameter Medium.Density rho_nominal = Medium.density_pTX(Medium.p_default, Medium.T_default, Medium.X_default)
+    "Nominal inlet density"
+    annotation (
+      Dialog(group = "Nominal operating point", enable = (CvData == Modelica.Fluid.Types.CvTypes.OpPoint)));
+  parameter Real opening_nominal(min = 0, max = 1) = 1
+    "Nominal opening"
+    annotation (
+      Dialog(group = "Nominal operating point", enable = (CvData == Modelica.Fluid.Types.CvTypes.OpPoint)));
 
   // Internal variables
   Medium.MassFlowRate m_flow(
-     min=if allowFlowReversal then -Modelica.Constants.inf else 0,
-     start = m_flow_start) "Mass flow rate in design flow direction";
-     
-  Modelica.SIunits.Pressure dp(start=dp_start)
-      "Pressure difference between port_a and port_b (= port_a.p - port_b.p)";
+    min = if allowFlowReversal then -Modelica.Constants.inf else 0,
+    start = m_flow_start)
+    "Mass flow rate in design flow direction";
 
-  Modelica.SIunits.VolumeFlowRate V_flow=
-      m_flow/Modelica.Fluid.Utilities.regStep(m_flow,
-                  Medium.density(state_a),
-                  Medium.density(state_b),
-                  m_flow_small) if show_V_flow
-      "Volume flow rate at inflowing port (positive when flow from port_a to port_b)";
+  Modelica.SIunits.Pressure dp(start = dp_start)
+    "Pressure difference between port_a and port_b (= port_a.p - port_b.p)";
 
-  Medium.Temperature port_a_T=
-      Modelica.Fluid.Utilities.regStep(port_a.m_flow,
-                  Medium.temperature(state_a),
-                  Medium.temperature(Medium.setState_phX(port_a.p, port_a.h_outflow, port_a.Xi_outflow)),
-                  m_flow_small) if show_T
-      "Temperature close to port_a, if show_T = true";
-      
-  Medium.Temperature port_b_T=
-      Modelica.Fluid.Utilities.regStep(port_b.m_flow,
-                  Medium.temperature(state_b),
-                  Medium.temperature(Medium.setState_phX(port_b.p, port_b.h_outflow, port_b.Xi_outflow)),
-                  m_flow_small) if show_T
-      "Temperature close to port_b, if show_T = true";
-  
+  Modelica.SIunits.VolumeFlowRate V_flow = m_flow / Modelica.Fluid.Utilities.regStep(
+    m_flow,
+    Medium.density(state_a),
+    Medium.density(state_b),
+    m_flow_small) if show_V_flow
+    "Volume flow rate at inflowing port (positive when flow from port_a to port_b)";
+
+  Medium.Temperature port_a_T = Modelica.Fluid.Utilities.regStep(
+    port_a.m_flow,
+    Medium.temperature(state_a),
+    Medium.temperature(Medium.setState_phX(port_a.p, port_a.h_outflow, port_a.Xi_outflow)),
+    m_flow_small) if show_T
+    "Temperature close to port_a, if show_T = true";
+
+  Medium.Temperature port_b_T = Modelica.Fluid.Utilities.regStep(
+    port_b.m_flow,
+    Medium.temperature(state_b),
+    Medium.temperature(Medium.setState_phX(port_b.p, port_b.h_outflow, port_b.Xi_outflow)),
+    m_flow_small) if show_T
+    "Temperature close to port_b, if show_T = true";
+
   // Imported modules
   Modelica.Fluid.Interfaces.FluidPort_a port_a(
-                                redeclare package Medium = Medium,
-                     m_flow(min=if allowFlowReversal then -Modelica.Constants.inf else 0))
+    redeclare package Medium = Medium,
+    m_flow(min = if allowFlowReversal then -Modelica.Constants.inf else 0))
     "Fluid connector a (positive design flow direction is from port_a to port_b)"
-    annotation (Placement(transformation(extent={{-110,-10},{-90,10}})));
+    annotation (Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   Modelica.Fluid.Interfaces.FluidPort_b port_b(
-                                redeclare package Medium = Medium,
-                     m_flow(max=if allowFlowReversal then +Modelica.Constants.inf else 0))
+    redeclare package Medium = Medium,
+    m_flow(max = if allowFlowReversal then +Modelica.Constants.inf else 0))
     "Fluid connector b (positive design flow direction is from port_a to port_b)"
-    annotation (Placement(transformation(extent={{110,-10},{90,10}}), iconTransformation(extent={{110,-10},{90,10}})));
+    annotation (Placement(transformation(extent = {{110, -10}, {90, 10}}), iconTransformation(extent = {{110, -10}, {90, 10}})));
 
-  Modelica.Blocks.Interfaces.RealInput opening(min=0, max=1) "Valve position in the range 0..1" annotation (Placement(visible = true,transformation(
-        origin={0,90},
-        extent={{-20,-20},{20,20}},
-        rotation=270), iconTransformation(origin = {8.88178e-16, 86}, extent = {{-14, -14}, {14, 14}}, rotation = 270)));
-      
-  protected
-  Medium.ThermodynamicState state_a "state for medium inflowing through port_a";
-  Medium.ThermodynamicState state_b "state for medium inflowing through port_b";
-  constant Real N6 = 31.6 "N6 constant of the ISA-75.01.01-2007 standard";
-  parameter SI.Area Av(fixed = false) ;
+  Modelica.Blocks.Interfaces.RealInput opening(min = 0, max = 1)
+    "Valve position in the range 0..1"
+    annotation (
+      Placement(
+        visible = true,
+        transformation(
+          origin = {0, 90},
+          extent = {{-20, -20}, {20, 20}},
+          rotation = 270),
+        iconTransformation(origin = {8.88178e-16, 86}, extent = {{-14, -14}, {14, 14}}, rotation = 270)));
+
+protected
+
+  Medium.ThermodynamicState state_a
+    "state for medium inflowing through port_a";
+  Medium.ThermodynamicState state_b
+    "state for medium inflowing through port_b";
+  constant Real N6 = 31.6
+    "N6 constant of the ISA-75.01.01-2007 standard";
+  parameter SI.Area Av(fixed = false);
 
 initial equation
+
   if CvData == CvTypes.Kv then
-    Av = Kv * N6 / 3600 / sqrt(1e5) "Unit conversion";
+    Av = Kv * N6 / 3600 / sqrt(1e5)
+      "Unit conversion";
   elseif CvData == CvTypes.Cv then
-    Av = Cv * 0.865 * N6 "Unit conversion";
+    Av = Cv * 0.865 * N6
+      "Unit conversion";
   elseif CvData == CvTypes.Av then
-    Av = A * sqrt(2) "Root of 2 is added to compensate for its lack in head expression V_flow = f(head)";    
+    Av = A * sqrt(2)
+      "Root of 2 is added to compensate for its lack in head expression V_flow = f(head)";
   end if;
 
-
 equation
+
   // medium states
   state_a = Medium.setState_phX(port_a.p, inStream(port_a.h_outflow), inStream(port_a.Xi_outflow));
   state_b = Medium.setState_phX(port_b.p, inStream(port_b.h_outflow), inStream(port_b.Xi_outflow));
@@ -143,14 +183,15 @@ equation
 
   port_a.C_outflow = inStream(port_b.C_outflow);
   port_b.C_outflow = inStream(port_a.C_outflow);
-  
+
   // Isenthalpic state transformation (no storage and no loss of energy)
   port_a.h_outflow = inStream(port_b.h_outflow);
   port_b.h_outflow = inStream(port_a.h_outflow);
- 
+
   annotation (
     Icon(graphics = {Rectangle(extent = {{-80, 80}, {80, -80}})}),
-    Documentation(info="<html>
+    Documentation(
+      info = "<html>
   <p>
     This is the base model for <code>Damper_parallelBlades</code> and <code>Damper_opposedBlades</code> strongly inspired from the PartialValve of Modelica Standard Library (MSL). 
     The model is based on the IEC 534 / ISA-75.01.01-2007 standard for valve sizing.

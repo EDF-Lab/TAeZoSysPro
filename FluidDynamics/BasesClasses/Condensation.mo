@@ -1,55 +1,69 @@
 within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model Condensation
+
   // medium declaration
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
 
-  Medium.ThermodynamicState state "State of fluid at infinite conditions";
-  
+  Medium.ThermodynamicState state
+    "State of fluid at infinite conditions";
+
   // User defined parameters
-  parameter Modelica.SIunits.Area A = 1 "Wall surface area";
-  parameter Real add_on = 1 "add on mass transfer coefficient";
-  
+  parameter Modelica.SIunits.Area A = 1
+    "Wall surface area";
+  parameter Real add_on = 1
+    "add on mass transfer coefficient";
+
   // Internal variables
-  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate >0 if condensation";
-  Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cp "Specific Heat Capacity";
-  Modelica.SIunits.Density d_sat "Saturation density of the condensable species";
-  Real betaV(unit = "m/s") "mass transfer coefficient";
+  Modelica.SIunits.MassFlowRate m_flow
+    "Mass flow rate >0 if condensation";
+  Modelica.SIunits.SpecificHeatCapacityAtConstantPressure cp
+    "Specific Heat Capacity";
+  Modelica.SIunits.Density d_sat
+    "Saturation density of the condensable species";
+  Real betaV(unit = "m/s")
+    "mass transfer coefficient";
 
   // Imported Modules
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b heatPort annotation(
-    Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealOutput m_flow_cond(unit = "kg/s") annotation(
-    Placement(visible = true, transformation(origin = {0, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 90), iconTransformation(origin = {-30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {-100, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-92, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput h_cv(unit = "W/(m2.K)") "Convective heat exchange coefficient" annotation(
-    Placement(visible = true, transformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b heatPort
+    annotation (
+      Placement(visible = true, transformation(origin = {102, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealOutput m_flow_cond(unit = "kg/s")
+    annotation (
+      Placement(visible = true, transformation(origin = {0, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 90), iconTransformation(origin = {-30, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a flowPort(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {-100, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-92, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput h_cv(unit = "W/(m2.K)")
+    "Convective heat exchange coefficient"
+    annotation (
+      Placement(visible = true, transformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
 
 equation
 
-// Calculation of properties
+  // Calculation of properties
   state = Medium.setState_dTX(d = sum(flowPort.d), T = flowPort.T, X = flowPort.d / sum(flowPort.d));
   cp = Medium.specificHeatCapacityCp(state);
-  d_sat = Medium.saturationPressure(heatPort.T) / (heatPort.T*Modelica.Constants.R/Medium.MMX[Medium.Water]) ;
+  d_sat = Medium.saturationPressure(heatPort.T) / (heatPort.T * Modelica.Constants.R / Medium.MMX[Medium.Water]);
 
-// Calculation of the condensation flow rate
+  // Calculation of the condensation flow rate
   betaV = add_on * h_cv / (sum(flowPort.d) * cp);
-  m_flow = betaV * max((flowPort.d[Medium.Water] - d_sat), 0.0) * A ;
+  m_flow = betaV * max((flowPort.d[Medium.Water] - d_sat), 0.0) * A;
 
-// Ports handover
+  // Ports handover
   flowPort.m_flow[Medium.Water] = m_flow;
   flowPort.m_flow[Medium.Air] = 0;
   flowPort.H_flow = m_flow * Medium.enthalpyOfCondensingGas(heatPort.T);
-  heatPort.Q_flow = -m_flow * Medium.enthalpyOfVaporization(heatPort.T) ;
+  heatPort.Q_flow = -m_flow * Medium.enthalpyOfVaporization(heatPort.T);
 
-//Output condensation data
-  m_flow_cond = m_flow ;
-  
-  annotation(
+  //Output condensation data
+  m_flow_cond = m_flow;
+
+  annotation (
     Diagram,
     Icon(graphics = {Rectangle(origin = {-10, -1}, fillColor = {136, 136, 136}, fillPattern = FillPattern.Cross, extent = {{-10, 101}, {30, -99}}), Ellipse(origin = {-23, 46}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Line(origin = {44.67, 60}, points = {{-15, 0}, {15, 0}}, color = {255, 0, 0}, thickness = 1.25, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Line(origin = {44.67, -40}, points = {{-15, 0}, {15, 0}}, color = {255, 0, 0}, thickness = 1.25, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Line(origin = {44.67, 40}, points = {{-15, 0}, {15, 0}}, color = {255, 0, 0}, thickness = 1.25, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Line(origin = {44.28, -60}, points = {{-15, 0}, {15, 0}}, color = {255, 0, 0}, thickness = 1.25, arrow = {Arrow.Filled, Arrow.Filled}, arrowSize = 5), Ellipse(origin = {-23, 30}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, 14}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -2}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -18}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -34}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -50}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -66}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -82}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360), Ellipse(origin = {-23, -98}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-11, 34}, {3, 20}}, endAngle = 360)}, coordinateSystem(initialScale = 0.1)),
-    Documentation(info = "
+    Documentation(
+      info = "
 <html>
   <head>
     <title>Condensation</title>

@@ -1,106 +1,128 @@
 within TAeZoSysPro.FluidDynamics.Components.Orifices;
 
 model SimpleOpeningComp
+
   replaceable package Medium = TAeZoSysPro.Media.MyMedia;
-  
+
   // User defined parameters
-  parameter Real Cd = 0.61 "discharge coefficient";
-  parameter Modelica.SIunits.CrossSection A = 1 "Opening cross section";
-  parameter Modelica.SIunits.Length Alt_a = 1.0 "Altitude of port_a";
-  parameter Modelica.SIunits.Length Alt_b = 1.0 "Altitude of port_b";
-  parameter Modelica.SIunits.Length Alt_opening = 1.0 "Altitude at the opening center";
-  
+  parameter Real Cd = 0.61
+    "discharge coefficient";
+  parameter Modelica.SIunits.CrossSection A = 1
+    "Opening cross section";
+  parameter Modelica.SIunits.Length Alt_a = 1.0
+    "Altitude of port_a";
+  parameter Modelica.SIunits.Length Alt_b = 1.0
+    "Altitude of port_b";
+  parameter Modelica.SIunits.Length Alt_opening = 1.0
+    "Altitude at the opening center";
+
   // Internal variables
   Modelica.SIunits.PressureDifference dp;
-  Modelica.SIunits.Velocity Vel "Velocity at the orifice";
-  Modelica.SIunits.Velocity c "Sound velocity";
-  Modelica.SIunits.MassFlowRate m_flow "Mass flow rate throught the opening";
-  Modelica.SIunits.Density d "density at the orifice";
-  
+  Modelica.SIunits.Velocity Vel
+    "Velocity at the orifice";
+  Modelica.SIunits.Velocity c
+    "Sound velocity";
+  Modelica.SIunits.MassFlowRate m_flow
+    "Mass flow rate throught the opening";
+  Modelica.SIunits.Density d
+    "density at the orifice";
+
   //  Modelica.SIunits.Density d_comp "Densite au col";
   Modelica.SIunits.AbsolutePressure p_a;
   Modelica.SIunits.AbsolutePressure p_b;
-  Modelica.SIunits.IsentropicExponent gamma "isentropic exponent";
-  Modelica.SIunits.MachNumber M "Mach number at the orifice";
-  Modelica.SIunits.Temperature T "Temperature at the orifice";
-  Medium.ThermodynamicState state_upstream "State of upstream flow";
-  Medium.ThermodynamicState state_a, state_b "States at ports";
-  
+  Modelica.SIunits.IsentropicExponent gamma
+    "isentropic exponent";
+  Modelica.SIunits.MachNumber M
+    "Mach number at the orifice";
+  Modelica.SIunits.Temperature T
+    "Temperature at the orifice";
+  Medium.ThermodynamicState state_upstream
+    "State of upstream flow";
+  Medium.ThermodynamicState state_a, state_b
+    "States at ports";
+
   // Imported modules
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium) annotation (
-    Placement(visible = true, transformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_a port_a(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  TAeZoSysPro.FluidDynamics.Interfaces.FlowPort_b port_b(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {70, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
 protected
-  Modelica.SIunits.SpecificEnthalpy h_a "Specific enthalpy from port_a" ;
-  Modelica.SIunits.SpecificEnthalpy h_b "Specific enthalpy from port_b" ;
-  parameter Modelica.SIunits.PressureDifference dp_small = 0.001 ;
+
+  Modelica.SIunits.SpecificEnthalpy h_a
+    "Specific enthalpy from port_a";
+  Modelica.SIunits.SpecificEnthalpy h_b
+    "Specific enthalpy from port_b";
+  parameter Modelica.SIunits.PressureDifference dp_small = 0.001;
   constant Modelica.SIunits.Acceleration g = Modelica.Constants.g_n;
-  
+
 equation
-//
-  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d) );
-  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d) );  
+
+  //
+  state_a = Medium.setState_dTX(d = sum(port_a.d), T = port_a.T, X = port_a.d / sum(port_a.d));
+  state_b = Medium.setState_dTX(d = sum(port_b.d), T = port_b.T, X = port_b.d / sum(port_b.d));
   state_upstream = Medium.setSmoothState(
-    x = dp, 
-    x_small = dp_small, 
-    state_a = state_a, 
+    x = dp,
+    x_small = dp_small,
+    state_a = state_a,
     state_b = state_b);
 
-// pressure reconstruction
+  // pressure reconstruction
   p_a = Medium.pressure(state_a) + sum(port_a.d) * g * (Alt_a - Alt_opening);
   p_b = Medium.pressure(state_b) + sum(port_b.d) * g * (Alt_b - Alt_opening);
   dp = p_a - p_b;
 
-// specific enthalpy reconstruction
+  // specific enthalpy reconstruction
   h_a = Medium.specificEnthalpy(state_a);
   h_b = Medium.specificEnthalpy(state_b);
-  
-// gamma is supposed contant along the flow
+
+  // gamma is supposed contant along the flow
   gamma = Medium.isentropicExponent(state_upstream);
-  
-// Mach number calculation: The pressure at the orifice is the downstream node pressure
+
+  // Mach number calculation: The pressure at the orifice is the downstream node pressure
   M = min(1, (2 / (gamma - 1) * ((min(p_a, p_b) / max(p_a, p_b)) ^ ((1 - gamma) / gamma) - 1)) ^ 0.5);
-  
-// Calculation temperature at the orifice
+
+  // Calculation temperature at the orifice
   T = Medium.temperature(state_upstream) / (1 + (gamma - 1) / 2 * M ^ 2);
 
-// Calculation density at the orifice
+  // Calculation density at the orifice
   d = Medium.density(state_upstream) / (1 + (gamma - 1) / 2 * M ^ 2) ^ (1 / (1 - gamma));
-  
-// solution 1: The velocity is computed from the Mach number and the velocity of sound
+
+  // solution 1: The velocity is computed from the Mach number and the velocity of sound
   //c = Medium.velocityOfSound(Medium.setState_pTX(p = min(p_a, p_b), T = T, X = state.X));
   c = sqrt(gamma * min(p_a, p_b) / d);
   Vel = M * c * sign(dp);
   m_flow = Vel * A * Cd * d;
-  
-// solution 2: The velocity is computed from the compressible Bernoulli relation
-//solution 2.1: more stable around dp = 0 but induces an interation variable
-//  2 * gamma / (gamma - 1) * max(p_a, p_b) / Medium.density(state) * (1- (1 + (gamma - 1) / 2 * M ^ 2) ^ (-1)) - Modelica.Fluid.Utilities.regSquare2(
-//    x = Vel, 
-//    x_small = 0.01, 
-//    k1 = 1, 
-//    k2 = 1) = 0.0 ;
-//solution 2.0: infinite derivative at dp = 0    
-//  Vel = sign(dp) * sqrt(2 * gamma / (gamma - 1) * max(p_a, p_b) / Medium.density(state) * (1- (1 + (gamma - 1) / 2 * M ^ 2) ^ (-1)) )  ;    
 
-//Blocking mass flow calculation
-//  m_flow_blocked = sign(dp) * max(pa, pb) * (gamma / r / T0) ^ 0.5 * Ar * Cd * ((gamma + 1) / 2) ^ ((1 + gamma) / 2 / (1 - gamma)) "From Barre Saint Venant and Hugoniot";
+  // solution 2: The velocity is computed from the compressible Bernoulli relation
+  //solution 2.1: more stable around dp = 0 but induces an interation variable
+  //  2 * gamma / (gamma - 1) * max(p_a, p_b) / Medium.density(state) * (1- (1 + (gamma - 1) / 2 * M ^ 2) ^ (-1)) - Modelica.Fluid.Utilities.regSquare2(
+  //    x = Vel, 
+  //    x_small = 0.01, 
+  //    k1 = 1, 
+  //    k2 = 1) = 0.0 ;
+  //solution 2.0: infinite derivative at dp = 0    
+  //  Vel = sign(dp) * sqrt(2 * gamma / (gamma - 1) * max(p_a, p_b) / Medium.density(state) * (1- (1 + (gamma - 1) / 2 * M ^ 2) ^ (-1)) )  ;    
 
+  //Blocking mass flow calculation
+  //  m_flow_blocked = sign(dp) * max(pa, pb) * (gamma / r / T0) ^ 0.5 * Ar * Cd * ((gamma + 1) / 2) ^ ((1 + gamma) / 2 / (1 - gamma)) "From Barre Saint Venant and Hugoniot";
 
-// Port handover
+  // Port handover
   port_a.m_flow = m_flow * TAeZoSysPro.FluidDynamics.Utilities.regStep(
-    x = dp, 
-    x_small = dp_small, 
-    y1 = port_a.d/sum(port_a.d), 
-    y2 = port_b.d/sum(port_b.d));
+    x = dp,
+    x_small = dp_small,
+    y1 = port_a.d / sum(port_a.d),
+    y2 = port_b.d / sum(port_b.d));
   port_a.m_flow + port_b.m_flow = fill(0.0, Medium.nX);
-  port_a.H_flow = semiLinear(m_flow, h_a + g*(Alt_a - Alt_b), h_b - g*(Alt_a - Alt_b) );
+  port_a.H_flow = semiLinear(m_flow, h_a + g * (Alt_a - Alt_b), h_b - g * (Alt_a - Alt_b));
   port_a.H_flow + port_b.H_flow = 0;
-  
-  annotation(defaultComponentName="SimpleOpeningComp",
-Documentation(info ="
+
+  annotation (
+    defaultComponentName = "SimpleOpeningComp",
+    Documentation(
+      info = "
 <html>
   <head>
     <title>SimpleOpeningComp</title>

@@ -13,7 +13,8 @@ algorithm
 
   annotation (
     inverse(NTU = TAeZoSysPro.HeatTransfer.Functions.ExchangerEffectiveness.Inverse.NTU_counterCurrent(Eff = Eff, Cr = Cr)),
-    Documentation(info = "
+    Documentation(
+      info = "
 <html>
   <head>
     <title>counterCurrent</title>
@@ -37,4 +38,5 @@ algorithm
                 
         </body>
 </html>"));
+
 end counterCurrent;

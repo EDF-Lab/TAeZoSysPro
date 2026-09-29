@@ -1,6 +1,7 @@
 within TAeZoSysPro.FluidDynamics.BasesClasses;
 
 model LiquidNode
+
   // additionnal package
   import Modelica.Fluid.Types;
   import Modelica.Fluid.Types.Dynamics;
@@ -11,130 +12,162 @@ model LiquidNode
   Medium.BaseProperties medium(preferredMediumStates = if energyDynamics == Dynamics.SteadyState and massDynamics == Dynamics.SteadyState then false else true);
   //User defined parameters
   // Assumptions
-  parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial "Formulation of energy balance" annotation(
-    Dialog(tab = "Assumptions", group = "Dynamics"));
-  parameter Types.Dynamics massDynamics = Dynamics.FixedInitial "Formulation of mass balance" annotation(
-    Dialog(tab = "Assumptions", group = "Dynamics"));
-  final parameter Types.Dynamics substanceDynamics = massDynamics "Formulation of substance balance" annotation(
-    Dialog(tab = "Assumptions", group = "Dynamics"));
-  final parameter Types.Dynamics traceDynamics = massDynamics "Formulation of trace substance balance" annotation(
-    Dialog(tab = "Assumptions", group = "Dynamics"));
+  parameter Types.Dynamics energyDynamics = Dynamics.FixedInitial
+    "Formulation of energy balance"
+    annotation (
+      Dialog(tab = "Assumptions", group = "Dynamics"));
+  parameter Types.Dynamics massDynamics = Dynamics.FixedInitial
+    "Formulation of mass balance"
+    annotation (
+      Dialog(tab = "Assumptions", group = "Dynamics"));
+  final parameter Types.Dynamics substanceDynamics = massDynamics
+    "Formulation of substance balance"
+    annotation (
+      Dialog(tab = "Assumptions", group = "Dynamics"));
+  final parameter Types.Dynamics traceDynamics = massDynamics
+    "Formulation of trace substance balance"
+    annotation (
+      Dialog(tab = "Assumptions", group = "Dynamics"));
   // Fixed start value
-  parameter SI.Temperature T_start = 293.15 "Initial temperature" annotation(
-    Dialog(tab = "Initialization"));
-  parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default ;
-  parameter SI.Volume V_start = 0 "Initial volume" annotation(
-    Dialog(group = "Geometrical properties"));
+  parameter SI.Temperature T_start = 293.15
+    "Initial temperature"
+    annotation (
+      Dialog(tab = "Initialization"));
+  parameter Medium.MassFraction X_start[Medium.nX] = Medium.X_default;
+  parameter SI.Volume V_start = 0
+    "Initial volume"
+    annotation (
+      Dialog(group = "Geometrical properties"));
   //
-  parameter Integer nPorts = 1 "Number of fluidport" annotation(
-    Dialog(connectorSizing = true));
+  parameter Integer nPorts = 1
+    "Number of fluidport"
+    annotation (
+      Dialog(connectorSizing = true));
 
-// Internal variables
-  SI.Enthalpy H "Medium enthalpy";  
-//
-  SI.Mass m "Medium mass";
-  SI.Mass mXi[Medium.nXi] "Masses of independent components in the fluid";
-  SI.Mass[Medium.nC] mC "Masses of trace substances in the fluid";
-  SI.Volume V;  
-// C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
-  Medium.ExtraProperty C[Medium.nC] "Trace substance mixture content";
+  // Internal variables
+  SI.Enthalpy H
+    "Medium enthalpy";
   //
-  SI.MassFlowRate mb_flow "Mass flows across boundaries";
-  SI.MassFlowRate[Medium.nXi] mbXi_flow "Substance mass flows across boundaries";
+  SI.Mass m
+    "Medium mass";
+  SI.Mass mXi[Medium.nXi]
+    "Masses of independent components in the fluid";
+  SI.Mass[Medium.nC] mC
+    "Masses of trace substances in the fluid";
+  SI.Volume V;
+  // C need to be added here because unlike for Xi, which has medium.Xi,there is no variable medium.C
+  Medium.ExtraProperty C[Medium.nC]
+    "Trace substance mixture content";
+  //
+  SI.MassFlowRate mb_flow
+    "Mass flows across boundaries";
+  SI.MassFlowRate[Medium.nXi] mbXi_flow
+    "Substance mass flows across boundaries";
   Medium.MassFlowRate ports_mXi_flow[nPorts, Medium.nXi];
-  Medium.ExtraPropertyFlowRate[Medium.nC] mbC_flow "Trace substance mass flows across boundaries";
-  SI.EnthalpyFlowRate Hb_flow "Enthalpy flow across boundaries or energy source/sink";
-  SI.HeatFlowRate Qb_flow "Heat flow across boundaries or energy source/sink";
+  Medium.ExtraPropertyFlowRate[Medium.nC] mbC_flow
+    "Trace substance mass flows across boundaries";
+  SI.EnthalpyFlowRate Hb_flow
+    "Enthalpy flow across boundaries or energy source/sink";
+  SI.HeatFlowRate Qb_flow
+    "Heat flow across boundaries or energy source/sink";
   //
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts](redeclare each package Medium = Medium) annotation(
-    Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort(T(start = 500.0, nominal = 500.0)) annotation(
-    Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPorts_a fluidPort[nPorts](redeclare each package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(origin = {0, 0}, extent = {{-10, -40}, {10, 40}}, rotation = 0), iconTransformation(origin = {50, 90}, extent = {{-10, -40}, {10, 40}}, rotation = -90)));
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort(T(start = 500.0, nominal = 500.0))
+    annotation (
+      Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+
 protected
-  Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC)) "Scaled masses of trace substances in the fluid";
-  parameter Medium.ExtraProperty C_start[Medium.nC](quantity=Medium.extraPropertiesNames) = Medium.C_default;
+
+  Real[Medium.nC] mC_scaled(min = fill(Modelica.Constants.eps, Medium.nC))
+    "Scaled masses of trace substances in the fluid";
+  parameter Medium.ExtraProperty C_start[Medium.nC](quantity = Medium.extraPropertiesNames) = Medium.C_default;
 
 initial equation
-// initialization of balances
-//Energy
+
+  // initialization of balances
+  //Energy
   if energyDynamics == Dynamics.FixedInitial then
     medium.T = T_start;
   elseif energyDynamics == Dynamics.SteadyStateInitial then
     der(medium.T) = 0;
   end if;
 
-  m = V_start * medium.d ;
-//Substances
+  m = V_start * medium.d;
+  //Substances
   if substanceDynamics == Dynamics.FixedInitial then
-    medium.Xi = X_start[1:Medium.nXi];
+    medium.Xi = X_start[1 : Medium.nXi];
   elseif substanceDynamics == Dynamics.SteadyStateInitial then
     der(medium.Xi) = zeros(Medium.nXi);
   end if;
-//Traces
+  //Traces
   if traceDynamics == Dynamics.FixedInitial then
-    mC_scaled = m * C_start[1:Medium.nC] ./ Medium.C_nominal;
+    mC_scaled = m * C_start[1 : Medium.nC] ./ Medium.C_nominal;
   elseif traceDynamics == Dynamics.SteadyStateInitial then
     der(mC_scaled) = zeros(Medium.nC);
   end if;
 
 equation
-  
-// Total quantities
+
+  // Total quantities
   m = V * medium.d;
   mXi = m * medium.Xi;
   H = m * medium.h;
   mC = m * C;
-  
-// Boundary flow quantities
-  for i in 1:nPorts loop
+
+  // Boundary flow quantities
+  for i in 1 : nPorts loop
     ports_mXi_flow[i, :] = fluidPort[i].m_flow * actualStream(fluidPort[i].Xi_outflow);
   end for;
-  
-  for j in 1:Medium.nXi loop
+
+  for j in 1 : Medium.nXi loop
     mbXi_flow[j] = sum(ports_mXi_flow[:, j]);
   end for;
-  
-  mb_flow = sum(fluidPort.m_flow)  ;
+
+  mb_flow = sum(fluidPort.m_flow);
   Qb_flow = heatPort.Q_flow;
-  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow)) ;
-// Balance equations
-// Energy
+  Hb_flow = sum(fluidPort.m_flow .* actualStream(fluidPort.h_outflow));
+  // Balance equations
+  // Energy
   if energyDynamics == Dynamics.SteadyState then
     0 = Hb_flow + Qb_flow;
   else
     der(H) = Hb_flow + Qb_flow;
   end if;
-// Mass
+  // Mass
   if massDynamics == Dynamics.SteadyState then
     0 = mb_flow;
   else
     der(m) = mb_flow;
   end if;
-// Independant masses
+  // Independant masses
   if substanceDynamics == Dynamics.SteadyState then
     zeros(Medium.nXi) = mbXi_flow;
   else
     der(mXi) = mbXi_flow;
   end if;
-// Trace masses
+  // Trace masses
   if traceDynamics == Dynamics.SteadyState then
     zeros(Medium.nC) = mbC_flow;
   else
     der(mC_scaled) = mbC_flow ./ Medium.C_nominal;
   end if;
   mC = mC_scaled .* Medium.C_nominal;
-// port handovers
-// fluidPorts
-  for i in 1:nPorts loop
+  // port handovers
+  // fluidPorts
+  for i in 1 : nPorts loop
     fluidPort[i].p = medium.p;
     fluidPort[i].h_outflow = medium.h;
     fluidPort[i].Xi_outflow = medium.Xi;
   end for;
-// heatPort
+  // heatPort
   heatPort.T = medium.T;
-  annotation(
-    Documentation(info = "
+
+  annotation (
+    Documentation(
+      info = "
 <html>
 <head>
 <title>The Modelica License 2</title>
@@ -203,4 +236,5 @@ end if </br>
 </body>		
 </html>"),
     Icon(graphics = {Rectangle(origin = {-96, 55}, fillPattern = FillPattern.Solid, extent = {{-4, 33}, {4, -35}}), Rectangle(origin = {96, 55}, fillPattern = FillPattern.Solid, extent = {{-4, 33}, {4, -35}}), Ellipse(origin = {13, 25}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, extent = {{-5, 5}, {3, -3}}, endAngle = 360), Rectangle(origin = {-30, -22}, lineColor = {0, 85, 255}, fillColor = {0, 85, 255}, fillPattern = FillPattern.Solid, extent = {{-70, 42}, {130, -78}}), Ellipse(origin = {-75, 5}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-75, -13}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-75, -31}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, -31}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, -13}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, 5}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, -49}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-75, -49}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, -67}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-75, -67}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-47, -85}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, -49}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, -67}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-75, -85}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, -31}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, -13}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, 5}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Ellipse(origin = {-19, -85}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-3, 3}, {3, -3}}, endAngle = 360), Polygon(origin = {9.09, 29.85}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-1.09366, -1.85355}, {6.90634, -1.85355}, {2.90634, 6.14645}, {-1.09366, -1.85355}}), Polygon(origin = {41.09, 29.85}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-1.09366, -1.85355}, {6.90634, -1.85355}, {2.90634, 6.14645}, {-1.09366, -1.85355}}), Ellipse(origin = {45, 25}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, extent = {{-5, 5}, {3, -3}}, endAngle = 360), Ellipse(origin = {75, 25}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, extent = {{-5, 5}, {3, -3}}, endAngle = 360), Polygon(origin = {71.09, 29.85}, fillColor = {0, 85, 255}, pattern = LinePattern.None, fillPattern = FillPattern.Solid, points = {{-1.09366, -1.85355}, {6.90634, -1.85355}, {2.90634, 6.14645}, {-1.09366, -1.85355}})}, coordinateSystem(initialScale = 0.1)));
+
 end LiquidNode;

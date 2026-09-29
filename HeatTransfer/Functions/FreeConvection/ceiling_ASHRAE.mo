@@ -4,59 +4,65 @@ function ceiling_ASHRAE
 
   extends Modelica.Icons.Function;
 
-  input Modelica.SIunits.TemperatureDifference dT "Temperature difference plate - fluid";
+  input Modelica.SIunits.TemperatureDifference dT
+    "Temperature difference plate - fluid";
   input Modelica.SIunits.RayleighNumber Ra;
   output Modelica.SIunits.NusseltNumber Nu;
 
 protected
+
   //boundary Rayleigh number
-  constant Real Ra_1 = 200, Ra_2 = 10 ^ 4, Ra_3 = 8 * 10 ^ 6 ;
-  Modelica.SIunits.NusseltNumber Nu_up, Nu_buffer ;
-  Real x_small "shift value to enter in the polynomial fitting to remove discontinuities";
-  
+  constant Real Ra_1 = 200, Ra_2 = 10 ^ 4, Ra_3 = 8 * 10 ^ 6;
+  Modelica.SIunits.NusseltNumber Nu_up, Nu_buffer;
+  Real x_small
+    "shift value to enter in the polynomial fitting to remove discontinuities";
+
 algorithm
+
   // initialization
-  x_small := 0 ;
-  Nu_up := 0 ;
-  Nu_buffer := 0 ;
+  x_small := 0;
+  Nu_up := 0;
+  Nu_buffer := 0;
 
   if dT < 0 then
 
     if Ra < Ra_1 then
-      x_small:= Ra_1/100 ; 
+      x_small := Ra_1 / 100;
       Nu_buffer := 0.96 * Ra ^ (1 / 6);
       Nu_up := 0.59 * Ra ^ (1 / 4);
-      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_1-Ra-x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up) ;
-      
+      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_1 - Ra - x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up);
+
     elseif Ra >= Ra_1 and Ra < Ra_2 then
-      x_small:= Ra_2/100 ; 
+      x_small := Ra_2 / 100;
       Nu_buffer := 0.59 * Ra ^ (1 / 4);
       Nu_up := 0.54 * Ra ^ (1 / 4);
-      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_2-Ra-x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up) ;
-      
+      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_2 - Ra - x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up);
+
     elseif Ra >= Ra_2 and Ra < Ra_3 then
-      x_small:= Ra_3/100 ; 
+      x_small := Ra_3 / 100;
       Nu_buffer := 0.54 * Ra ^ (1 / 4);
       Nu_up := 0.15 * Ra ^ (1 / 3);
-      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_3-Ra-x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up) ;
-      
-    elseif Ra >= Ra_3  then
+      Nu := Modelica.Fluid.Utilities.regStep(x = Ra_3 - Ra - x_small, x_small = x_small, y1 = Nu_buffer, y2 = Nu_up);
+
+    elseif Ra >= Ra_3 then
       Nu := 0.15 * Ra ^ (1 / 3);
-      
-    end if ;
-    
-    assert(not(Ra < 1), "the Rayleigh number <1 is out of the range of the correlation", level = AssertionLevel.warning) ;
-    assert(not(Ra > 1.5*10^9), "the Rayleigh number >1.5*10^9 is out of the range of the correlation", level = AssertionLevel.warning) ;
-  
+
+    end if;
+
+    assert(not (Ra < 1), "the Rayleigh number <1 is out of the range of the correlation", level = AssertionLevel.warning);
+    assert(not (Ra > 1.5 * 10 ^ 9), "the Rayleigh number >1.5*10^9 is out of the range of the correlation", level = AssertionLevel.warning);
+
   else
-  
+
     Nu := 0.27 * Ra ^ (1 / 4);
-    assert(not(Ra < 10^5), "the Rayleigh number <10^5 is out of the range of the correlation", level = AssertionLevel.warning) ;
-    assert(not(Ra > 10^10), "the Rayleigh number >10^9 is out of the range of the correlation", level = AssertionLevel.warning) ;
+    assert(not (Ra < 10 ^ 5), "the Rayleigh number <10^5 is out of the range of the correlation", level = AssertionLevel.warning);
+    assert(not (Ra > 10 ^ 10), "the Rayleigh number >10^9 is out of the range of the correlation", level = AssertionLevel.warning);
 
   end if;
-  
-annotation(Documentation(info = "
+
+  annotation (
+    Documentation(
+      info = "
 <html>
 	<head>
 	  <title>ceiling_ASHRAE</title>

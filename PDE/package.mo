@@ -2,10 +2,11 @@ within TAeZoSysPro;
 
 package PDE
 
-extends Modelica.Icons.Package ;
+  extends Modelica.Icons.Package;
 
-  annotation(
-    Documentation(info = "
+  annotation (
+    Documentation(
+      info = "
 <html>
 	<head>
 		<title>PDE package</title>
@@ -83,4 +84,5 @@ extends Modelica.Icons.Package ;
 	
 </html>"),
     Icon(coordinateSystem(initialScale = 0.1), graphics = {Bitmap(origin = {40.5, 22.5}, extent = {{-112.5, -112.5}, {67.5, 67.5}}, fileName = "modelica://TAeZoSysPro/Information/PDE/img_package.png")}));
+
 end PDE;

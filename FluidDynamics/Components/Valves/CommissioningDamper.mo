@@ -1,31 +1,51 @@
 within TAeZoSysPro.FluidDynamics.Components.Valves;
 
 model CommissioningDamper
-  replaceable package Medium = TAeZoSysPro.Media.MyMedia "Medium in the component";
+
+  replaceable package Medium = TAeZoSysPro.Media.MyMedia
+    "Medium in the component";
 
   // User defined parameters
 
-  parameter Medium.MassFlowRate m_flow_nominal "Nominal mass flow rate targeted" annotation(Dialog(group="Nominal operating point")) ;
-  parameter Modelica.SIunits.Pressure dp_ref=1e5 "Reference pressure drop (Standard states 1e5 Pa )" annotation(Dialog(group="Nominal operating point")) ; 
-  parameter Modelica.SIunits.Temperature T_ref=293.15 "reference temperature used for computed Kv"annotation(Dialog(group="Nominal operating point"));
-  parameter Modelica.SIunits.Density rho_ref=Medium.density_pTX(Medium.p_default, T_ref, Medium.X_default) annotation(Dialog(group="Nominal operating point"));   
-  parameter Modelica.SIunits.Pressure dp_small = 1 "Regularisation of zero flow" annotation(Dialog(tab="Advanced"));
-  parameter Real Kv(fixed = false) "(Metric) flow coefficient";
-  parameter Real Fxt=0.5 "F_gamma*xt critical ratio";
-    
+  parameter Medium.MassFlowRate m_flow_nominal
+    "Nominal mass flow rate targeted"
+    annotation (Dialog(group = "Nominal operating point"));
+  parameter Modelica.SIunits.Pressure dp_ref = 1e5
+    "Reference pressure drop (Standard states 1e5 Pa )"
+    annotation (Dialog(group = "Nominal operating point"));
+  parameter Modelica.SIunits.Temperature T_ref = 293.15
+    "reference temperature used for computed Kv"
+    annotation (Dialog(group = "Nominal operating point"));
+  parameter Modelica.SIunits.Density rho_ref = Medium.density_pTX(Medium.p_default, T_ref, Medium.X_default)
+    annotation (Dialog(group = "Nominal operating point"));
+  parameter Modelica.SIunits.Pressure dp_small = 1
+    "Regularisation of zero flow"
+    annotation (Dialog(tab = "Advanced"));
+  parameter Real Kv(fixed = false)
+    "(Metric) flow coefficient";
+  parameter Real Fxt = 0.5
+    "F_gamma*xt critical ratio";
+
   // Internal variables
-  Modelica.SIunits.Pressure dp(start=100) "Pressure difference between port_a and port_b (= port_a.p - port_b.p)" ;
-  Medium.MassFlowRate m_flow(start = m_flow_nominal) "Mass flow rate in design flow direction";
-  
+  Modelica.SIunits.Pressure dp(start = 100)
+    "Pressure difference between port_a and port_b (= port_a.p - port_b.p)";
+  Medium.MassFlowRate m_flow(start = m_flow_nominal)
+    "Mass flow rate in design flow direction";
+
   // Imported modules
-  Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package Medium = Medium) annotation(
-    Placement(visible = true, transformation(extent = {{110, -10}, {90, 10}}, rotation = 0), iconTransformation(extent = {{110, -10}, {90, 10}}, rotation = 0)));
-  Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium = Medium) annotation(
-    Placement(visible = true, transformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(extent = {{110, -10}, {90, 10}}, rotation = 0), iconTransformation(extent = {{110, -10}, {90, 10}}, rotation = 0)));
+  Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium = Medium)
+    annotation (
+      Placement(visible = true, transformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0), iconTransformation(extent = {{-110, -10}, {-90, 10}}, rotation = 0)));
 
 protected
-  Real xs "Saturated pressure drop ratio";
-  Real Y "Compressibility factor";
+
+  Real xs
+    "Saturated pressure drop ratio";
+  Real Y
+    "Compressibility factor";
 
 /* initial equation block comment :
   + was initially intented to help homotopy function inversion 
@@ -46,42 +66,43 @@ protected
 //          X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))})))) ; 
 
 equation
+
   //
-  dp = port_a.p - port_b.p ;
-  xs = max(-Fxt, min(dp/max(port_a.p, port_b.p), Fxt));
-  Y = 1 - abs(xs)/(3*Fxt);
-  
+  dp = port_a.p - port_b.p;
+  xs = max(-Fxt, min(dp / max(port_a.p, port_b.p), Fxt));
+  Y = 1 - abs(xs) / (3 * Fxt);
+
   // multiply volumetric flow by rho and integrate it in ssqrt to avoid two call to Medium.Density
-  m_flow = homotopy(Kv/3600.0 * sqrt(rho_ref) * Y * sqrt(1.0/dp_ref) * Modelica.Fluid.Utilities.regRoot2(
-    x = dp,
-    x_small = dp_small,
-    k1 = Medium.density_phX(
-          p = port_a.p, 
-          h = inStream(port_a.h_outflow), 
-          X = cat(1, inStream(port_a.Xi_outflow), {1 - sum(inStream(port_a.Xi_outflow))})) ,
-    k2 = Medium.density_phX(
-          p = port_b.p, 
-          h = inStream(port_b.h_outflow), 
-          X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))}))),
-    
-    Kv/3600*dp/dp_ref );
+  m_flow = homotopy(
+    Kv / 3600.0 * sqrt(rho_ref) * Y * sqrt(1.0 / dp_ref) * Modelica.Fluid.Utilities.regRoot2(
+      x = dp,
+      x_small = dp_small,
+      k1 = Medium.density_phX(
+        p = port_a.p,
+        h = inStream(port_a.h_outflow),
+        X = cat(1, inStream(port_a.Xi_outflow), {1 - sum(inStream(port_a.Xi_outflow))})),
+      k2 = Medium.density_phX(
+        p = port_b.p,
+        h = inStream(port_b.h_outflow),
+        X = cat(1, inStream(port_b.Xi_outflow), {1 - sum(inStream(port_b.Xi_outflow))}))),
+    Kv / 3600 * dp / dp_ref);
 
   // Port handover
-  port_a.m_flow = m_flow ;
-  port_a.m_flow + port_b.m_flow = 0.0 ;
+  port_a.m_flow = m_flow;
+  port_a.m_flow + port_b.m_flow = 0.0;
 
   port_a.h_outflow = inStream(port_b.h_outflow);
-  port_b.h_outflow = inStream(port_a.h_outflow);    
-  
+  port_b.h_outflow = inStream(port_a.h_outflow);
+
   port_a.Xi_outflow = inStream(port_b.Xi_outflow);
   port_b.Xi_outflow = inStream(port_a.Xi_outflow);
 
   port_a.C_outflow = inStream(port_b.C_outflow);
   port_b.C_outflow = inStream(port_a.C_outflow);
 
-annotation(
-    Documentation(info=
-"<html><head>
+  annotation (
+    Documentation(
+      info = "<html><head>
     <title>CommissioningDamper</title>
   </head>
   

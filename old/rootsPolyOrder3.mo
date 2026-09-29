@@ -1,71 +1,82 @@
 within TAeZoSysPro.FluidDynamics.Functions;
 
-function rootsPolyOrder3 "Find the roots of a 3 order polynome of kind ax3 + bx2 + cx + d = 0"
+function rootsPolyOrder3
+  "Find the roots of a 3 order polynome of kind ax3 + bx2 + cx + d = 0"
 
-  input Real a "Polynom coefficients";
-  input Real b "Polynom coefficients";
-  input Real c "Polynom coefficients";
-  input Real d "Polynom coefficients";
-  output Real roots[3] ;   
+  input Real a
+    "Polynom coefficients";
+  input Real b
+    "Polynom coefficients";
+  input Real c
+    "Polynom coefficients";
+  input Real d
+    "Polynom coefficients";
+  output Real roots[3];
 
 protected
-  Real p, q ;
-  Real discriminant ;
-  Real x1 "First root of the polynom";
-  Real x2 "Second roots of the polynom";
-  Real x3 "Third roots of the polynom";
-    
-algorithm
-// default value
-  x1 := 0.0 ;
-  x2 := 0.0 ;
-  x3 := 0.0 ;
-  p := 0.0 ;
-  q := 0.0 ;
-  discriminant := 0.0 ;  
 
-// check that is high enough to consider the polynom as a third order
+  Real p, q;
+  Real discriminant;
+  Real x1
+    "First root of the polynom";
+  Real x2
+    "Second roots of the polynom";
+  Real x3
+    "Third roots of the polynom";
+
+algorithm
+
+  // default value
+  x1 := 0.0;
+  x2 := 0.0;
+  x3 := 0.0;
+  p := 0.0;
+  q := 0.0;
+  discriminant := 0.0;
+
+  // check that is high enough to consider the polynom as a third order
   if abs(a) <= 1e-10 then /* 2nd order polynom */
     if abs(b) <= 1e-10 then /* 1st order polynom */
-      x1 := -d / c ;
+      x1 := -d / c;
     else /* 2nd order polynom */
-      discriminant := c^2 - 4*b*d ;
+      discriminant := c ^ 2 - 4 * b * d;
       if discriminant < 0.0 then
-        assert(discriminant >= 0.0, message = "Negative discriminant, no real roots", level = AssertionLevel.error) ;
+        assert(discriminant >= 0.0, message = "Negative discriminant, no real roots", level = AssertionLevel.error);
       elseif discriminant == 0.0 then
-        x1 := -c / (2*b) ;
-        
+        x1 := -c / (2 * b);
+
       else /*discriminant > 0.0 */
-        x1 := (- c - sqrt(discriminant) ) / (2*b) ;
-        x2 := (- c + sqrt(discriminant) ) / (2*b) ;
+        x1 := (-c - sqrt(discriminant)) / (2 * b);
+        x2 := (-c + sqrt(discriminant)) / (2 * b);
 
-      end if ;    
-    end if ;
+      end if;
+    end if;
   else /* 3rd order polynom */
-// first a change of variable is performed to derives to the following equation solvable via the Cardan method: X^3 + pX + q = 0
-    p := (3*a*c - b^2) / (3*a^2) ;
-    q := (2*b^3 - 9*a*b*c + 27*a^2*d) / (27*a^3) ;
-    discriminant := -(27*q^2 + 4*p^3) ;
-    x1 := ((-q - sqrt(discriminant)) / 2)^(1/3) +   ((-q + sqrt(discriminant)) / 2)^(1/3) - b/(3*a) ;
-/* knowing the first racine, the polynom becomes: ax^2 + (b+ax1)x + (c+(b+ax1)x1) = 0.
+    // first a change of variable is performed to derives to the following equation solvable via the Cardan method: X^3 + pX + q = 0
+    p := (3 * a * c - b ^ 2) / (3 * a ^ 2);
+    q := (2 * b ^ 3 - 9 * a * b * c + 27 * a ^ 2 * d) / (27 * a ^ 3);
+    discriminant := -(27 * q ^ 2 + 4 * p ^ 3);
+    x1 := ((-q - sqrt(discriminant)) / 2) ^ (1 / 3) + ((-q + sqrt(discriminant)) / 2) ^ (1 / 3) - b / (3 * a);
+    /* knowing the first racine, the polynom becomes: ax^2 + (b+ax1)x + (c+(b+ax1)x1) = 0.
    The discriminant of this new equation derives: */
-    discriminant := (b+a*x1)^2 - 4*a*(c+(b+a*x1)*x1) ;
+    discriminant := (b + a * x1) ^ 2 - 4 * a * (c + (b + a * x1) * x1);
     if discriminant < 0.0 then
-      assert(discriminant >= 0.0, message = "Negative discriminant, no real roots", level = AssertionLevel.error) ;
+      assert(discriminant >= 0.0, message = "Negative discriminant, no real roots", level = AssertionLevel.error);
     elseif discriminant == 0.0 then
-        x2 := -(c+(b+a*x1)*x1) / (2*(b+a*x1)) ;
-        
+      x2 := -(c + (b + a * x1) * x1) / (2 * (b + a * x1));
+
     else /*discriminant > 0.0 */
-      x2 := (- (b+a*x1) - sqrt(discriminant) ) / (2*a) ;
-      x3 := (- (b+a*x1) + sqrt(discriminant) ) / (2*a) ;
+      x2 := (-(b + a * x1) - sqrt(discriminant)) / (2 * a);
+      x3 := (-(b + a * x1) + sqrt(discriminant)) / (2 * a);
 
-    end if ;    
-  end if ;
-  
-  roots := {x1, x2, x3} ;
+    end if;
+  end if;
 
-annotation(
-  Documentation(info = "
+  roots := {x1, x2, x3};
+
+  annotation (
+    Documentation(
+      info = "
 <html>
   <head>
     <title>rootsPolyOrder3</title>
@@ -136,6 +147,6 @@ annotation(
     </p>
 
   </body>
-</html>")) ;
+</html>"));
 
 end rootsPolyOrder3;

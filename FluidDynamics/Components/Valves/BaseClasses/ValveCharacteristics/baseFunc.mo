@@ -1,11 +1,17 @@
 within TAeZoSysPro.FluidDynamics.Components.Valves.BaseClasses.ValveCharacteristics;
 
-partial function baseFunc "Base class for valve characteristics"
+partial function baseFunc
+  "Base class for valve characteristics"
+
   extends Modelica.Icons.Function;
-  input Real pos(min=0, max=1)
-      "Opening position (0: closed, 1: fully open)";
-  output Real rc "Relative flow coefficient (per unit)";
-  annotation (Documentation(info="<html>
+  input Real pos(min = 0, max = 1)
+    "Opening position (0: closed, 1: fully open)";
+  output Real rc
+    "Relative flow coefficient (per unit)";
+
+  annotation (
+    Documentation(
+      info = "<html>
 <p>
 This is a partial function that defines the interface of valve
 characteristics. The function returns \"rc = valveCharacteristic\" as function of the
@@ -20,4 +26,5 @@ m_flow =                  rc * Av * sqrt(rho * dp)
 </pre></blockquote>
 
 </html>"));
+
 end baseFunc;
