@@ -16,13 +16,14 @@ model test_Interface_liq_gas
 
   end LiquidNode_simulated;
 
-  TAeZoSysPro.FluidDynamics.BasesClasses.Interface_liq_gas interFace_liq_gas(A = 1)
+  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the liquid-gas interface";
+  TAeZoSysPro.FluidDynamics.BasesClasses.Interface_liq_gas interFace_liq_gas(redeclare package Medium = Medium, A = 1)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 3.33067e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.FixedTemperature T_interface(T(displayUnit = "K") = 378.15)
     annotation (
       Placement(visible = true, transformation(origin = {-70, -52}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere
+  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(redeclare package Medium = Medium)
     annotation (
       Placement(visible = true, transformation(origin = {-40, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant F_view(k = 1)

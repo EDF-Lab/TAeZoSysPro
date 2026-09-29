@@ -2,13 +2,14 @@ within TAeZoSysPro_testsuite.FluidDynamics.BaseClasses;
 
 model test_MolecularDiffusion
 
-  TAeZoSysPro.FluidDynamics.BasesClasses.MolecularDiffusion molecularDiffusion(A = 1, Th = 0.1)
+  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the molecular diffusion model";
+  TAeZoSysPro.FluidDynamics.BasesClasses.MolecularDiffusion molecularDiffusion(redeclare package Medium = Medium, A = 1, Th = 0.1)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(RH = 0)
+  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(redeclare package Medium = Medium, RH = 0)
     annotation (
       Placement(visible = true, transformation(origin = {-80, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere1(RH = 1)
+  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere1(redeclare package Medium = Medium, RH = 1)
     annotation (
       Placement(visible = true, transformation(origin = {80, 0}, extent = {{20, -20}, {-20, 20}}, rotation = 0)));
 

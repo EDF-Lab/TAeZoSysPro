@@ -2,6 +2,7 @@ within TAeZoSysPro_testsuite.HeatTransfer.BaseClasses;
 
 model test_ForcedConvection
 
+  package Medium = TAeZoSysPro.Media.Air.MoistAir "Medium whose thermodynamic state provides the density d used by ForcedConvection";
   Modelica.Thermal.HeatTransfer.Sources.FixedTemperature T_wall(T = 303.15)
     annotation (
       Placement(visible = true, transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -11,19 +12,19 @@ model test_ForcedConvection
   Modelica.Thermal.HeatTransfer.Sources.FixedHeatFlow fixedHeatFlow1(Q_flow = 383)
     annotation (
       Placement(visible = true, transformation(origin = {-50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection1(A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.flat_plate_ASHRAE)
+  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection1(redeclare package Medium = Medium, A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.flat_plate_ASHRAE)
     annotation (
       Placement(visible = true, transformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection2(A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.crossFlow_cylinder_ASHRAE)
+  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection2(redeclare package Medium = Medium, A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.crossFlow_cylinder_ASHRAE)
     annotation (
       Placement(visible = true, transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection3(A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.internal_pipe_ASHRAE)
+  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection3(redeclare package Medium = Medium, A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.internal_pipe_ASHRAE)
     annotation (
       Placement(visible = true, transformation(origin = {0, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection4(A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.Constant, h_cv_const = 100)
+  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection4(redeclare package Medium = Medium, A = 1, Lc = 1, correlation = TAeZoSysPro.HeatTransfer.Types.ForcedConvectionCorrelation.Constant, h_cv_const = 100)
     annotation (
       Placement(visible = true, transformation(origin = {0, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection5(A = 1)
+  TAeZoSysPro.HeatTransfer.BasesClasses.ForcedConvection forcedConvection5(redeclare package Medium = Medium, A = 1)
     annotation (
       Placement(visible = true, transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant Velocity(k = 10)

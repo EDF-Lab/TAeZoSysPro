@@ -2,10 +2,11 @@ within TAeZoSysPro_testsuite.FluidDynamics.BaseClasses;
 
 model test_Condensation
 
-  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere
+  package Medium = TAeZoSysPro.Media.Air.MoistAir "Condensable medium required by the condensation model";
+  TAeZoSysPro.FluidDynamics.Sources.Atmosphere atmosphere(redeclare package Medium = Medium)
     annotation (
       Placement(visible = true, transformation(origin = {-70, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation
+  TAeZoSysPro.FluidDynamics.BasesClasses.Condensation condensation(redeclare package Medium = Medium)
     annotation (
       Placement(visible = true, transformation(origin = {-3.55271e-15, 3.55271e-15}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.FixedTemperature T_wall(T = 278.15)

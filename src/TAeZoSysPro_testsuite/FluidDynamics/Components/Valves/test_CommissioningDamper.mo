@@ -2,7 +2,7 @@ within TAeZoSysPro_testsuite.FluidDynamics.Components.Valves;
 
 model test_CommissioningDamper
 
-  TAeZoSysPro.FluidDynamics.Components.Valves.CommissioningDamper commissioningDamper(redeclare package Medium = Modelica.Media.Air.SimpleAir, dp_nominal = 100000, m_flow_nominal = 1)
+  TAeZoSysPro.FluidDynamics.Components.Valves.CommissioningDamper commissioningDamper(redeclare package Medium = Modelica.Media.Air.SimpleAir, m_flow(fixed = true), m_flow_nominal = 1)
     annotation (
       Placement(visible = true, transformation(origin = {0, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Fluid.Sources.FixedBoundary source(redeclare package Medium = Modelica.Media.Air.SimpleAir, T = 277.15, nPorts = 1, p = 101325 + 1e5)
