@@ -1,6 +1,7 @@
 package TAeZoSysPro
 
   annotation (
+    version = "3.3.0",
     Documentation(
       info = "<html><head>
 		<title>The TAeZoSysPro librairy</title>
@@ -21,8 +22,8 @@ package TAeZoSysPro
 	
 	<body lang=\"en-UK\">
 
-		<h1>Version 3.1.0</h1><p>
-		This package with all of its subpackages contains the elements of the “ TAeZoSysPro ” librairie version 3.1.0 
+		<h1>Version 3.3.0</h1><p>
+		This package with all of its subpackages contains the elements of the “ TAeZoSysPro ” librairie version 3.3.0
 		</p>
 
 		<p>
